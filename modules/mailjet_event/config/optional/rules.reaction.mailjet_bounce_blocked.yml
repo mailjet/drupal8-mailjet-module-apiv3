@@ -1,0 +1,15 @@
+uuid: dd18ace8-fa54-435d-98fe-b1d89dae7c1d
+langcode: en
+status: true
+dependencies: {  }
+id: mailjet_bounce_blocked
+label: 'Mailjet Bounce Blocked'
+events:
+  -
+    event_name: blocked_event
+description: ''
+tags:
+  - Mailjet
+config_version: '3'
+expression:
+  id: rules_rule

@@ -1,0 +1,85 @@
+# Schema for the configuration files of the Mailjet Subscription module.
+
+
+mailjet_subscription.mailjet_subscription_form.*:
+  type: config_entity
+  label: 'Mailjet Subscription config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    name:
+      type: text
+      label: 'Name'
+    uuid:
+      type: string
+      label: 'UUID'
+    description:
+      type: string
+      label: 'Description'
+    sumbit_label:
+      type: string
+      label: 'Sumbit Label'
+    destination_page:
+      type: string
+      label: 'Destination page'
+    error_token:
+      type: string
+      label: 'Error Token'
+    confirmation_email_text:
+      type: string
+      label: 'Confirmation email text'
+    email_text_button:
+      type: string
+      label: 'Email text button'
+    email_text_description:
+      type: string
+      label: 'Email description'
+    email_text_thank_you:
+      type: string
+      label: 'Email text thank you'
+    email_owner:
+      type: string
+      label: 'Email Owner'
+    contact_exist:
+      type: string
+      label: 'Contact exist message'
+    lists:
+      type: string
+      label: 'Lists'
+    fields_mailjet:
+      type: string
+      label: 'Contact properties'
+    css_field:
+      type: string
+      label: 'CSS FIELD'
+    js_field:
+      type: string
+      label: 'JS field'
+    email_footer_text:
+      type: string
+      label: 'Email Footer text'
+    error_data_types:
+      type: string
+      label: 'Data type error message'
+    confirmation_message:
+      type: string
+      label: 'Confirmation message'
+    subscribe_error:
+      type: string
+      label: 'Subscribe error'
+    success_message_subsribe:
+      type: string
+      label: 'Success message'
+    created_date:
+      type: string
+      label: 'Created time'
+    changed_date:
+      type: string
+      label: 'Changed time'
+    email_label:
+      type: string
+      label: 'Email Label'
+    labels_fields:
+      type: string
+      label: 'Signup form properties ( labels )'

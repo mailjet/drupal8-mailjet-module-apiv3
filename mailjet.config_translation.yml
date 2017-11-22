@@ -1,0 +1,6 @@
+
+mailjet_settings.settings_form:
+  title: 'Mailjet Settings'
+  base_route_name: mailjet_settings.settings_form
+  names:
+    - mailsystem.settings

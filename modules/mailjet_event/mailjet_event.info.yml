@@ -1,0 +1,9 @@
+name: Mailjet Event API
+description: Add support for MailJet Events.
+package: Mailjet
+type: module
+version: 1.0
+core: 8.x
+
+dependencies:
+  - mailjet:mailjet

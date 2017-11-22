@@ -1,0 +1,7 @@
+event.content:
+  path: '/admin/config/mailjet/other-settings/event'
+  defaults:
+    _controller: 'Drupal\mailjet_event\Controller\EventAdminController::content'
+    _title: 'Event'
+  requirements:
+    _mailjet_access_check:  'TRUE' 
