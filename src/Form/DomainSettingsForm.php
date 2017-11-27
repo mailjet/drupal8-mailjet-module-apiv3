@@ -28,7 +28,7 @@ class DomainSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form = parent::buildForm($form, $form_state);
+    $form = [];
     $header = [
       'domain' => [
         'data' => t('Domain'),
@@ -74,7 +74,7 @@ class DomainSettingsForm extends ConfigFormBase {
       '#button_type' => 'primary',
     ];
 
-    return parent::buildForm($form, $form_state);
+    return $form;
   }
 
   /**

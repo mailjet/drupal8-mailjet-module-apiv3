@@ -24,3 +24,24 @@ function mailjet_trigger_examples_requirements($phase) {
   }
   return $requirements;
 }
+
+/**
+ * Implements hook_uninstall().
+ */
+function mailjet_trigger_examples_uninstall($phase) {
+
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('views.view.') as $view_config_name) {
+
+    if ($view_config_name == 'views.view.mailjet_customers_who_did_not_ordered_for_x_weeks_months_commerce_order_' ||
+      $view_config_name == 'views.view.mailjet_purchase_anniversary_promo_view_commerce_order_' ||
+      $view_config_name == 'views.view._mailjet_last_product_exceeded_30_min_commerce_order_') {
+      $view = $config_factory->getEditable($view_config_name);
+      $view->delete();
+
+    }
+
+  }
+}
+
+

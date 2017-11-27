@@ -361,7 +361,7 @@ class SubscriptionSignupPageForm extends FormBase {
             if (!empty($field) && !empty($form_values['signup-' . $field])) {
               switch (mailjet_get_propertiy_type($field)) {
                 case 'datetime':
-                  $data_value = \DateTime::createFromFormat('d-m-Y', $form_values['signup-' . $field])
+                  $data_value = \DateTime::createFromFormat('d-m-Y', trim($form_values['signup-' . $field]))
                     ->getTimestamp();
                   break;
 

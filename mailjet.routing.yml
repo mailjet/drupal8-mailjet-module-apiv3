@@ -57,16 +57,6 @@ mailjet_other_settings.page:
   options:  
     _admin_route: TRUE  
 
-mailjet_event.page:  
-  path: '/mailjetevent'  
-  defaults:
-    _controller: '\Drupal\mailjet\Controller\MailjetEventController::content'  
-    _title: 'Mailjet Event Callback'  
-  requirements:  
-    _mailjet_access_check:  'TRUE' 
-  options:  
-    _admin_route: TRUE 
-
 mailjet_regester.page:  
   path: '/admin/config/system/mailjet/register'  
   defaults:

@@ -73,14 +73,13 @@ class MailjetMail implements MailInterface {
     }
 
 
-
-    if(isset($message['params']['order'])){
-}
-else{
-    if (isset($message['params']['body'][0])) {
-      $body = $message['params']['body'][0];
+    if (isset($message['params']['order'])) {
     }
-}
+    else {
+      if (isset($message['params']['body'][0])) {
+        $body = $message['params']['body'][0];
+      }
+    }
 
 
     if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
@@ -95,7 +94,8 @@ else{
         if (empty($library) || empty($library['loaded'])) {
           \Drupal::logger('mailjet')
             ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
-          drupal_set_message(t('Unable to send mail : PHPMailer library does not exist.'), 'error');
+          drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v5.2.21 from GitHub here: <a href="http://github.com/PHPMailer/PHPMailer/archive/v5.2.21.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
+DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does not exist.'), 'error');
           return FALSE;
         }
       }
@@ -497,7 +497,7 @@ else{
     }
 
     // Set the protocol prefix for the smtp host.
-    $protocol=!empty($config->get('mailjet_protocol')) ? $config->get('mailjet_protocol') : 'standard';
+    $protocol = !empty($config->get('mailjet_protocol')) ? $config->get('mailjet_protocol') : 'standard';
     switch ($protocol) {
       case 'ssl':
         $mailer->SMTPSecure = 'ssl';
@@ -523,6 +523,7 @@ else{
       \Drupal::logger('mailjet')
         ->notice('Sending mail to: @to', ['@to' => $to]);
     }
+
 
     // Try to send e-mail. If it fails, set watchdog entry.
     if (!$mailer->send()) {

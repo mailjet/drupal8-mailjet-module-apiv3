@@ -12,9 +12,9 @@ use Drupal\Core\Entity\EntityChangedTrait;
 use MailJet\MailJet;
 
 /**
- * Defines the Campaign entity.
+ * Defines the Event entity.
  *
- * @ingroup campaign_entity
+ * @ingroup event_entity
  *
  *
  * @ContentEntityType(
@@ -109,6 +109,11 @@ class Event extends ContentEntityBase implements EventInterface {
     $fields['uuid'] = BaseFieldDefinition::create('uuid')
       ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Event.'))
+      ->setReadOnly(TRUE);
+
+    $fields['event_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Event type - String '))
+      ->setDescription(t('Event type - String'))
       ->setReadOnly(TRUE);
 
     $fields['event_field'] = BaseFieldDefinition::create('map')

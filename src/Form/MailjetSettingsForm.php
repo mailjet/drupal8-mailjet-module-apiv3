@@ -37,27 +37,25 @@ class MailjetSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
     global $base_url;
     $form = parent::buildForm($form, $form_state);
     $config_mailjet = $this->config('mailjet.settings');
-    $config = \Drupal::service('config.factory')
-      ->getEditable('mailsystem.settings');
+
+     $config1 = \Drupal::getContainer()
+      ->get('config.factory')
+      ->getEditable('system.mail');
 
     $form['onoff'] = [
       '#type' => 'fieldset',
       '#title' => t('General settings'),
     ];
 
-    if ($config->get('defaults.formatter') == 'mailjet_mail') {
-      $mailjet_on = TRUE;
+    if ($config_mailjet->get('mailjet_mail') == '1') {
+       $config1->set('interface.default', 'mailjet_mail')->save();
     }
 
-    if ($config_mailjet->get('mailjet_mail') == '1') {
-      $config->set('defaults.formatter', 'mailjet_mail');
-      $config->set('defaults.sender', 'mailjet_mail');
-      $config->save();
-    }
-    if ($config->get('defaults.formatter') == 'mailjet_mail') {
+    if ($config1->get('interface.default') == 'mailjet_mail') {
       $mailjet_on = TRUE;
     }
 
@@ -90,7 +88,7 @@ class MailjetSettingsForm extends ConfigFormBase {
     $form['tracking']['text'] = [
       '#type' => 'markup',
       '#markup' => 'Log into <a href="https://app.mailjet.com/account/triggers" target="_blank">https://app.mailjet.com/account/triggers</a> and paste the URL below into the ENDPOINT URL field <br>'
-        . 'corresponding to the events you want to track in Drupal. Then check the same events below.',
+        . 'corresponding to the events you want to track in Drupal. Then check the same events below. If you want the ENDPOINT URL link store the event information in your site when accept data and enable the different rules actions, please enable Mailjet Event API module.',
     ];
 
     $form['tracking']['event_url'] = [
@@ -336,18 +334,17 @@ class MailjetSettingsForm extends ConfigFormBase {
     $config_mailjet = \Drupal::getContainer()
       ->get('config.factory')
       ->getEditable('mailjet.settings');
-    $config = \Drupal::getContainer()
+
+         $config1 = \Drupal::getContainer()
       ->get('config.factory')
-      ->getEditable('mailsystem.settings');
+      ->getEditable('system.mail');
 
 
     if (!empty($form_state->getValue('mailjet_on'))) {
-      $config->set('defaults.formatter', 'mailjet_mail');
-      $config->set('defaults.sender', 'mailjet_mail');
+     $config1->set('interface.default', 'mailjet_mail')->save();
     }
     else {
-      $config->set('defaults.formatter', 'php_mail');
-      $config->set('defaults.sender', 'php_mail');
+     $config1->set('interface.default', 'php_mail')->save();
     }
 
     $config_mailjet->set('mailjet_mail', 0);

@@ -6,6 +6,7 @@
 
 namespace Drupal\mailjet_campaign\Controller;
 
+use Drupal\mailjet_event\Event\BlockedEvent;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 

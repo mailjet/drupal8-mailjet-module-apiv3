@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\mailjet_subscription\Form\MailjetSettingsForm.
+ * Contains \Drupal\mailjet_subscription\Form\MailjetSubcriptionLabelsForm.
  */
 
 namespace Drupal\mailjet_subscription\Form;
@@ -106,15 +106,15 @@ class MailjetSubscriptionLabelsForm extends ConfigFormBase {
       }
 
       $entity->set('labels_fields', implode(',', $fields_label));
+    }
 
-      $status = $entity->save();
+    $status = $entity->save();
 
-      if ($status == SAVED_UPDATED) {
-        drupal_set_message(t('Subscription Form Labels has been updated.'));
-      }
-      else {
-        drupal_set_message(t('Subscription Form Labels hasn\'t been updated.'));
-      }
+    if ($status == SAVED_UPDATED) {
+      drupal_set_message(t('Subscription Form Labels has been updated.'));
+    }
+    else {
+      drupal_set_message(t('Subscription Form Labels hasn\'t been updated.'));
     }
 
   }

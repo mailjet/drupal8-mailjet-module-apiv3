@@ -100,8 +100,7 @@ function mailjet_campaign_multiple($campaign_ids = [], $reset = FALSE) {
  * the link.
  */
 function _mailjet_campaign_alter_callback() {
-  watchdog('mailjet', json_encode($_POST));
-  watchdog('mailjet', print_r($_POST, TRUE));
+
   $html = '';
   $mj = mailjet_new();
 
@@ -177,7 +176,6 @@ function _mailjet_campaign_alter_callback() {
 
     $campaign_data = [
       'name' => $campaign_name,
-      'uuid' => \Drupal::currentUser()->id(),
       'camp_id_mailjet' => $data->campaign_id,
     ];
 
@@ -208,7 +206,6 @@ function _mailjet_campaign_alter_callback() {
       ];
 
       echo json_encode($res);
-      drupal_exit();
     }
   }
   $res = [
@@ -218,7 +215,6 @@ function _mailjet_campaign_alter_callback() {
   ];
 
   echo json_encode($res);
-  drupal_exit();
 }
 
 /**

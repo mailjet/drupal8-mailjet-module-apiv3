@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Campaign  module.
+ * Install, update and uninstall functions for the Mailjet Campaign  module.
  */
 
 
 /**
  * Implements hook_requirements().
  */
-function campaign_requirements($phase) {
+function mailjet_campaign_requirements($phase) {
   $requirements = [];
   $config_mailjet = \Drupal::config('mailjet.settings');
 

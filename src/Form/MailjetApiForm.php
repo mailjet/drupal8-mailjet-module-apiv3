@@ -33,6 +33,7 @@ class MailjetApiForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+
     $config_mailjet = $this->config('mailjet.settings');
     $form = parent::buildForm($form, $form_state);
     $form['api'] = [

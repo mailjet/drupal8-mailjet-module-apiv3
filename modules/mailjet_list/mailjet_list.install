@@ -16,7 +16,7 @@ function mailjet_list_requirements($phase) {
   if ($phase == 'install') {
     $errorData = [
       'severity' => REQUIREMENT_ERROR,
-      'description' => t('List Subscription  module requires the Mailjet module. Please enable first Mailjet module and enter Mailjet API KEYS.!'),
+      'description' => t('Mailjet List  module requires the Mailjet module. Please enable first Mailjet module and enter Mailjet API KEYS.!'),
     ];
 
     if (empty($config_mailjet->get('mailjet_active')) && empty($config_mailjet->get('mailjet_username')) && empty($config_mailjet->get('mailjet_password'))) {
