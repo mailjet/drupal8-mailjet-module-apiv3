@@ -1,4 +1,5 @@
 # Schema for the configuration files of the Mailjet module.
+
 mailjet.settings:
   type: config_object
   label: 'Mailjet Settings'
@@ -8,7 +9,7 @@ mailjet.settings:
       label: 'Mailjet username'
     mailjet_password:
       type: string
-      label: 'Mailjet passoword'
+      label: 'Mailjet password'
     mailjet_mail:
       type: boolean
       label: 'Mailjet email status'
@@ -21,3 +22,8 @@ mailjet.settings:
     apitoken:
       type: string
       label: 'Api token'
+    mailjet_title:
+      type: string
+      label: 'Mailjet title'
+      translatable: true
+

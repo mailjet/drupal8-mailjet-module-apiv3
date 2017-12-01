@@ -4,10 +4,9 @@ mailjet_settings.settings_form:
     _form: '\Drupal\mailjet\Form\MailjetSettingsForm'  
     _title: 'Mailjet Settings' 
   requirements:  
-    _mailjet_access_check:  'TRUE'
+    _mailjet_access_check:  'TRUE'    
   options:  
     _admin_route: TRUE  
-
 
 mailjet_api.admin_settings_form:  
   path: '/admin/config/system/mailjet/api'  

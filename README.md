@@ -4,7 +4,7 @@ Mailjet Module - Drupal 8.x.
 Mailjet APIv3 module for Drupal 8.x.
 
 This module for Drupal 8.x. provides complete control of Drupal Email 
-settings by Mailjet and also adds specific Drupal Commerce email marketing 
+settings with Mailjet and also adds specific Drupal Commerce email marketing 
 functionality such as triggered marketing emails and marketing campaign revenue statistics.
 
 The Mailjet Module for Drupal 8.x configures your default Drupal SMTP 
@@ -36,7 +36,7 @@ Prerequisites
 
 The Mailjet plugin relies on the PHPMailer v5.2.21 for sending emails.
 
-To install PHPMailer via composer use: NOT SUPPORTED YET! 
+To install PHPMailer via composer use: NOT SUPPORT YET! 
 
 
 To install PHPMailer manually:

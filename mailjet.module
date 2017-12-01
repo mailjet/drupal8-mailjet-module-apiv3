@@ -1187,4 +1187,4 @@ function mailjet_theme($existing, $type, $theme, $path) {
       'template' => 'block--local-actions-block',
     ],
   ];
-}
+} 

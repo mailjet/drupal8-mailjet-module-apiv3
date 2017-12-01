@@ -1,0 +1,16 @@
+{
+  "name": "drupal/mailjet",
+  "type": "drupal-module",
+  "description": "Mailjet Drupal8 integration",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/mailjet",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/mailjet",
+    "source": "http://cgit.drupalcode.org/mailjet"
+  },
+  "require": {
+    "phpmailer/phpmailer": "~5.2"
+  }
+}

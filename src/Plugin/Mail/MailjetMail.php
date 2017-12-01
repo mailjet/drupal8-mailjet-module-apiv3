@@ -81,17 +81,24 @@ class MailjetMail implements MailInterface {
       }
     }
 
+    $path = drupal_get_path('module', 'mailjet');
 
     if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
       require_once 'libraries/phpmailer/PHPMailerAutoload.php';
     }
+    elseif (file_exists($path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php')) {
+      require_once $path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
+    }
 
     if (!class_exists('PHPMailer')) {
+
       // If the PHPMailer class is not yet auto-loaded, try to load the library
       // using Libraries API, if present.
       if (function_exists('libraries_load')) {
+
         $library = libraries_load('phpmailer');
         if (empty($library) || empty($library['loaded'])) {
+
           \Drupal::logger('mailjet')
             ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
           drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v5.2.21 from GitHub here: <a href="http://github.com/PHPMailer/PHPMailer/archive/v5.2.21.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
@@ -556,7 +563,8 @@ DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does 
    * @return array
    *   An array containing the resulting mime parts
    */
-  protected function boundarySplit($input, $boundary) {
+  protected
+  function boundarySplit($input, $boundary) {
     $parts = [];
     $bs_possible = drupal_substr($boundary, 2, -2);
     $bs_check = '\"' . $bs_possible . '\"';
@@ -644,4 +652,4 @@ DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does 
     return $substring;
   }
 
-}
+} 
