@@ -52,7 +52,9 @@ function mailjet_campaign_iframe() {
     $callbackurl = urlencode($callbackurl);
     $default_url = urldecode($default_url);
 
-    return $default_url . $callbackurl;
+    // Callback url is temporarily removed
+    return $default_url;
+//    return $default_url . $callbackurl;
   }
   return t('Unable to generate campaign.');
 }
@@ -117,19 +119,16 @@ function _mailjet_campaign_alter_callback() {
     $response = (object) $_POST['response'];
   }
 
-  if ($response->message == 'last change of campaigns parameters') {
+  if ($response->message == 'html saved successfully') {
 
     // Get the HTML for the email template.
-    $res = $mj->data('newsletter', $data->campaign_id, 'HTML', 'text/html', NULL, 'GET', 'LAST')
-      ->getResponse();
+    $html = $mj->data('newsletter', $data->campaign_id, 'HTML', 'text/html', NULL, 'GET', 'LAST')->getResponse();
 
     // Find the body for the email template.
-    $html = $res;
-    $get_body_part_html = strstr($html, '<!-- #nl_content -->');
-    $actuall_body_part = strstr($get_body_part_html, '</table>', TRUE);
+    $get_body_part_html = strstr($html, '<body>');
 
     // Get all links in the body.
-    $links = explode('<a', $actuall_body_part);
+    $links = explode('<a', $get_body_part_html);
     if (!empty($links)) {
       foreach ($links as $key => $value) {
         if ($key != 0) {
@@ -147,11 +146,10 @@ function _mailjet_campaign_alter_callback() {
       }
     }
 
-    $res = $mj->data('newsletter', $data->campaign_id, 'HTML', 'text/html', $html, 'PUT', 'LAST')
-      ->getResponse();
+    $res = $mj->data('newsletter', $data->campaign_id, 'HTML', 'text/html', $html, 'PUT', 'LAST')->getResponse();
   }
 
-  if ($response->message == 'send details saved successfully') {
+  if ($response->message == 'campaign added successfully') {
     $user_infos = mailjet_user_infos();
     $url = 'http://api.mailjet.com/v3/REST/user/' . $user_infos['Email'];
     $result = $mj->generalRequest(FALSE, [], 'GET', $url);
@@ -187,8 +185,7 @@ function _mailjet_campaign_alter_callback() {
 
   }
 
-
-  if ($data->campaign_id && strpos($data->next_step_url, "summary") !== FALSE) {
+  if ($data->campaign_id && strpos($data->next_step_url, "summary") !== false) {
 
     if (
       isset($data->block_type) && $data->block_type && isset($data->block_content) && $data->block_content
