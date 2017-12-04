@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the MailChimp Module.
+ */
+
+
+/**
+ * Implements hook_requirements().
+ */
+function mailjet_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'install') {
+    $errorData = [
+      'severity' => REQUIREMENT_ERROR,
+      'description' => t('Mailjet module requires the <a href="@phpmailer">PHPMailer Library</a>, which is missing. Download and extract the entire contents of the archive into the %path directory on your server.',
+        [
+          '@phpmailer' => 'http://github.com/PHPMailer/PHPMailer/archive/v5.2.21.zip',
+          '%path' => 'sites/all/libraries/phpmailer',
+        ]
+      ),
+    ];
+
+    if (function_exists('libraries_get_path')) {
+      $phpmailer_path = libraries_get_path('phpmailer');
+      if (!$phpmailer_path) {
+        $requirements['phpmailer'] = $errorData;
+      }
+    }
+    elseif (!file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
+      $requirements['phpmailer'] = $errorData;
+    }
+  }
+  return $requirements;
+}  
+

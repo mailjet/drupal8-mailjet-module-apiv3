@@ -1,0 +1,10 @@
+name: Mailjet
+description: Send your emails by your Mailjet API.
+package: Mailjet
+type: module
+version: 1.0
+core: 8.x
+configure: mailjet.settings
+
+dependencies:
+  - libraries

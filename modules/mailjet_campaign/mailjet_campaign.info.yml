@@ -1,0 +1,15 @@
+name: Mailjet Campaigns
+description: Add support for sending MailJet Campaigns.
+package: Mailjet
+type: module
+version: 1.0
+core: 8.x
+
+dependencies:
+  - mailjet:mailjet
+  - commerce
+  - commerce_order
+  - commerce_cart
+  - commerce_payment
+  - commerce_product
+  - commerce_store
