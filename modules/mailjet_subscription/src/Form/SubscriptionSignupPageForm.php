@@ -100,11 +100,55 @@ class SubscriptionSignupPageForm extends FormBase {
         '#attributes' => ['placeholder' => t('your@email.com')],
       ];
 
-      $fields = explode(',', $entity->fields_mailjet);
-      $labels_fields = explode(',', $entity->labels_fields);
+      $fields = [];
+      $labels_fields = [];
+      $fields_mailjet2 = [];
+      $sort_config = explode(',', $entity->sort_fields);
+      $fields_mailjet = explode(',', $entity->fields_mailjet);
+      $labels = explode(',', $entity->labels_fields);
+
       $counter = 0;
 
-      if (!(empty($fields[0]))) {
+      foreach ($fields_mailjet as $field) {
+        $labels_fields[$field] = $labels[$counter];
+        $counter++;
+      }
+
+      $counter = 0;
+      foreach ($fields_mailjet as $field) {
+        $fields_mailjet2[$field] = $fields_mailjet[$counter];
+        $counter++;
+      }
+
+      $field_counter = 0;
+      if (!(empty($sort_config[0]))) {
+        foreach ($sort_config as $sort_field) {
+
+          if (in_array(trim($sort_field), $fields_mailjet2) != FALSE) {
+            $fields[$field_counter] = trim($sort_field);
+          }
+
+          $field_counter++;
+        }
+
+        $field_counter = 100;
+        foreach ($fields_mailjet2 as $field) {
+
+          if (!in_array(trim($field), $fields) != FALSE) {
+            $fields[$field_counter] = trim($field);
+          }
+
+          $field_counter++;
+        }
+      }
+      else {
+        $fields = $fields_mailjet;
+      }
+      
+      $counter = 0;
+
+      if (!(empty($fields_mailjet[0]))) {
+
         foreach ($fields as $field) {
 
           switch ((mailjet_get_propertiy_type($field))) {
@@ -127,7 +171,7 @@ class SubscriptionSignupPageForm extends FormBase {
 
           $form['signup-' . $field] = [
             '#type' => 'textfield',
-            '#title' => "" . $labels_fields[$counter],
+            '#title' => "" . $labels_fields[$field],
             '#description' => $description_field,
             '#default_value' => '',
             '#required' => TRUE,
@@ -318,29 +362,18 @@ class SubscriptionSignupPageForm extends FormBase {
 
         $mailjet->resetRequest();
         $response = $mailjet->manycontacts($add_params)->getResponse();
-
         if ($response && isset($response->Count) && $response->Count > 0) {
 
           // watchdog('mailjet_messages','The user with mail is add to contact list with iD'.);
           $contact_id = $response->Data[0]->Recipients->Items[0]->Contact->ID;
 
-          if ($double_opt_in == 1) {
-            if ($mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send)) {
-              $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
-              if (!empty($entity->confirmation_message)) {
-                drupal_set_message(t($confirmation_message), 'status');
-              }
-              else {
-                drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
-              }
-            }
-          }
         }
         else {
           drupal_set_message(t($entity->subscribe_error), 'error');
           return FALSE;
         }
 
+        $sendMailData = TRUE;
         if ($double_opt_in == 1) {
           $unsub_params = [
             'method' => 'POST',
@@ -390,10 +423,49 @@ class SubscriptionSignupPageForm extends FormBase {
           $mailjet->resetRequest();
           $response = $mailjet->contactdata($data_params)->getResponse();
           if (isset($response->ErrorInfo)) {
-            drupal_set_message('Mailjet Status error code: ' . $response->StatusCode . '. Your contact properties is not sync! Input data is incorrect.Please check your input data. Please resubscribe your data in form.', 'error');
+            $sendMailData = FALSE;
+
+            $start = '[{ "';
+            $end = '" :';
+            $ini = strpos($response->ErrorMessage, $start);
+            $ini += strlen($start);
+            $len = strpos($response->ErrorMessage, $end, $ini) - $ini;
+            $filed_prop_name = trim(substr($response->ErrorMessage, $ini, $len));
+            $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter the correct values according to the example of the description in the field:  <  %id  >';
+            $missmatch_values = str_replace("%id", $filed_prop_name, $missmatch_values);
+
+            switch (mailjet_get_propertiy_type($filed_prop_name)) {
+              case 'int':
+                drupal_set_message($missmatch_values, 'error');
+                break;
+
+              case 'str':
+                drupal_set_message($missmatch_values, 'error');
+                break;
+
+              case 'datetime':
+                drupal_set_message($missmatch_values, 'error');
+                break;
+
+              case 'bool':
+                drupal_set_message($missmatch_values, 'error');
+                break;
+            }
+
           }
         }
 
+        if ($double_opt_in == 1 && $sendMailData == TRUE) {
+          if ($mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send)) {
+            $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
+            if (!empty($entity->confirmation_message)) {
+              drupal_set_message(t($confirmation_message), 'status');
+            }
+            else {
+              drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
+            }
+          }
+        }
 
         //redicrect or redicrect and display success message after all process
         if (!empty($entity->destination_page)) {

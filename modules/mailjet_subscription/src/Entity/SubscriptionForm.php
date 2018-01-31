@@ -183,4 +183,11 @@ class SubscriptionForm extends ConfigEntityBase {
    * @var string
    */
   public $error_data_types;
+
+  /**
+   * The Signup Form Sort fields - String
+   *
+   * @var string
+   */
+  public $sort_fields;
 }

@@ -252,6 +252,17 @@ class SubscriptionFormFormBase extends EntityForm {
       '#max' => 3,
     ];
 
+    $form['mailjet_lists']['sort_fields'] = [];
+    $form['mailjet_lists']['sort_fields'] = [
+      '#type' => 'textfield',
+      '#title' => t('Please enter your ordering field in the subscription form. You can enter only 
+      the fields you select that will be displayed. 
+      In case of incorrect input, your order will not be counted. '),
+      '#description' => t('Еxample selected fields for display in form: lastname,firstname,age. Correct input 
+      for sort configuration in this field: <b>firstname,lastname,age</b>'),
+      '#default_value' => $entity->sort_fields,
+    ];
+
     $form['js_field'] = [
       '#type' => 'textarea',
       '#title' => t('Enter your inline JS here.'),
@@ -367,6 +378,8 @@ class SubscriptionFormFormBase extends EntityForm {
     $entity->set('email_text_thank_you', $form_state->getValue('email_settings')['email_text_thank_you']);
     $entity->set('email_text_description', $form_state->getValue('email_settings')['email_text_description']);
     $entity->set('email_text_button', $form_state->getValue('email_settings')['email_text_button']);
+
+    $entity->set('sort_fields', $form_state->getValue('sort_fields'));
 
     $entity->set('lists', $form_state->getValue('ml_lists'));
     $entity->set('fields_mailjet', $string_fields);
