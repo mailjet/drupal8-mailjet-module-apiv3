@@ -243,6 +243,14 @@ class SubscriptionFormFormBase extends EntityForm {
       $counter_prop++;
     }
 
+    $form['mailjet_lists']['sort_fields'] = [];
+    $form['mailjet_lists']['sort_fields'] = [
+      '#type' => 'textfield',
+      '#title' => t('You can sort the fields in your subscription form. To do that, enter their names in the desired order in the field below separated by <b> comma.  </b>'),
+      '#description' => t('Example: You have selected firstname, lastname and age. You wish to display them in <b> alphabetical order </b>. Do so by entering: <b>age, firstname, lastname</b>. Note: the email field is always displayed in first position.'),
+      '#default_value' => $entity->sort_fields,
+    ];
+
     $form['mailjet_lists']['ml_fields'] = [
       '#type' => 'checkboxes',
       '#title' => t('Contact properties'),
@@ -250,17 +258,6 @@ class SubscriptionFormFormBase extends EntityForm {
       '#options' => $mailjet_properties,
       '#default_value' => explode(',', $entity->fields_mailjet),
       '#max' => 3,
-    ];
-
-    $form['mailjet_lists']['sort_fields'] = [];
-    $form['mailjet_lists']['sort_fields'] = [
-      '#type' => 'textfield',
-      '#title' => t('Please enter your ordering field in the subscription form. You can enter only 
-      the fields you select that will be displayed. 
-      In case of incorrect input, your order will not be counted. '),
-      '#description' => t('Еxample selected fields for display in form: lastname,firstname,age. Correct input 
-      for sort configuration in this field: <b>firstname,lastname,age</b>'),
-      '#default_value' => $entity->sort_fields,
     ];
 
     $form['js_field'] = [
