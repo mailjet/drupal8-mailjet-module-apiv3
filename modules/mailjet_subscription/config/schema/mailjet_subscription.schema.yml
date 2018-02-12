@@ -102,3 +102,7 @@ mailjet_subscription.mailjet_subscription_form.*:
       type: string
       label: 'Signup form properties ( labels )'
       translatable: true
+    sort_fields:
+      type: string
+      label: 'Sort configuration for contact properties'
+      translatable: true

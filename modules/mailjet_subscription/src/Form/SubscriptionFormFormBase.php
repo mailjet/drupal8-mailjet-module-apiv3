@@ -243,6 +243,14 @@ class SubscriptionFormFormBase extends EntityForm {
       $counter_prop++;
     }
 
+    $form['mailjet_lists']['sort_fields'] = [];
+    $form['mailjet_lists']['sort_fields'] = [
+      '#type' => 'textfield',
+      '#title' => t('You can sort the fields in your subscription form. To do that, enter their names in the desired order in the field below separated by <b> comma.  </b>'),
+      '#description' => t('Example: You have selected firstname, lastname and age. You wish to display them in <b> alphabetical order </b>. Do so by entering: <b>age, firstname, lastname</b>. Note: the email field is always displayed in first position.'),
+      '#default_value' => $entity->sort_fields,
+    ];
+
     $form['mailjet_lists']['ml_fields'] = [
       '#type' => 'checkboxes',
       '#title' => t('Contact properties'),
@@ -367,6 +375,8 @@ class SubscriptionFormFormBase extends EntityForm {
     $entity->set('email_text_thank_you', $form_state->getValue('email_settings')['email_text_thank_you']);
     $entity->set('email_text_description', $form_state->getValue('email_settings')['email_text_description']);
     $entity->set('email_text_button', $form_state->getValue('email_settings')['email_text_button']);
+
+    $entity->set('sort_fields', $form_state->getValue('sort_fields'));
 
     $entity->set('lists', $form_state->getValue('ml_lists'));
     $entity->set('fields_mailjet', $string_fields);

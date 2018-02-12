@@ -1,5 +1,5 @@
 <?php
- 
+
 /**
  *  * @file
  *  * Contains \Drupal\mailjet\Form\MailjetSettingsForm.
@@ -43,7 +43,7 @@ class MailjetApiForm extends ConfigFormBase {
     $form['api']['welcome'] = [
       '#markup' => t('Welcome to the Mailjet Configuration page.</br>
       If you are new to Mailjet, please register by clicking on the button above.</br>
-      Should you already have a pre-existing Mailjet account, please copy and paste your Mailjet API Key and Secret Key which can be found '),
+      Should you already have a pre-existing Mailjet account, please copy and paste your Mailjet API Key and Secret Key which can be found in <a href="https://app.mailjet.com/account/api_keys">your Mailjet account.</a>'),
     ];
 
     $form['api']['mailjet_username'] = [
