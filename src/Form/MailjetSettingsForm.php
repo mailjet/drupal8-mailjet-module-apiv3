@@ -236,7 +236,7 @@ class MailjetSettingsForm extends ConfigFormBase {
       '#type' => 'select',
       '#title' => t('State'),
       '#options' => UsStates::getStates(),
-      '#default_value' => !empty($user_infos) ? $user_infos['Email'] : '',
+      '#default_value' => !empty($user_infos) ? $user_infos['AddressState'] : '',
       '#required' => TRUE,
       '#states' => [
         // Only show this field when the value of type is sell.
