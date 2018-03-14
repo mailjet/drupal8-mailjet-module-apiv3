@@ -28,7 +28,7 @@ function mailjet_trigger_examples_requirements($phase) {
 /**
  * Implements hook_uninstall().
  */
-function mailjet_trigger_examples_uninstall($phase) {
+function mailjet_trigger_examples_uninstall() {
 
   $config_factory = \Drupal::configFactory();
   foreach ($config_factory->listAll('views.view.') as $view_config_name) {
