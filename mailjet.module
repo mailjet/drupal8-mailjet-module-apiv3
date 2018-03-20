@@ -936,17 +936,14 @@ function mailjet_mail($key, &$message, $params) {
     'langcode' => $message['langcode'],
   ];
 
-  $user_infos = mailjet_user_infos();
   switch ($key) {
     case 'test_mail':
       $message['subject'] = t('Your test mail from Mailjet', $options);
       $message['body'][] = Html::escape($params['message']);
-	  $message['from'] = $user_infos['Email'] ;
       break;
     case 'activation_mail':
       $message['subject'] = t('Activatin mail', $options);
       $message['body'][] = $params['message'];
-	  $message['from'] = $user_infos['Email'] ;
       break;
   }
 }
