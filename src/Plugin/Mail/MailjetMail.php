@@ -346,7 +346,6 @@ DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does 
     }
 
     $mailer->AddCustomHeader('X-Mailer:Mailjet-for-Drupal8/1.1');
-
     $mailer->Subject = $subject;
 
     // Processes the message's body.
