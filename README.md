@@ -116,5 +116,11 @@ Configuration
 10. If you want to enable the trigger_examples sub-module you need to enable 
     the views_bulk_operations module and apply the following patch to it:  
     https://www.drupal.org/files/issues/views-vbo-patch-anon-users.patch
-      
+
 Author
+
+## Changelog
+= 8.x-1.1 =
+* Fixed problem with breadcrumb navigation
+* Fixed problem with uninstall of trigger examples
+* Fixed admin URL link not working during module initial setup
