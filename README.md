@@ -55,10 +55,7 @@ Installation
 3. Log in as administrator in Drupal.
 4. Enable the Mailjet settings module on the Home >  Administration > Extend page.
 5. Fill in required settings on the Home > Administration > Configuration > System  Mailjet Settings > Mailjet API page.
-6. You will be required to enter API key and Secret Key, if you do not have any, 
-    you should go to https://www.mailjet.com/
-    And signup for your credential data. You should enter those credentials 
-    under your API tab (your_site/admin/config/system/mailjet/api). 
+6. You will be required to enter API key and Secret Key from your Mailjet account. If you do not have an account yet, please [create one](https://app.mailjet.com/signup?aff=drupal-8).
 
 Configuration
 -------------
