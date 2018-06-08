@@ -117,6 +117,9 @@ Configuration
 Author
 
 ## Changelog
+= 8.x-1.2 =
+* Update the tracking parameter
+
 = 8.x-1.1 =
 * Fixed problem with breadcrumb navigation
 * Fixed problem with uninstall of trigger examples
