@@ -882,13 +882,21 @@ function mailjet_first_sync($list_id) {
   $config_mailjet->save();
 }
 
+function  get_mailjet_get_lists_limit() {
+    return 500;
+}
+
 // Getter functions - LISTS and Properties
 function mailjet_get_lists() {
   $contact_lists2 = [];
 
   $mailjet = mailjet_new();
   $counter_contact = 0;
-  $contact_lists = $mailjet->contactslist()->getResponse();
+  $getlist_params = [
+    'method' => 'GET',
+    'limit' => get_mailjet_get_lists_limit(),
+  ];
+  $contact_lists = $mailjet->contactslist($getlist_params)->getResponse();
   if (!empty($contact_lists) && is_array($contact_lists->Data)) {
     foreach ($contact_lists->Data as $list) {
       $contact_lists2[$list->ID] = $list->Name;
