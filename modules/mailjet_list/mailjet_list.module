@@ -28,10 +28,11 @@ function mailjet_list_iframe() {
       'fr' => 'fr_FR',
       'de' => 'de_DE',
       'es' => 'es_ES',
+      'it' => 'it_IT',
     ];
 
     $default_lang = 'en';
-    $locale = isset($lang_codes_map[$language->language]) ? $lang_codes_map[$language->language] : $lang_codes_map[$default_lang];
+    $locale = isset($lang_codes_map[$language->getId()]) ? $lang_codes_map[$language->getId()] : $lang_codes_map[$default_lang];
 
     $callbackurl = 't=' . $token . '&show_menu=none&sp=display&u=Drupal-8.0&locale=' . $locale;
 
