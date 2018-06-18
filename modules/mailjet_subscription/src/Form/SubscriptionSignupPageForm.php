@@ -193,7 +193,7 @@ class SubscriptionSignupPageForm extends FormBase {
         '#value' => $this->entity_id,
       ];
 
-      $form['unsuscribe_id'] = [
+      $form['unsubscribe_id'] = [
         '#type' => 'hidden',
         '#value' => 1,
       ];
@@ -221,7 +221,7 @@ class SubscriptionSignupPageForm extends FormBase {
     $form_values = $form_state->getValues();
     $signup_form = mailjet_subscription_load($this->entity_id);
 
-    if (!isset($form_values['unsuscribe_id']) && empty($form_values['unsuscribe_id'])) {
+    if (!isset($form_values['unsubscribe_id']) && empty($form_values['unsubscribe_id'])) {
       if (!valid_email_address($form_values['signup-email'])) {
         $form_state->setErrorByName('signup-email', t('Please enter valid EMAIL addres!'));
       }
@@ -283,6 +283,116 @@ class SubscriptionSignupPageForm extends FormBase {
     }
   }
 
+  private function unsubContactFromList($mailjet, $contact_id, $list_id) {
+//    $unsub_params = [
+//      'method' => 'POST',
+//      'Action' => 'Unsubscribe',
+//      'Addresses' => [$email],
+//      'ListID' => $list_id,
+//    ];
+
+    $mailjet->resetRequest();
+
+    $url = 'http://api.mailjet.com/v3/REST/contact/'.$contact_id.'/managecontactslists';
+
+    $params = [
+            'ContactsLists' => [
+                [
+                    'ListID' => $list_id,
+                    'Action' => 'unsub'
+                ],
+            ]
+        ];
+        return $mailjet->generalRequest(FALSE, $params, 'JSON', $url);
+//    return $mailjet->manycontacts($unsub_params)->getResponse();
+  }
+
+  private function addNewContactInList($mailjet, $email, $list_id) {
+    $add_params = [
+      'method' => 'POST',
+      'Action' => 'Add',
+      'Force' => TRUE,
+      'Addresses' => [$email],
+      'ListID' => $list_id,
+    ];
+
+    $mailjet->resetRequest();
+    return $mailjet->manycontacts($add_params)->getResponse();
+  }
+
+  private function manageFields($mailjet, $entity, $form_values, $contact_id) {
+    $data = [];
+    $fields = explode(',', $entity->fields_mailjet);
+
+    // Collect data from filled fields
+    if (!(empty($fields[0]))) {
+      foreach ($fields as $field) {
+        if (!empty($field) && !empty($form_values['signup-' . $field])) {
+          switch (mailjet_get_propertiy_type($field)) {
+            case 'datetime':
+              $data_value = \DateTime::createFromFormat('d-m-Y', trim($form_values['signup-' . $field]))
+                ->getTimestamp();
+              break;
+
+            default:
+              $data_value = $form_values['signup-' . $field];
+              break;
+          }
+
+          $data[] = [
+            'Name' => $field,
+            'Value' => $data_value,
+          ];
+        }
+      }
+    }
+
+    if (empty($data)) {
+      // There is no contact data
+      return TRUE;
+    }
+
+    $data_params = [
+      'method' => 'JSON',
+      'ContactID' => $contact_id,
+      'ID' => $contact_id,
+      'Data' => $data,
+    ];
+
+    $mailjet->resetRequest();
+    $response = $mailjet->contactdata($data_params)->getResponse();
+    if (isset($response->ErrorInfo)) {
+      $start = '[{ "';
+      $end = '" :';
+      $ini = strpos($response->ErrorMessage, $start);
+      $ini += strlen($start);
+      $len = strpos($response->ErrorMessage, $end, $ini) - $ini;
+      $filed_prop_name = trim(substr($response->ErrorMessage, $ini, $len));
+      $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter the correct values according to the example of the description in the field:  <  %id  >';
+      $missmatch_values = str_replace("%id", $filed_prop_name, $missmatch_values);
+
+      switch (mailjet_get_propertiy_type($filed_prop_name)) {
+        case 'int':
+          drupal_set_message($missmatch_values, 'error');
+          break;
+
+        case 'str':
+          drupal_set_message($missmatch_values, 'error');
+          break;
+
+        case 'datetime':
+          drupal_set_message($missmatch_values, 'error');
+          break;
+
+        case 'bool':
+          drupal_set_message($missmatch_values, 'error');
+          break;
+      }
+      return FALSE;
+    }
+    return TRUE;
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -302,21 +412,15 @@ class SubscriptionSignupPageForm extends FormBase {
     $list_id = $entity->lists;
     $user = \Drupal::currentUser();
     $mailjet = mailjet_new();
-    $check_complate = FALSE;
+//    $check_complate = FALSE;
 
-    if (isset($form_values['unsuscribe_id']) && !empty($form_values['unsuscribe_id'])) {
-
-      $unsub_params = [
-        'method' => 'POST',
-        'Action' => 'Unsubscribe',
-        'Addresses' => [$user->getEmail()],
-        'ListID' => $list_id,
-      ];
-
-      $mailjet->resetRequest();
-
-      $response = $mailjet->manycontacts($unsub_params)->getResponse();
-
+    //Unsubscribe
+    if (!empty($form_values['unsubscribe_id'])) {
+      $url = 'http://api.mailjet.com/v3/REST/user/' . $user->getEmail();
+      $result = $mailjet->generalRequest(FALSE, [], 'GET', $url);
+      $result_arr = json_decode($result);
+      $user_id = $result_arr->Data[0]->ID;
+      $response = $this->unsubContactFromList($mailjet, $user_id, $list_id);
       if ($response && isset($response->Count) && $response->Count > 0) {
         \Drupal::logger('mailjet_messages')
           ->error(t('The new contact was unsubscribed from list #' . $list_id . '.'));
@@ -330,157 +434,63 @@ class SubscriptionSignupPageForm extends FormBase {
           ->error(t('The new contact was not unsubscribed from list #' . $list_id . '.'));
         drupal_set_message(t('Error'), 'error');
       }
+      return;
     }
-    else {
-      $double_opt_in = '1';
-      $url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
-      $data = [];
-      $response_exist_user = mailjet_find_conctact($email, $list_id);
 
-      if ($response_exist_user == FALSE) {
+    $user_exists = mailjet_find_conctact($email, $list_id);
 
-        if ($double_opt_in == 1) {
-
-          $mailManager = \Drupal::service('plugin.manager.mail');
-          $module = 'mailjet';
-          $key = 'activation_mail';
-          $to = $email;
-          $params['message'] = prepare_mail_template($heading_text, $email_text_button, $email_text_description, $email_text_thank_you, $owner, $url, $email_footer_text);
-
-          $langcode = \Drupal::currentUser()->getPreferredLangcode();
-          $send = TRUE;
-        }
-
-        $add_params = [
-          'method' => 'POST',
-          'Action' => 'Add',
-          'Force' => TRUE,
-          'Addresses' => [$email],
-          'ListID' => $list_id,
-        ];
-
-
-        $mailjet->resetRequest();
-        $response = $mailjet->manycontacts($add_params)->getResponse();
-        if ($response && isset($response->Count) && $response->Count > 0) {
-
-          // watchdog('mailjet_messages','The user with mail is add to contact list with iD'.);
-          $contact_id = $response->Data[0]->Recipients->Items[0]->Contact->ID;
-
-        }
-        else {
-          drupal_set_message(t($entity->subscribe_error), 'error');
-          return FALSE;
-        }
-
-        $sendMailData = TRUE;
-        if ($double_opt_in == 1) {
-          $unsub_params = [
-            'method' => 'POST',
-            'Action' => 'Unsubscribe',
-            'Addresses' => [$email],
-            'ListID' => $list_id,
-          ];
-
-          $mailjet->resetRequest();
-          $response = $mailjet->manycontacts($unsub_params)->getResponse();
-        }
-
-        $fields = explode(',', $entity->fields_mailjet);
-
-        if (!(empty($fields[0]))) {
-          foreach ($fields as $field) {
-
-            if (!empty($field) && !empty($form_values['signup-' . $field])) {
-              switch (mailjet_get_propertiy_type($field)) {
-                case 'datetime':
-                  $data_value = \DateTime::createFromFormat('d-m-Y', trim($form_values['signup-' . $field]))
-                    ->getTimestamp();
-                  break;
-
-                default:
-                  $data_value = $form_values['signup-' . $field];
-                  break;
-              }
-
-              $data[] = [
-                'Name' => $field,
-                'Value' => $data_value,
-              ];
-            }
-          }
-        }
-
-        if (!empty($data)) {
-
-          $data_params = [
-            'method' => 'JSON',
-            'ContactID' => $contact_id,
-            'ID' => $contact_id,
-            'Data' => $data,
-          ];
-
-          $mailjet->resetRequest();
-          $response = $mailjet->contactdata($data_params)->getResponse();
-          if (isset($response->ErrorInfo)) {
-            $sendMailData = FALSE;
-
-            $start = '[{ "';
-            $end = '" :';
-            $ini = strpos($response->ErrorMessage, $start);
-            $ini += strlen($start);
-            $len = strpos($response->ErrorMessage, $end, $ini) - $ini;
-            $filed_prop_name = trim(substr($response->ErrorMessage, $ini, $len));
-            $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter the correct values according to the example of the description in the field:  <  %id  >';
-            $missmatch_values = str_replace("%id", $filed_prop_name, $missmatch_values);
-
-            switch (mailjet_get_propertiy_type($filed_prop_name)) {
-              case 'int':
-                drupal_set_message($missmatch_values, 'error');
-                break;
-
-              case 'str':
-                drupal_set_message($missmatch_values, 'error');
-                break;
-
-              case 'datetime':
-                drupal_set_message($missmatch_values, 'error');
-                break;
-
-              case 'bool':
-                drupal_set_message($missmatch_values, 'error');
-                break;
-            }
-
-          }
-        }
-
-        if ($double_opt_in == 1 && $sendMailData == TRUE) {
-          if ($mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send)) {
-            $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
-            if (!empty($entity->confirmation_message)) {
-              drupal_set_message(t($confirmation_message), 'status');
-            }
-            else {
-              drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
-            }
-          }
-        }
-
-        //redicrect or redicrect and display success message after all process
-        if (!empty($entity->destination_page)) {
-          //redicrect or redicrect and display success message
-          $url = $entity->destination_page;
-
-          $response = new RedirectResponse($url);
-          $response->send();
-          return;
-        }
-      }
-      else {
+    // The user exists in the given list
+    if ($user_exists) {
         $message = str_replace('%', $email, $entity->contact_exist);
         drupal_set_message($message, 'error');
+        return;
+    }
+
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+
+    // Subscribe in the chosen contact list
+    $response = $this->addNewContactInList($mailjet, $email, $list_id);
+    if (isset($response->Count) && $response->Count > 0) {
+      // watchdog('mailjet_messages','The user with mail is add to contact list with iD'.);
+      $contact_id = $response->Data[0]->Recipients->Items[0]->Contact->ID;
+    }
+    else {
+      drupal_set_message(t($entity->subscribe_error), 'error');
+      return FALSE;
+    }
+
+    // Unsubscribe just added user, because there is no way to add unsub user
+    $isUnsub = $this->unsubContactFromList($mailjet, $contact_id, $list_id);
+
+    // Manage contact data
+    $sendMailData = $this->manageFields($mailjet, $entity, $form_values, $contact_id);
+
+    if ($sendMailData) {
+      $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      $module = 'mailjet';
+      $key = 'activation_mail';
+      $to = $email;
+      $params['message'] = prepare_mail_template($heading_text, $email_text_button, $email_text_description, $email_text_thank_you, $owner, $subscribe_url, $email_footer_text);
+      if ($mailManager->mail($module, $key, $to, $langcode, $params, NULL, TRUE)) {
+        $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
+        if (!empty($entity->confirmation_message)) {
+          drupal_set_message(t($confirmation_message), 'status');
+        }
+        else {
+          drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
+        }
       }
+    }
+
+    //redicrect or redicrect and display success message after all process
+    if (!empty($entity->destination_page)) {
+      //redirect or redirect and display success message
+      $subscribe_url = $entity->destination_page;
+
+      $response = new RedirectResponse($subscribe_url);
+      $response->send();
+      return;
     }
 
   }
