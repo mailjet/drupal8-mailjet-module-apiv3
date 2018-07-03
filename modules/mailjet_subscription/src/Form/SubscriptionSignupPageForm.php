@@ -207,8 +207,6 @@ class SubscriptionSignupPageForm extends FormBase {
       ];
     }
 
-//    print '<script>' . htmlspecialchars_decode($entity->js_field) . '</script>';
-//    print '<style>' . htmlspecialchars_decode($entity->css_field) . '</style>';
     if (!empty($entity->js_field)) {
       $form['#attached']['html_head'][] = [
         [
