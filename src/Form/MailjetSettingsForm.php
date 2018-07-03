@@ -341,10 +341,10 @@ class MailjetSettingsForm extends ConfigFormBase {
 
 
     if (!empty($form_state->getValue('mailjet_on'))) {
-     $config1->set('interface.default', 'mailjet_mail')->save();
+      $config1->set('interface.default', 'mailjet_mail')->save();
     }
-    else {
-     $config1->set('interface.default', 'php_mail')->save();
+    else if($config1->get('interface.default') == 'mailjet_mail') {
+      $config1->set('interface.default', 'php_mail')->save();
     }
 
     $config_mailjet->set('mailjet_mail', 0);

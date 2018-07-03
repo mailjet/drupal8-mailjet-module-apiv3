@@ -618,7 +618,8 @@ class MailJet {
     }
     $result = $this->readCache($method, $params, $request);
     if (is_NULL($result)) {
-      if ($result = $this->sendRequest($method, $params, $request)) {
+        $result = $this->sendRequest($method, $params, $request);
+      if ($result) {
         $this->writeCache($method, $params, $request, $this->_response);
       }
     }
@@ -702,7 +703,6 @@ class MailJet {
     if ($url == FALSE) {
       $url = $this->requestUrlBuilder($method, $params, $request);
     }
-
     if (is_NULL($this->_curl_handle)) {
       $this->_curl_handle = curl_init();
     }
@@ -857,7 +857,6 @@ class MailJet {
     if ($this->_debug > 0) {
       $this->debug();
     }
-
     return ($this->_response_code == 200) ? $buffer : FALSE;
   }
 

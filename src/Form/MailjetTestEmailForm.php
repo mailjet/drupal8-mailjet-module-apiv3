@@ -40,6 +40,7 @@ class MailjetTestEmailForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => t('Recipient of test mail '),
       '#default_value' => $config->get('mail'),
+      '#description' => t('Mailjet is using the Site Email address for sending emails (located in Configuration → System → Basic Site Settings). Make sure you have validated this address in your <a href="https://app.mailjet.com/account/sender" target="_blank">Mailjet account</a>'),
     ];
 
 
