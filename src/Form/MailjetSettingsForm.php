@@ -42,7 +42,7 @@ class MailjetSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config_mailjet = $this->config('mailjet.settings');
 
-     $config1 = \Drupal::getContainer()
+     $config = \Drupal::getContainer()
       ->get('config.factory')
       ->getEditable('system.mail');
 
@@ -52,10 +52,10 @@ class MailjetSettingsForm extends ConfigFormBase {
     ];
 
     if ($config_mailjet->get('mailjet_mail') == '1') {
-       $config1->set('interface.default', 'mailjet_mail')->save();
+       $config->set('interface.default', 'mailjet_mail')->save();
     }
 
-    if ($config1->get('interface.default') == 'mailjet_mail') {
+    if ($config->get('interface.default') == 'mailjet_mail') {
       $mailjet_on = TRUE;
     }
 
@@ -335,16 +335,16 @@ class MailjetSettingsForm extends ConfigFormBase {
       ->get('config.factory')
       ->getEditable('mailjet.settings');
 
-         $config1 = \Drupal::getContainer()
+         $config = \Drupal::getContainer()
       ->get('config.factory')
       ->getEditable('system.mail');
 
 
     if (!empty($form_state->getValue('mailjet_on'))) {
-      $config1->set('interface.default', 'mailjet_mail')->save();
+      $config->set('interface.default', 'mailjet_mail')->save();
     }
-    else if($config1->get('interface.default') == 'mailjet_mail') {
-      $config1->set('interface.default', 'php_mail')->save();
+    else if($config->get('interface.default') == 'mailjet_mail') {
+      $config->set('interface.default', 'php_mail')->save();
     }
 
     $config_mailjet->set('mailjet_mail', 0);
