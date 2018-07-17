@@ -117,6 +117,11 @@ Configuration
 Author
 
 ## Changelog
+= 8.x-2.0 =
+* Remove depricated Global $language from stats module
+* Enable user to sort subscription form parameters
+* Add sort_fields field to the subscrioption form
+
 = 8.x-1.3 =
 * Fix Saving settings with "Send emails through Mailjet" unchecked overrides non-default Mail system
 * Fix adding inline css and js with the subscription form
