@@ -27,6 +27,7 @@ function mailjet_subscription_form_alter(&$form, FormStateInterface $form_state)
       '#value' => t('Edit Labels'),
     ];
   }
+  $form['#attached']['library'][] = 'mailjet_subscirption/sort_properties';
 }
 
 function mailjet_subscription_redicrect_to_edit_form(&$form, FormStateInterface $form_state) {

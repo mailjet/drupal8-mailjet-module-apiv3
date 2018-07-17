@@ -22,7 +22,7 @@ function mailjet_stats_iframe() {
 
   if (!empty($token)) {
     global $base_url;
-    global $language;
+    $language = \Drupal::languageManager()->getCurrentLanguage();
 
     $lang_codes_map = [
       'en' => 'en_US',
