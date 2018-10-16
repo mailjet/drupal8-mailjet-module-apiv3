@@ -302,15 +302,15 @@ class SubscriptionSignupPageForm extends FormBase {
   }
 
   private function unsubContactFromList($mailjet, $user, $list_id) {
-    $unsub_params = [
-        'method' => 'POST',
-        'Action' => 'unsub',
-        'Addresses' => [$user->getEmail()],
-        'ListID' => $list_id,
-      ];
-      $mailjet->resetRequest();
-      return $mailjet->manycontacts($unsub_params)->getResponse();
+      $unsub_params = [
+            'method' => 'POST',
+            'Action' => 'unsub',
+            'Email' => $user->getEmail(),
+            'ListID' => $list_id,
+          ];
 
+          $mailjet->resetRequest();
+          return $mailjet->{'contactslist/' . $list_id . '/managecontact'}($unsub_params)->getResponse();
   }
 
   private function manageFields($mailjet, $entity, $form_values, $contact_id) {
@@ -410,19 +410,8 @@ class SubscriptionSignupPageForm extends FormBase {
 
     //Unsubscribe
     if (!empty($form_values['unsubscribe_id'])) {
-//      $url = 'http://api.mailjet.com/v3/REST/user/' . $user->getEmail();
-//      $result = $mailjet->generalRequest(FALSE, [], 'GET', $url);
-//      $result_arr = json_decode($result);
-//      $user_id = $result_arr->Data[0]->ID;
-        
-        
-      
       $response = $this->unsubContactFromList($mailjet, $user, $list_id);
-      
-//echo $list_id;
-//echo "<pre>";
-//var_dump($response);
-//exit;
+
       if ($response && isset($response->Count) && $response->Count > 0) {
         \Drupal::logger('mailjet_messages')
           ->error(t('The new contact was unsubscribed from list #' . $list_id . '.'));
