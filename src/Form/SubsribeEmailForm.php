@@ -48,7 +48,7 @@ class SubsribeEmailForm extends ConfigFormBase {
 
     $add_params = [
       'method' => 'POST',
-      'Action' => 'Add',
+      'Action' => 'Addforce',
       'Force' => TRUE,
       'Addresses' => [$sec_code_email], 
       'ListID' => $list_id,
