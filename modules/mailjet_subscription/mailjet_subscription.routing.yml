@@ -2,7 +2,7 @@
 # Here we define the paths for our entity type's admin UI.
 
 entity.mailjet_subscription_form.list:
-  path: '/admin/config/system/mailjet/signup-setttings'
+  path: '/admin/config/system/mailjet/signup-settings'
   defaults:
     _entity_list: 'mailjet_subscription_form'
     _title: 'Subscription forms'
@@ -11,7 +11,7 @@ entity.mailjet_subscription_form.list:
 
 
 entity.mailjet_subscription_form.add_form:
-  path: '/admin/config/system/mailjet/signup-setttings/add'
+  path: '/admin/config/system/mailjet/signup-settings/add'
   defaults:
     _title: 'Add Subscription form'
     _entity_form: mailjet_subscription_form.add
@@ -20,7 +20,7 @@ entity.mailjet_subscription_form.add_form:
 
 
 entity.mailjet_subscription_form.edit_form:
-  path: '/admin/config/system/mailjet/signup-setttings/{mailjet_subscription_form}'
+  path: '/admin/config/system/mailjet/signup-settings/{mailjet_subscription_form}'
   defaults:
     _title: 'Edit Subscription form'
     _entity_form: mailjet_subscription_form.edit
@@ -29,18 +29,18 @@ entity.mailjet_subscription_form.edit_form:
 
 
 entity.mailjet_subscription_form.delete_form:
-  path: '/admin/config/system/mailjet/signup-setttings/{mailjet_subscription_form}/delete'
+  path: '/admin/config/system/mailjet/signup-settings/{mailjet_subscription_form}/delete'
   defaults:
     _title: 'Delete Subscription form'
     _entity_form: mailjet_subscription_form.delete
   requirements:
     _entity_access: mailjet_subscription_form.delete
 
-mailjet_labels_form.settings:  
-  path: '/admin/config/system/mailjet/signup-setttings/labels'  
+mailjet_labels_form.settings:
+  path: '/admin/config/system/mailjet/signup-settings/labels'
   defaults:  
-    _form: '\Drupal\mailjet_subscription\Form\MailjetSubscriptionLabelsForm'  
-    _title: 'Mailjet Label Settings' 
+    _form: '\Drupal\mailjet_subscription\Form\MailjetSubscriptionLabelsForm'
+    _title: 'Mailjet Label Settings'
   requirements:
     _permission: 'administer subscriptions'
 

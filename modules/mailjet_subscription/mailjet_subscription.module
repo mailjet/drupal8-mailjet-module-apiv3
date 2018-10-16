@@ -35,7 +35,7 @@ function mailjet_subscription_redicrect_to_edit_form(&$form, FormStateInterface 
 
   global $base_url;
 
-  $response = new RedirectResponse($base_url . '/admin/config/system/mailjet/signup-setttings/labels?entity-id=' . $entity_id);
+  $response = new RedirectResponse($base_url . '/admin/config/system/mailjet/signup-settings/labels?entity-id=' . $entity_id);
   $response->send();
 }
 
