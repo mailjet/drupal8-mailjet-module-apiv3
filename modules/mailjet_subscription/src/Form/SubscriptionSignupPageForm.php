@@ -301,41 +301,16 @@ class SubscriptionSignupPageForm extends FormBase {
     }
   }
 
-  private function unsubContactFromList($mailjet, $contact_id, $list_id) {
-//    $unsub_params = [
-//      'method' => 'POST',
-//      'Action' => 'Unsubscribe',
-//      'Addresses' => [$email],
-//      'ListID' => $list_id,
-//    ];
+  private function unsubContactFromList($mailjet, $user, $list_id) {
+    $unsub_params = [
+        'method' => 'POST',
+        'Action' => 'unsub',
+        'Addresses' => [$user->getEmail()],
+        'ListID' => $list_id,
+      ];
+      $mailjet->resetRequest();
+      return $mailjet->manycontacts($unsub_params)->getResponse();
 
-    $mailjet->resetRequest();
-
-    $url = 'http://api.mailjet.com/v3/REST/contact/'.$contact_id.'/managecontactslists';
-
-    $params = [
-            'ContactsLists' => [
-                [
-                    'ListID' => $list_id,
-                    'Action' => 'unsub'
-                ],
-            ]
-        ];
-        return $mailjet->generalRequest(FALSE, $params, 'JSON', $url);
-//    return $mailjet->manycontacts($unsub_params)->getResponse();
-  }
-
-  private function addNewContactInList($mailjet, $email, $list_id) {
-    $add_params = [
-      'method' => 'POST',
-      'Action' => 'Add',
-      'Force' => TRUE,
-      'Addresses' => [$email],
-      'ListID' => $list_id,
-    ];
-
-    $mailjet->resetRequest();
-    return $mailjet->manycontacts($add_params)->getResponse();
   }
 
   private function manageFields($mailjet, $entity, $form_values, $contact_id) {
@@ -428,17 +403,26 @@ class SubscriptionSignupPageForm extends FormBase {
     $heading_text = !empty($entity->confirmation_email_text) ? $entity->confirmation_email_text : t('Please Confirm Your Subscription To');
 
     $list_id = $entity->lists;
+
     $user = \Drupal::currentUser();
     $mailjet = mailjet_new();
 //    $check_complate = FALSE;
 
     //Unsubscribe
     if (!empty($form_values['unsubscribe_id'])) {
-      $url = 'http://api.mailjet.com/v3/REST/user/' . $user->getEmail();
-      $result = $mailjet->generalRequest(FALSE, [], 'GET', $url);
-      $result_arr = json_decode($result);
-      $user_id = $result_arr->Data[0]->ID;
-      $response = $this->unsubContactFromList($mailjet, $user_id, $list_id);
+//      $url = 'http://api.mailjet.com/v3/REST/user/' . $user->getEmail();
+//      $result = $mailjet->generalRequest(FALSE, [], 'GET', $url);
+//      $result_arr = json_decode($result);
+//      $user_id = $result_arr->Data[0]->ID;
+        
+        
+      
+      $response = $this->unsubContactFromList($mailjet, $user, $list_id);
+      
+//echo $list_id;
+//echo "<pre>";
+//var_dump($response);
+//exit;
       if ($response && isset($response->Count) && $response->Count > 0) {
         \Drupal::logger('mailjet_messages')
           ->error(t('The new contact was unsubscribed from list #' . $list_id . '.'));
@@ -466,38 +450,19 @@ class SubscriptionSignupPageForm extends FormBase {
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
 
-    // Subscribe in the chosen contact list
-    $response = $this->addNewContactInList($mailjet, $email, $list_id);
-    if (isset($response->Count) && $response->Count > 0) {
-      // watchdog('mailjet_messages','The user with mail is add to contact list with iD'.);
-      $contact_id = $response->Data[0]->Recipients->Items[0]->Contact->ID;
-    }
-    else {
-      drupal_set_message(t($entity->subscribe_error), 'error');
-      return FALSE;
-    }
-
-    // Unsubscribe just added user, because there is no way to add unsub user
-    $isUnsub = $this->unsubContactFromList($mailjet, $contact_id, $list_id);
-
-    // Manage contact data
-    $sendMailData = $this->manageFields($mailjet, $entity, $form_values, $contact_id);
-
-    if ($sendMailData) {
-      $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
-      $mailManager = \Drupal::service('plugin.manager.mail');
-      $module = 'mailjet';
-      $key = 'activation_mail';
-      $to = $email;
-      $params['message'] = prepare_mail_template($heading_text, $email_text_button, $email_text_description, $email_text_thank_you, $owner, $subscribe_url, $email_footer_text);
-      if ($mailManager->mail($module, $key, $to, $langcode, $params, NULL, TRUE)) {
-        $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
-        if (!empty($entity->confirmation_message)) {
-          drupal_set_message(t($confirmation_message), 'status');
-        }
-        else {
-          drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
-        }
+    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $module = 'mailjet';
+    $key = 'activation_mail';
+    $to = $email;
+    $params['message'] = prepare_mail_template($heading_text, $email_text_button, $email_text_description, $email_text_thank_you, $owner, $subscribe_url, $email_footer_text);
+    if ($mailManager->mail($module, $key, $to, $langcode, $params, NULL, TRUE)) {
+      $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
+      if (!empty($entity->confirmation_message)) {
+        drupal_set_message(t($confirmation_message), 'status');
+      }
+      else {
+        drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
       }
     }
 
