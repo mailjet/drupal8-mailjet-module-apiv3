@@ -302,15 +302,15 @@ class SubscriptionSignupPageForm extends FormBase {
   }
 
   private function unsubContactFromList($mailjet, $user, $list_id) {
-      $unsub_params = [
-            'method' => 'POST',
-            'Action' => 'unsub',
-            'Email' => $user->getEmail(),
-            'ListID' => $list_id,
-          ];
+      $unsub_params = array(
+        'method' => 'POST',
+        'Action' => 'unsub',
+        'Email' => $user->getEmail(),
+        'ListID' => $list_id,
+      );
 
-          $mailjet->resetRequest();
-          return $mailjet->{'contactslist/' . $list_id . '/managecontact'}($unsub_params)->getResponse();
+      $mailjet->resetRequest();
+      return $mailjet->{'contactslist/' . $list_id . '/managecontact'}($unsub_params)->getResponse();
   }
 
   private function manageFields($mailjet, $entity, $form_values, $contact_id) {
