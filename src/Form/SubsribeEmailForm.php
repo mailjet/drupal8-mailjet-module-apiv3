@@ -30,17 +30,23 @@ class SubsribeEmailForm extends ConfigFormBase {
 
     $form = [];
 
-    if (isset($_GET['list']) && !empty($_GET['list'])) {
-      $list_id = $_GET['list'];
+    if(empty($_GET['list']) || empty($_GET['sec_code']) || empty($_GET['others']) ) {
+        return FALSE;
     }
-    if (isset($_GET['sec_code']) && !empty($_GET['sec_code'])) {
-      $sec_code_email = base64_decode($_GET['sec_code']);
-    }
-    if (isset($_GET['others']) && !empty($_GET['others'])) {
-      $form_hidden_id = $_GET['others'];
-    }
-    else {
-      return FALSE;
+
+    $list_id = $_GET['list'];
+    $sec_code_email = base64_decode($_GET['sec_code']);
+    $form_hidden_id = $_GET['others'];
+
+    $propertiesParams = array();
+    if (!empty($_GET['p'])) {
+      $p = base64_decode($_GET['p']);
+      $propertiesArray = explode('&', $p);
+
+      foreach($propertiesArray as $propertyData) {
+          $kvp = explode('=', $propertyData);
+          $propertiesParams[$kvp[0]] = $kvp[1];
+      }
     }
 
     $signup_form = mailjet_subscription_load($form_hidden_id);
@@ -51,6 +57,7 @@ class SubsribeEmailForm extends ConfigFormBase {
       'Action' => 'Addforce',
       'Email' => $sec_code_email,
       'ListID' => $list_id,
+      'Properties' => $propertiesParams,
     );
 
     // Create and subscribe at once
