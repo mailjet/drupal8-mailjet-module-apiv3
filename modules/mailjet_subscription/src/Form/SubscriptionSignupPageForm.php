@@ -302,15 +302,15 @@ class SubscriptionSignupPageForm extends FormBase {
   }
 
   private function unsubContactFromList($mailjet, $user, $list_id) {
-    $unsub_params = [
+      $unsub_params = array(
         'method' => 'POST',
         'Action' => 'unsub',
-        'Addresses' => [$user->getEmail()],
+        'Email' => $user->getEmail(),
         'ListID' => $list_id,
-      ];
-      $mailjet->resetRequest();
-      return $mailjet->manycontacts($unsub_params)->getResponse();
+      );
 
+      $mailjet->resetRequest();
+      return $mailjet->{'contactslist/' . $list_id . '/managecontact'}($unsub_params)->getResponse();
   }
 
   private function manageFields($mailjet, $entity, $form_values, $contact_id) {
@@ -410,19 +410,8 @@ class SubscriptionSignupPageForm extends FormBase {
 
     //Unsubscribe
     if (!empty($form_values['unsubscribe_id'])) {
-//      $url = 'http://api.mailjet.com/v3/REST/user/' . $user->getEmail();
-//      $result = $mailjet->generalRequest(FALSE, [], 'GET', $url);
-//      $result_arr = json_decode($result);
-//      $user_id = $result_arr->Data[0]->ID;
-        
-        
-      
       $response = $this->unsubContactFromList($mailjet, $user, $list_id);
-      
-//echo $list_id;
-//echo "<pre>";
-//var_dump($response);
-//exit;
+
       if ($response && isset($response->Count) && $response->Count > 0) {
         \Drupal::logger('mailjet_messages')
           ->error(t('The new contact was unsubscribed from list #' . $list_id . '.'));
@@ -450,7 +439,8 @@ class SubscriptionSignupPageForm extends FormBase {
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
 
-    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
+    $properties = $this->getContactPropertiesQuery($form_values);
+    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'].$properties;
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'mailjet';
     $key = 'activation_mail';
@@ -476,6 +466,28 @@ class SubscriptionSignupPageForm extends FormBase {
       return;
     }
 
+  }
+  
+  private function getContactPropertiesQuery($form_values) {
+    $contactProperties = $form_values;
+    unset($contactProperties['signup_id_form']);
+    unset($contactProperties['signup-email']);
+    unset($contactProperties['submit']);
+    unset($contactProperties['form_build_id']);
+    unset($contactProperties['form_token']);
+    unset($contactProperties['form_id']);
+    unset($contactProperties['op']);
+
+    $data = array();
+    foreach($contactProperties as $signUpProperty => $propertyValue) {
+        $propertyName = substr($signUpProperty, 7);
+        $data[$propertyName] = $propertyValue;
+    }
+
+    if(empty($data)) {
+        return '';
+    }
+    return '&p='.base64_encode(http_build_query($data));
   }
 
 }

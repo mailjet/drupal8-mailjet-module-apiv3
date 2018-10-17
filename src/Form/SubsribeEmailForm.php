@@ -30,31 +30,38 @@ class SubsribeEmailForm extends ConfigFormBase {
 
     $form = [];
 
-    if (isset($_GET['list']) && !empty($_GET['list'])) {
-      $list_id = $_GET['list'];
+    if(empty($_GET['list']) || empty($_GET['sec_code']) || empty($_GET['others']) ) {
+        return FALSE;
     }
-    if (isset($_GET['sec_code']) && !empty($_GET['sec_code'])) {
-      $sec_code_email = base64_decode($_GET['sec_code']);
-    }
-    if (isset($_GET['others']) && !empty($_GET['others'])) {
-      $form_hidden_id = $_GET['others'];
-    }
-    else {
-      return FALSE;
+
+    $list_id = $_GET['list'];
+    $sec_code_email = base64_decode($_GET['sec_code']);
+    $form_hidden_id = $_GET['others'];
+
+    $propertiesParams = array();
+    if (!empty($_GET['p'])) {
+      $p = base64_decode($_GET['p']);
+      $propertiesArray = explode('&', $p);
+
+      foreach($propertiesArray as $propertyData) {
+          $kvp = explode('=', $propertyData);
+          $propertiesParams[$kvp[0]] = $kvp[1];
+      }
     }
 
     $signup_form = mailjet_subscription_load($form_hidden_id);
     $mailjet = mailjet_new();
 
-    $add_params = [
+    $params = array(
       'method' => 'POST',
-      'Action' => 'Add',
-      'Force' => TRUE,
-      'Addresses' => [$sec_code_email], 
+      'Action' => 'Addforce',
+      'Email' => $sec_code_email,
       'ListID' => $list_id,
-    ];
-    $mailjet->resetRequest();
-    $response = $mailjet->manycontacts($add_params)->getResponse();
+      'Properties' => $propertiesParams,
+    );
+
+    // Create and subscribe at once
+    $response = $mailjet->{'contactslist/' . $list_id . '/managecontact'}($params)->getResponse();
 
     if ($response && isset($response->Count) && $response->Count > 0) {
       if (!empty($signup_form->success_message_subsribe)) {
