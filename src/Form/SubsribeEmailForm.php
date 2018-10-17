@@ -46,15 +46,15 @@ class SubsribeEmailForm extends ConfigFormBase {
     $signup_form = mailjet_subscription_load($form_hidden_id);
     $mailjet = mailjet_new();
 
-    $add_params = [
+    $params = array(
       'method' => 'POST',
       'Action' => 'Addforce',
-      'Force' => TRUE,
-      'Addresses' => [$sec_code_email], 
+      'Email' => $sec_code_email,
       'ListID' => $list_id,
-    ];
-    $mailjet->resetRequest();
-    $response = $mailjet->manycontacts($add_params)->getResponse();
+    );
+
+    // Create and subscribe at once
+    $response = $mailjet->{'contactslist/' . $list_id . '/managecontact'}($params)->getResponse();
 
     if ($response && isset($response->Count) && $response->Count > 0) {
       if (!empty($signup_form->success_message_subsribe)) {
