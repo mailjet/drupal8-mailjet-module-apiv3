@@ -439,7 +439,8 @@ class SubscriptionSignupPageForm extends FormBase {
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
 
-    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
+    $properties = $this->getContactPropertiesQuery($form_values);
+    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'].$properties;
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'mailjet';
     $key = 'activation_mail';
@@ -465,6 +466,28 @@ class SubscriptionSignupPageForm extends FormBase {
       return;
     }
 
+  }
+  
+  private function getContactPropertiesQuery($form_values) {
+    $contactProperties = $form_values;
+    unset($contactProperties['signup_id_form']);
+    unset($contactProperties['signup-email']);
+    unset($contactProperties['submit']);
+    unset($contactProperties['form_build_id']);
+    unset($contactProperties['form_token']);
+    unset($contactProperties['form_id']);
+    unset($contactProperties['op']);
+
+    $data = array();
+    foreach($contactProperties as $signUpProperty => $propertyValue) {
+        $propertyName = substr($signUpProperty, 7);
+        $data[$propertyName] = $propertyValue;
+    }
+
+    if(empty($data)) {
+        return '';
+    }
+    return '&p='.base64_encode(http_build_query($data));
   }
 
 }
