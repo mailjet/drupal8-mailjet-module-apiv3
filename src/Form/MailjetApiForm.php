@@ -10,6 +10,8 @@ namespace Drupal\mailjet\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use MailJet\MailJet;
+use MailjetTools\MailjetApi;
+use Mailjet\Resources;
 
 class MailjetApiForm extends ConfigFormBase {
 
@@ -81,56 +83,43 @@ class MailjetApiForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state)
+  {
+      $config = \Drupal::service('config.factory')
+          ->getEditable('mailjet.settings');
 
-    $config = \Drupal::service('config.factory')
-      ->getEditable('mailjet.settings');
+      $config->set('mailjet_username', $form_state->getValue('mailjet_username'));
+      $config->set('mailjet_password', $form_state->getValue('mailjet_password'));
+      $config->save();
 
+      $mailjetApiClient = MailjetApi::getApiClient($form_state->getValue('mailjet_username'),
+      $form_state->getValue('mailjet_password'));
+      $response = $mailjetApiClient->get(Resources::$Myprofile);
+      if ($response->success()) {
+          $config->set('mailjet_active', TRUE);
 
-    $config->set('mailjet_username', $form_state->getValue('mailjet_username'));
-    $config->set('mailjet_password', $form_state->getValue('mailjet_password'));
-    $config->save();
+          $params = [
+              'AllowedAccess' => 'campaigns,contacts,stats,pricing,account,reports',
+              'APIKeyALT' => $form_state->getValue('mailjet_username'),
+              'TokenType' => 'iframe',
+              'IsActive' => TRUE,
+          ];
 
-    $mailjet = new MailJet($form_state->getValue('mailjet_username'), $form_state->getValue('mailjet_password'));
+          $responseApiToken = MailjetApi::createApiToken($params);
+          if (false != $responseApiToken) {
+              $config->set('APItoken', $responseApiToken[0]['Token']);
+              $config->save();
+              mailjet_first_sync(mailjet_get_default_list_id(mailjet_new()));
 
-
-    $paramsProfile = [
-      'method' => 'GET',
-    ];
-
-    $response = $mailjet->myprofile($paramsProfile)->getResponse();
-
-    if ($response) {
-
-      $config->set('mailjet_active', TRUE);
-
-      $params = [
-        'AllowedAccess' => 'campaigns,contacts,stats,pricing,account,reports',
-        'method' => 'JSON',
-        'APIKeyALT' => $mailjet->getAPIKey(),
-        'TokenType' => 'iframe',
-        'IsActive' => TRUE,
-      ];
-      $mailjet->resetRequest();
-      $response2 = $mailjet->apitoken($params)->getResponse();
-
-      if ($response2->Count > 0) {
-
-        $config->set('APItoken', $response2->Data[0]->Token);
-        $config->save();
-        mailjet_first_sync(mailjet_get_default_list_id(mailjet_new()));
-
-        drupal_set_message(t('The configuration options have been saved.'));
-        drupal_flush_all_caches();
+              drupal_set_message(t('The configuration options have been saved.'));
+              drupal_flush_all_caches();
+          } else {
+              $form_state->setErrorByName('mailjet_username', t('Token was NOT generated! Please try again.'));
+          }
+      } else {
+          drupal_set_message(t('Please verify that you have entered your API and secret key correctly. Please note this plug-in is compatible for Mailjet v3 accounts only. Click <a href=" https://app.mailjet.com/support/why-do-i-get-an-api-error-when-trying-to-activate-a-mailjet-plug-in,497.htm"> here</a> for more information'),
+              'error');
       }
-      else {
-        $form_state->setErrorByName('mailjet_username', t('Token was NOT generated! Please try again.'));
-      }
-    }
-    else {
-      drupal_set_message(t('Please verify that you have entered your API and secret key correctly. Please note this plug-in is compatible for Mailjet v3 accounts only. Click <a href=" https://app.mailjet.com/support/why-do-i-get-an-api-error-when-trying-to-activate-a-mailjet-plug-in,497.htm"> here</a> for more information'), 'error');
-    }
-
   }
 
 }

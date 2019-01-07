@@ -46,16 +46,16 @@ class DomainSettingsForm extends ConfigFormBase {
 
     if ($domains = mailjet_user_domain_list()) {
       foreach ($domains as $domain) {
-        if (is_object($domain->Email)) {
-          $email = $domain->Email->Email;
+        if (is_object($domain['Email'])) {
+          $email = $domain['Email']['Email'];
         }
         else {
-          $email = $domain->Email;
+          $email = $domain['Email'];
         }
         $options[$email] = [
           'domain' => str_replace('*@', '', $email),
-          'enabled' => $domain->Status,
-          'file_name' => $domain->Filename,
+          'enabled' => $domain['Status'],
+          'file_name' => $domain['Filename'],
         ];
       }
     }
