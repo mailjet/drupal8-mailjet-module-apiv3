@@ -30,14 +30,17 @@
       "MailjetTools\\": "lib/mailjet-api-php/src/"
     }
   },
+  "config": {
+    "preferred-install": "dist"
+  },
   "scripts": {
 	 "post-install-cmd": [
-	  "find docroot vendor -name '.git' | xargs rm -rf",
-	  "find docroot vendor -name '.gitignore' | xargs rm -rf"
+	  "find ./vendor -name '.git' | xargs rm -rf",
+	  "find ./vendor -name '.gitignore' | xargs rm -rf"
 	],
 	"post-update-cmd": [
-	  "find docroot vendor -name '.git' | xargs rm -rf",
-	  "find docroot vendor -name '.gitignore' | xargs rm -rf"
+	  "find ./vendor -name '.git' | xargs rm -rf",
+	  "find ./vendor -name '.gitignore' | xargs rm -rf"
 	]
   }
 }
