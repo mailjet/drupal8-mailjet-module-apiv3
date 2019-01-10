@@ -326,5 +326,40 @@ class MailjetApi
 
 
 
+    public static function getMailjetIframe($username, $password)
+    {
+      $mailjetIframe = new \MailjetIframe\MailjetIframe($username, $password, false);
+
+      $language = \Drupal::languageManager()->getCurrentLanguage();
+      $lang_codes_map = [
+        'en' => 'en_US',
+        'fr' => 'fr_FR',
+        'de' => 'de_DE',
+        'es' => 'es_ES',
+        'it' => 'it_IT',
+      ];
+      $default_lang = 'en';
+      $locale = isset($lang_codes_map[$language->getId()]) ? $lang_codes_map[$language->getId()] : $lang_codes_map[$default_lang];
+
+      $mailjetIframe
+        ->setCallback('')
+        ->setTokenExpiration(600)
+        ->setLocale($locale)
+        ->setTokenAccess(array(
+          'campaigns',
+          'contacts',
+          'stats',
+        ))
+        ->turnDocumentationProperties(\MailjetIframe\MailjetIframe::OFF)
+        ->turnNewContactListCreation(\MailjetIframe\MailjetIframe::ON)
+        ->turnMenu(\MailjetIframe\MailjetIframe::OFF)
+        ->turnFooter(\MailjetIframe\MailjetIframe::ON)
+        ->turnBar(\MailjetIframe\MailjetIframe::ON)
+        ->turnCreateCampaignButton(\MailjetIframe\MailjetIframe::ON)
+        ->turnSendingPolicy(\MailjetIframe\MailjetIframe::ON);
+
+      return $mailjetIframe;
+    }
+
 
 }

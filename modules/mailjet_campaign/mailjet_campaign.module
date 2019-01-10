@@ -8,57 +8,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * code for Mailjet Capmpaign module
  */
 
-/**
- * Iframe for the campaigns.
- */
-function mailjet_campaign_iframe() {
-  define("IFRAME_URL", "https://app.mailjet.com/");
-  $config_mailjet = \Drupal::config('mailjet.settings');
-
-  if (empty($config_mailjet->get('mailjet_active')) && empty($config_mailjet->get('mailjet_username')) && empty($config_mailjet->get('mailjet_password'))) {
-    drupal_set_message(t('You need to add your Mailjet API details before you can continue'), 'warning');
-    $response = new RedirectResponse('/admin/config/mailjet/settings');
-    $response->send();
-  }
-
-  $token = $config_mailjet->get('APItoken');
-
-  if (!empty($token)) {
-    global $base_url;
-    $language = \Drupal::languageManager()->getCurrentLanguage();
-
-    $lang_codes_map = [
-      'en' => 'en_US',
-      'fr' => 'fr_FR',
-      'de' => 'de_DE',
-      'es' => 'es_ES',
-      'it' => 'it_IT',
-    ];
-    $default_lang = 'en';
-    $locale = isset($lang_codes_map[$language->getId()]) ? $lang_codes_map[$language->getId()] : $lang_codes_map[$default_lang];
-
-    $callbackurl = urlencode($base_url . '?q=/admin/mailjet/campaign/alter_callback');
-
-    $default_url = IFRAME_URL . "campaigns?t={$token}&show_menu=none&sp=display&locale={$locale}&cb=";
-    $running_bjs = \Drupal::state()->get('runningBtachJobs', []);
-    $still_running = [];
-    foreach ($running_bjs as $key => $value) {
-      if (is_batchjob_running($value)) {
-        $still_running[] = $value;
-        drupal_set_message(t('Running batcjob: ' . $value . 'Please note that your campaign will be sent only to the processed contacts. Maybe wait and check later if your synchronization is complete!'), 'warning');
-      }
-    }
-    \Drupal::state()->get('runningBtachJobs', $still_running);
-
-    $callbackurl = urlencode($callbackurl);
-    $default_url = urldecode($default_url);
-
-    // Callback url is temporarily removed
-    return $default_url;
-//    return $default_url . $callbackurl;
-  }
-  return t('Unable to generate campaign.');
-}
 
 /**
  * Loads a single Campaign by ID.
@@ -105,7 +54,19 @@ function mailjet_campaign_multiple($campaign_ids = [], $reset = FALSE) {
 function _mailjet_campaign_alter_callback() {
 
   $html = '';
-  $mj = mailjet_new();
+  $mailjetApiClient = mailjet_new();
+  $filters = [
+    'ContactEmail' => $user->getEmail(),
+    'ContactsList' => $list_id,
+  ];
+
+  $result = $mailjetApiClient->get(Resources::$Listrecipient, ['filters' => $filters]);
+  if ($result->success() && $result->getCount() > 0) {
+    $data = $result->getData();
+    if (isset($data[0]['IsUnsubscribed'])) {
+      $is_un_subs = (true == $data[0]['IsUnsubscribed'] ? 0 : 1);
+    }
+  }
 
   if (isset($_POST['data'])) {
     $data = (object) $_POST['data'];
