@@ -27,7 +27,7 @@ class ListMailjetController extends ControllerBase {
 
     $build = [
       '#type' => 'inline_template',
-      '#template' => $mailjetIframe->getHtml(),
+      '#template' => '<div id="iframe-main-container" class="iframe-main-container" style="width:100%; height: 1300px;">' . $mailjetIframe->getHtml() . '</div>',
     ];
 
     return $build;
