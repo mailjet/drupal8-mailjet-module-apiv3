@@ -39,5 +39,5 @@
 	  "find docroot vendor -name '.git' | xargs rm -rf",
 	  "find docroot vendor -name '.gitignore' | xargs rm -rf"
 	]
-  },
+  }
 }
