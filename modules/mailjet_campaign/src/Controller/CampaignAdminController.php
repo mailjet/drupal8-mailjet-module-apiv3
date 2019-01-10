@@ -6,10 +6,9 @@
 
 namespace Drupal\mailjet_campaign\Controller;
 
-use Drupal\mailjet_event\Event\BlockedEvent;
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use MailjetTools\MailjetApi;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class CampaignAdminController extends ControllerBase {
 
@@ -26,7 +25,7 @@ class CampaignAdminController extends ControllerBase {
 
     $mailjetIframe = MailjetApi::getMailjetIframe($config_mailjet->get('mailjet_username'), $config_mailjet->get('mailjet_password'));
     $mailjetIframe->setInitialPage(\MailjetIframe\MailjetIframe::PAGE_CAMPAIGNS);
-    $callbackurl = urlencode($base_url . '?q=/admin/mailjet/campaign/alter_callback');
+    $callbackurl = urlencode($base_url . '/campaigncallback');
     $mailjetIframe->setCallback($callbackurl);
 
     $build = [
