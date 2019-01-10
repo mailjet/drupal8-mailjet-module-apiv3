@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "9799bbcb90ed2df488adb0924169163156483e52"
+                "reference": "c5da4c3128db9f892f0911043cfffb6c559bd6da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/9799bbcb90ed2df488adb0924169163156483e52",
-                "reference": "9799bbcb90ed2df488adb0924169163156483e52",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/c5da4c3128db9f892f0911043cfffb6c559bd6da",
+                "reference": "c5da4c3128db9f892f0911043cfffb6c559bd6da",
                 "shasum": ""
             },
             "require": {
@@ -70,7 +70,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-12-07T08:18:25+00:00"
+            "time": "2018-12-21T16:46:01+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -129,12 +129,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "5e61346ab1e1ca7d01d2f633bad9574d35717781"
+                "reference": "ae7949ee7b865f0eb8b191c438cda63cad59d437"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/5e61346ab1e1ca7d01d2f633bad9574d35717781",
-                "reference": "5e61346ab1e1ca7d01d2f633bad9574d35717781",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/ae7949ee7b865f0eb8b191c438cda63cad59d437",
+                "reference": "ae7949ee7b865f0eb8b191c438cda63cad59d437",
                 "shasum": ""
             },
             "require": {
@@ -191,7 +191,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2018-12-07T15:04:46+00:00"
+            "time": "2018-12-28T01:59:01+00:00"
         },
         {
             "name": "mailjet/Mailjet-iframe-v3",
@@ -249,12 +249,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mailjet/mailjet-apiv3-php.git",
-                "reference": "9d89b9a424a9631bff8e499cbbe34058481e8102"
+                "reference": "9b9028ca8e798f1362a8ad64ac1ebe2f98ee8907"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mailjet/mailjet-apiv3-php/zipball/9d89b9a424a9631bff8e499cbbe34058481e8102",
-                "reference": "9d89b9a424a9631bff8e499cbbe34058481e8102",
+                "url": "https://api.github.com/repos/mailjet/mailjet-apiv3-php/zipball/9b9028ca8e798f1362a8ad64ac1ebe2f98ee8907",
+                "reference": "9b9028ca8e798f1362a8ad64ac1ebe2f98ee8907",
                 "shasum": ""
             },
             "require": {
@@ -291,10 +291,10 @@
                 "v3"
             ],
             "support": {
-                "source": "https://github.com/mailjet/mailjet-apiv3-php/tree/v1.4.1",
+                "source": "https://github.com/mailjet/mailjet-apiv3-php/tree/master",
                 "issues": "https://github.com/mailjet/mailjet-apiv3-php/issues"
             },
-            "time": "2018-10-31T13:24:45+00:00"
+            "time": "2019-01-08T13:07:43+00:00"
         },
         {
             "name": "phpmailer/phpmailer",

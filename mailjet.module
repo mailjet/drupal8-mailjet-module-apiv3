@@ -22,7 +22,7 @@ use Mailjet\Client;
 use Mailjet\Resources;
 use \Drupal\user\Entity\User;
 
-include $path . '/lib/mailjet-api-php/src/mailjet.api.inc';
+//include $path . '/lib/mailjet-api-php/src/mailjet.api.inc';
 
 /**
  * Redirects to external links.
@@ -49,7 +49,6 @@ function _mailjet_register_alter_callback() {
 
   $config_mailjet = \Drupal::service('config.factory')
     ->getEditable('mailjet.settings');
-  // include mailjet.api.inc
   if (isset($_POST['data']['apikey']) && !empty($_POST['data']['apikey']) && isset($_POST['data']['secretkey']) && !empty($_POST['data']['secretkey'])) {
 
     $config_mailjet->set('mailjet_active', TRUE);
