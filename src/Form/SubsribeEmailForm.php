@@ -38,6 +38,9 @@ class SubsribeEmailForm extends ConfigFormBase {
     if (isset($_GET['sec_code']) && !empty($_GET['sec_code'])) {
       $sec_code_email = base64_decode($_GET['sec_code']);
     }
+    if (isset($_GET['properties']) && !empty($_GET['properties'])) {
+      $properties = json_decode(base64_decode($_GET['properties']));
+    }
     if (isset($_GET['others']) && !empty($_GET['others'])) {
       $form_hidden_id = $_GET['others'];
     }
@@ -50,6 +53,19 @@ class SubsribeEmailForm extends ConfigFormBase {
     $contact = [
       'Email' => $sec_code_email
     ];
+
+    // If we have any properties we clean the `signup-` part from the name and prepare them to sync to Mailjet
+    // Note that the `$properties` is Object not Array
+    if (isset($properties) && !empty($properties)) {
+        $propertiesClean = [];
+        foreach ($properties as $key => $value) {
+            if (stristr($key, 'signup-')) {
+                $keyClean = str_ireplace('signup-', '', $key);
+                $propertiesClean[$keyClean] = $value;
+            }
+        }
+        $contact['Properties'] = $propertiesClean;
+    }
 
     //add new email
     $response = MailjetApi::syncMailjetContact($list_id, $contact);

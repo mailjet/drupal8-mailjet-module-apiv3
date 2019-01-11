@@ -392,6 +392,8 @@ class SubscriptionSignupPageForm extends FormBase {
 
     $list_id = $entity->lists;
 
+    $properties = $this->fetchPropertiesOnWidgetSubscribe($form_state);
+
     $user = \Drupal::currentUser();
     $mailjetApiClient = mailjet_new();
 //    $check_complate = FALSE;
@@ -436,7 +438,7 @@ class SubscriptionSignupPageForm extends FormBase {
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
 
-    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&others=' . $form_values['signup_id_form'];
+    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&properties=' . base64_encode(json_encode($properties, true)) . '&others=' . $form_values['signup_id_form'];
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'mailjet';
     $key = 'activation_mail';
@@ -464,4 +466,16 @@ class SubscriptionSignupPageForm extends FormBase {
 
   }
 
+
+  private function fetchPropertiesOnWidgetSubscribe(FormStateInterface $form_state) {
+    $form_values = $form_state->getValues();
+    $properties = [];
+    // We loop all form values to find contact properties.
+    foreach ($form_values as $key => $value) {
+      if ($key != 'signup-email' && stristr($key, 'signup-')) {
+        $properties[$key] = $value;
+      }
+    }
+    return $properties;
+  }
 }
