@@ -450,7 +450,7 @@ class SubscriptionSignupPageForm extends FormBase {
         drupal_set_message(t($confirmation_message), 'status');
       }
       else {
-        drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
+        drupal_set_message(t('Subscription confirmation email sent to ' . $email . '. Please check your inbox and confirm the subscription.'));
       }
     }
 
