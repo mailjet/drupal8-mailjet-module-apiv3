@@ -108,11 +108,11 @@ class MailjetSettingsForm extends ConfigFormBase {
 
     $tracking_url = $base_url . '/mailjetevent';
     $current_events = [];
-    foreach ($tracking_check->Data as $event) {
-      if (array_key_exists($event->EventType, $check)) {
-        $check[$event->EventType] = 1;
-        $tracking_url = $event->Url;
-        $current_events[$event->EventType] = $event->ID;
+    foreach ($tracking_check as $event) {
+      if (array_key_exists($event['EventType'], $check)) {
+        $check[$event['EventType']] = 1;
+        $tracking_url = $event['Url'];
+        $current_events[$event['EventType']] = $event['ID'];
       }
     }
     $current_events = serialize($current_events);
