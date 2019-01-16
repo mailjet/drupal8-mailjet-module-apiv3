@@ -257,7 +257,7 @@ class SubscriptionSignupPageForm extends FormBase {
 
           $field_value = $form_values['signup-' . $field];
           $field_name = $field;
-          $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter correct data type %type in %id';
+          $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter correct data type in %id';
 
           $missmatch_values = str_replace("%id", $labels_fields[$counter], $missmatch_values);
 
@@ -350,7 +350,7 @@ class SubscriptionSignupPageForm extends FormBase {
       $ini += strlen($start);
       $len = strpos($response->getErrorMessage(), $end, $ini) - $ini;
       $filed_prop_name = trim(substr($response->getErrorMessage(), $ini, $len));
-      $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter correct data type %type in %id';
+      $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter correct data type in %id';
       $missmatch_values = str_replace("%id", $filed_prop_name, $missmatch_values);
 
       switch (mailjet_get_propertiy_type($filed_prop_name)) {
