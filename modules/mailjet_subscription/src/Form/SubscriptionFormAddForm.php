@@ -14,7 +14,7 @@ class SubscriptionFormAddForm extends SubscriptionFormFormBase {
 
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    $actions['submit']['#value'] = $this->t('Create Subscription Form');
+    $actions['submit']['#value'] = $this->t('Create a Subscription Form');
     return $actions;
   }
 
