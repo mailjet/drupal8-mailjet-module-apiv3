@@ -108,7 +108,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['form_settings']['confirmation_message'] = [
       '#type' => 'textfield',
       '#title' => t('Confirmation message'),
-      '#description' => t('Subscription confirmation email sent to %. Please check your inbox and confirm the subscription.<br /><b>Note:</b> The \'%\' symbol is a placeholder for the email of the subscriber.'),
+      '#description' => t('Subscription confirmation email sent to %. Please check your inbox and confirm the subscription.<br /><b>Note:</b> The % symbol is a placeholder for the email of the subscriber.'),
       '#default_value' => $entity->confirmation_message,
     ];
 
@@ -198,7 +198,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['form_settings'] ['error_data_types'] = [
       '#type' => 'textfield',
       '#title' => t('Data type mismatch error'),
-      '#description' => t('Incorrect data values. Please enter correct data type in %id <br /><b>Note:</b> the %id symbol is a placeholder for the field name.'),
+      '#description' => t('Incorrect data values. Please enter correct data type in %id <br /><b>Note:</b> The %id symbol is a placeholder for the field name.'),
       '#default_value' => $entity->error_data_types,
     ];
 
