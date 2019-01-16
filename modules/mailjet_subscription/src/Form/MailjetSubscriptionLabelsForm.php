@@ -60,7 +60,7 @@ class MailjetSubscriptionLabelsForm extends ConfigFormBase {
       foreach ($fields as $field) {
         $form['singup-' . $field] = [
           '#type' => 'textfield',
-          '#title' => t('Label of field with machine name: ' . $field),
+          '#title' => t('Label of \'machine name\' field: ' . $field),
           '#description' => '',
           '#required' => TRUE,
           '#default_value' => $labels_fields[$counter],
@@ -111,10 +111,10 @@ class MailjetSubscriptionLabelsForm extends ConfigFormBase {
     $status = $entity->save();
 
     if ($status == SAVED_UPDATED) {
-      drupal_set_message(t('Subscription Form Labels has been updated.'));
+      drupal_set_message(t('Subscription Form Labels have been updated.'));
     }
     else {
-      drupal_set_message(t('Subscription Form Labels hasn\'t been updated.'));
+      drupal_set_message(t('Subscription Form Labels haven\'t been updated.'));
     }
 
   }
