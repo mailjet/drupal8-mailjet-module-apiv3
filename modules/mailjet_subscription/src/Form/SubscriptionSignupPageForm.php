@@ -98,7 +98,7 @@ class SubscriptionSignupPageForm extends FormBase {
       $form['signup-email'] = [
         '#type' => 'textfield',
         '#title' => $entity->email_label,
-        '#description' => 'Please enter your email adress.',
+        '#description' => 'Please enter your email address.',
         '#default_value' => '',
         '#required' => TRUE,
         '#attributes' => ['placeholder' => t('your@email.com')],
@@ -165,7 +165,7 @@ class SubscriptionSignupPageForm extends FormBase {
               break;
 
             case 'datetime':
-              $description_field = t('Correct field format - date. Ex: 26-02-2017');
+              $description_field = t('Correct field format - date. Ex: 26-02-2010');
               break;
 
             case 'bool':
@@ -245,7 +245,7 @@ class SubscriptionSignupPageForm extends FormBase {
 
     if (!isset($form_values['unsubscribe_id']) && empty($form_values['unsubscribe_id'])) {
       if (!valid_email_address($form_values['signup-email'])) {
-        $form_state->setErrorByName('signup-email', t('Please enter valid EMAIL addres!'));
+        $form_state->setErrorByName('signup-email', t('Please enter a valid email address!'));
       }
 
       $labels_fields = explode(',', $signup_form->labels_fields);
@@ -257,7 +257,7 @@ class SubscriptionSignupPageForm extends FormBase {
 
           $field_value = $form_values['signup-' . $field];
           $field_name = $field;
-          $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter the correct values according to the example of the description in the field:  <  %id  >';
+          $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter correct data type in %id';
 
           $missmatch_values = str_replace("%id", $labels_fields[$counter], $missmatch_values);
 
@@ -350,7 +350,7 @@ class SubscriptionSignupPageForm extends FormBase {
       $ini += strlen($start);
       $len = strpos($response->getErrorMessage(), $end, $ini) - $ini;
       $filed_prop_name = trim(substr($response->getErrorMessage(), $ini, $len));
-      $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter the correct values according to the example of the description in the field:  <  %id  >';
+      $missmatch_values = !empty($entity->error_data_types) ? $entity->error_data_types : 'Incorrect data values. Please enter correct data type in %id';
       $missmatch_values = str_replace("%id", $filed_prop_name, $missmatch_values);
 
       switch (mailjet_get_propertiy_type($filed_prop_name)) {
@@ -388,7 +388,7 @@ class SubscriptionSignupPageForm extends FormBase {
     $owner = !empty($entity->email_owner) ? $entity->email_owner : t('Mailjet');
     $email_footer_text = !empty($entity->email_footer_text) ? $entity->email_footer_text : t('Did not ask to subscribe to this list? Or maybe you have changed your mind? Then simply ignore this email and you will not be subscribed');
     $email = $form_values['signup-email'];
-    $heading_text = !empty($entity->confirmation_email_text) ? $entity->confirmation_email_text : t('Please Confirm Your Subscription To');
+    $heading_text = !empty($entity->confirmation_email_text) ? $entity->confirmation_email_text : t('Please confirm your subscription to');
 
     $list_id = $entity->lists;
 
@@ -413,15 +413,15 @@ class SubscriptionSignupPageForm extends FormBase {
 //exit;
       if (false != $responseContactList) {
         \Drupal::logger('mailjet_messages')
-          ->error(t('The new contact was unsubscribed from list #' . $list_id . '.'));
-        drupal_set_message(t('The user is unsubscribe successfully!'));
+          ->error(t('The contact was unsubscribed from list #' . $list_id . '.'));
+        drupal_set_message(t('The contact was unsubscribed successfully!'));
         $response = new RedirectResponse($base_url);
         $response->send();
         return;
       }
       else {
         \Drupal::logger('mailjet_messages')
-          ->error(t('The new contact was not unsubscribed from list #' . $list_id . '.'));
+          ->error(t('The contact was not unsubscribed from list #' . $list_id . '.'));
         drupal_set_message(t('Error'), 'error');
       }
       return;
@@ -450,7 +450,7 @@ class SubscriptionSignupPageForm extends FormBase {
         drupal_set_message(t($confirmation_message), 'status');
       }
       else {
-        drupal_set_message(t('Subscription confirmation email sent to ' . $email . '.Please check your inbox and confirm the subscription.'));
+        drupal_set_message(t('Subscription confirmation email was sent to ' . $email . '. Please check your inbox and confirm the subscription.'));
       }
     }
 
