@@ -8,6 +8,9 @@ namespace Drupal\mailjet\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use MailjetTools\MailjetApi;
+use Mailjet\Client;
+use Mailjet\Resources;
 
 class SubsribeEmailForm extends ConfigFormBase {
 
@@ -29,45 +32,47 @@ class SubsribeEmailForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $form = [];
-
-    if(empty($_GET['list']) || empty($_GET['sec_code']) || empty($_GET['others']) ) {
-        return FALSE;
+    if (isset($_GET['list']) && !empty($_GET['list'])) {
+      $list_id = $_GET['list'];
     }
-
-    $list_id = $_GET['list'];
-    $sec_code_email = base64_decode($_GET['sec_code']);
-    $form_hidden_id = $_GET['others'];
-
-    $propertiesParams = array();
-    if (!empty($_GET['p'])) {
-      $p = base64_decode($_GET['p']);
-      $propertiesArray = explode('&', $p);
-
-      foreach($propertiesArray as $propertyData) {
-          $kvp = explode('=', $propertyData);
-          $propertiesParams[$kvp[0]] = $kvp[1];
-      }
+    if (isset($_GET['sec_code']) && !empty($_GET['sec_code'])) {
+      $sec_code_email = base64_decode($_GET['sec_code']);
     }
-
+    if (isset($_GET['properties']) && !empty($_GET['properties'])) {
+      $properties = json_decode(base64_decode($_GET['properties']));
+    }
+    if (isset($_GET['others']) && !empty($_GET['others'])) {
+      $form_hidden_id = $_GET['others'];
+    }
+    else {
+      return FALSE;
+    }
     $signup_form = mailjet_subscription_load($form_hidden_id);
-    $mailjet = mailjet_new();
+    $mailjetApiClient = mailjet_new();
 
-    $params = array(
-      'method' => 'POST',
-      'Action' => 'Addforce',
-      'Email' => $sec_code_email,
-      'ListID' => $list_id,
-      'Properties' => $propertiesParams,
-    );
+    $contact = [
+      'Email' => $sec_code_email
+    ];
 
-    // Create and subscribe at once
-    $response = $mailjet->{'contactslist/' . $list_id . '/managecontact'}($params)->getResponse();
+    // If we have any properties we clean the `signup-` part from the name and prepare them to sync to Mailjet
+    // Note that the `$properties` is Object not Array
+    if (isset($properties) && !empty($properties)) {
+        $propertiesClean = [];
+        foreach ($properties as $key => $value) {
+            if (stristr($key, 'signup-')) {
+                $keyClean = str_ireplace('signup-', '', $key);
+                $propertiesClean[$keyClean] = $value;
+            }
+        }
+        $contact['Properties'] = $propertiesClean;
+    }
 
-    if ($response && isset($response->Count) && $response->Count > 0) {
+    //add new email
+    $response = MailjetApi::syncMailjetContact($list_id, $contact);
+    if (false != $response) {
       if (!empty($signup_form->success_message_subsribe)) {
         drupal_set_message(t($signup_form->success_message_subsribe), 'status');
-      }
-      else {
+      } else {
         drupal_set_message(t('You have successfully subscribed to Mailjet contact list! Thank you!'));
       }
     }

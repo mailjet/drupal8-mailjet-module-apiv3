@@ -204,7 +204,7 @@ display:
           relationship: none
           group_type: count
           admin_label: ''
-          label: '`Number of orders'
+          label: 'Number of orders'
           exclude: false
           alter:
             alter_text: false

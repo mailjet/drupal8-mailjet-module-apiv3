@@ -14,7 +14,7 @@ use Drupal\block\Entity\Block;
 class SubscriptionFormDeleteForm extends EntityConfirmFormBase {
 
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete subscription form -> %label?', [
+    return $this->t('Are you sure you want to delete the subscription form -> %label?', [
       '%label' => $this->entity->label(),
     ]);
   }

@@ -46,7 +46,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['primary_settings']['name'] = [
       '#type' => 'textfield',
       '#title' => t('Title'),
-      '#description' => t('The title for this subscription form.'),
+      '#description' => t('Subscription form title'),
       '#size' => 35,
       '#maxlength' => 32,
       '#default_value' => $entity->name,
@@ -60,7 +60,7 @@ class SubscriptionFormFormBase extends EntityForm {
       '#default_value' => $entity->description,
       '#rows' => 2,
       '#maxlength' => 700,
-      '#description' => t('This description will be shown on the subscription form below the title. (700 characters or less)'),
+      '#description' => t('Description shown below the subscription form title (max. 700 characters)'),
     ];
 
 
@@ -91,7 +91,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['sumbit_label'] = [];
     $form['settings']['sumbit_label'] = [
       '#type' => 'textfield',
-      '#title' => t('Submit Button Label'),
+      '#title' => t('Submit button label'),
       '#required' => 'TRUE',
       '#default_value' => $entity->sumbit_label,
     ];
@@ -107,9 +107,8 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['confirmation_message'] = [];
     $form['form_settings']['confirmation_message'] = [
       '#type' => 'textfield',
-      '#title' => t('Confirmation Message'),
-      '#description' => t('Subscription confirmation email sent to %. Please check your inbox and confirm the subscription.
--> The \'%\' symbol will be replaced by the email of the current user.'),
+      '#title' => t('Confirmation message'),
+      '#description' => t('Subscription confirmation email sent to %. Please check your inbox and confirm the subscription.<br /><b>Note:</b> The % symbol is a placeholder for the email of the subscriber.'),
       '#default_value' => $entity->confirmation_message,
     ];
 
@@ -125,16 +124,16 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['confirmation_email_text'] = [];
     $form['email_settings']['confirmation_email_text'] = [
       '#type' => 'textfield',
-      '#title' => t('Email Heading Text'),
-      '#description' => t('This is the heading of the subscription confirmation email.'),
+      '#title' => t('Email heading text'),
+      '#description' => '',
       '#default_value' => $entity->confirmation_email_text,
     ];
 
     $form['email_text_button'] = [];
     $form['email_settings']['email_text_button'] = [
       '#type' => 'textfield',
-      '#title' => t('Email Confirmation Button Text'),
-      '#description' => t('This is the text of the button inside the subscription confirmation email.'),
+      '#title' => t('Subscription confirmation button text'),
+      '#description' => '',
       '#default_value' => $entity->email_text_button,
     ];
 
@@ -142,22 +141,22 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['email_settings']['email_text_description'] = [
       '#type' => 'textfield',
       '#title' => t('Email body text'),
-      '#description' => (''),
+      '#description' => '',
       '#default_value' => $entity->email_text_description,
     ];
 
     $form['email_text_thank_you'] = [];
     $form['email_settings']['email_text_thank_you'] = [
       '#type' => 'textfield',
-      '#title' => t('Thanks, ....'),
-      '#description' => (''),
+      '#title' => t('Thanks,'),
+      '#description' => '',
       '#default_value' => $entity->email_text_thank_you,
     ];
 
     $form['email_owner'] = [];
     $form['email_settings']['email_owner'] = [
       '#type' => 'textfield',
-      '#title' => t('Owner'),
+      '#title' => t('Owner name'),
       '#description' => ('Site owner name, shown at the end of the subscription confirmation email.'),
       '#default_value' => $entity->email_owner,
     ];
@@ -166,8 +165,8 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['subscribe_error'] = [];
     $form['form_settings']['subscribe_error'] = [
       '#type' => 'textfield',
-      '#title' => t('Subscribe error. Please try again later!'),
-      '#description' => t('This message wil appear when have a error with subscription form.'),
+      '#title' => t('Subscription failed. Please try again later!'),
+      '#description' => t('Shown in case an error occurs during subscription form submission.'),
       '#default_value' => $entity->subscribe_error,
     ];
 
@@ -176,23 +175,22 @@ class SubscriptionFormFormBase extends EntityForm {
       '#type' => 'textfield',
       '#title' => t('The contact % is already subscribed'),
       '#default_value' => $entity->contact_exist,
-      '#description' => t('This message will appear when the subscriber already exists in '
-        . 'your Mailjet contact list. The % symbol will be replaced by the email address of the subscriber.'),
+      '#description' => t('Shown when the subscriber already exists in your Mailjet contact list.<br /><b>Note:</b> The % symbol is a placeholder for the email address of the subscriber.'),
     ];
 
     $form['success_message_subsribe'] = [];
     $form['form_settings']['success_message_subsribe'] = [
       '#type' => 'textfield',
-      '#title' => t('"Thanks for subscribing... " message'),
-      '#description' => t('This message will appear when the subscriber is successfully added to the contact list.'),
+      '#title' => t('"Thanks for subscribing" message'),
+      '#description' => t('Shown when the subscriber is successfully added to the contact list.'),
       '#default_value' => $entity->success_message_subsribe,
     ];
 
     $form['email_footer_text'] = [];
     $form['email_settings'] ['email_footer_text'] = [
       '#type' => 'textfield',
-      '#title' => t('Email footer text '),
-      '#description' => t(''),
+      '#title' => t('Email footer text'),
+      '#description' => '',
       '#default_value' => $entity->email_footer_text,
     ];
 
@@ -200,7 +198,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['form_settings'] ['error_data_types'] = [
       '#type' => 'textfield',
       '#title' => t('Data type mismatch error'),
-      '#description' => t('Incorrect data values. Please enter the correct values according to the example of the description in the field: < %id > -> The %id symbol will be replaced by the name of property and the %type symbol replace a type of data in property/field. '),
+      '#description' => t('Incorrect data values. Please enter correct data type in %id <br /><b>Note:</b> The %id symbol is a placeholder for the field name.'),
       '#default_value' => $entity->error_data_types,
     ];
 
@@ -217,7 +215,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['mailjet_lists']['ml_lists'] = [
       '#type' => 'select',
       '#title' => t('Mailjet contact list'),
-      '#description' => t('Select a contact list where all new subscribers will be added. You can create additional contact lists at  Mailjet.'),
+      '#description' => t('Select a contact list where all new subscribers will be added. You can create additional contact lists in Mailjet.'),
       '#options' => $lists_mailjet,
       '#required' => TRUE,
       '#default_value' => $entity->lists,
@@ -246,15 +244,15 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['mailjet_lists']['sort_fields'] = [];
     $form['mailjet_lists']['sort_fields'] = [
       '#type' => 'textfield',
-      '#title' => t('You can sort the fields in your subscription form. To do that, enter their names in the desired order in the field below separated by <b> comma.  </b>'),
-      '#description' => t('Example: You have selected firstname, lastname and age. You wish to display them in <b> alphabetical order </b>. Do so by entering: <b>age, firstname, lastname</b>. Note: the email field is always displayed in first position.'),
+      '#title' => t('You can sort the fields in your subscription form. To do that, enter their names in the desired order in the field below separated by <b>comma</b>.'),
+      '#description' => t('Example: You have selected firstname, lastname and age. You wish to display them in <b>alphabetical order</b>. Do so by entering: <b>age, firstname, lastname</b>.<br /> <b>Note:</b> The email field is always shown in first position.'),
       '#default_value' => $entity->sort_fields,
     ];
 
     $form['mailjet_lists']['ml_fields'] = [
       '#type' => 'checkboxes',
-      '#title' => t('Contact properties'),
-      '#description' => t('Select which contact properties to show on your Mailjet subscription form.'),
+      '#title' => t('Contact properties - select which contact properties to show in your subscription form'),
+      '#description' => '',
       '#options' => $mailjet_properties,
       '#default_value' => explode(',', $entity->fields_mailjet),
       '#max' => 3,
@@ -289,7 +287,7 @@ class SubscriptionFormFormBase extends EntityForm {
       '#machine_name' => [
         'exists' => [$this, 'exists'],
         'replace_pattern' => '([^a-z0-9_]+)|(^custom$)',
-        'error' => 'The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores. Additionally, it can not be the reserved word "custom".',
+        'error' => 'The machine-readable name must be unique and can only contain lowercase letters, numbers, and underscores. It can not be the reserved word "custom".',
       ],
       '#disabled' => TRUE,
     ];
@@ -385,7 +383,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $entity->set('changed_date', $form_state->getValue('changed_date'));
 
     if (count($arr_selected_prop) > 3) {
-      drupal_set_message(t('You may select a maximum of 3 contact properties in your subscription form. Please update your selection and save the form again.'), 'error');
+      drupal_set_message(t('You may add a maximum of 3 contact properties in your subscription form. Please update your selection and save the form again.'), 'error');
       return;
     }
 
