@@ -198,7 +198,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['form_settings'] ['error_data_types'] = [
       '#type' => 'textfield',
       '#title' => t('Data type mismatch error'),
-      '#description' => t('Incorrect data values. Please enter the correct values according to the example of the description in the field: %id <br /><b>Note:</b> the %id symbol as a placeholder for property name and %type for the required type of data.'),
+      '#description' => t('Incorrect data values. Please enter correct data type in %id <br /><b>Note:</b> the %id symbol is a placeholder for the field name.'),
       '#default_value' => $entity->error_data_types,
     ];
 
@@ -244,14 +244,14 @@ class SubscriptionFormFormBase extends EntityForm {
     $form['mailjet_lists']['sort_fields'] = [];
     $form['mailjet_lists']['sort_fields'] = [
       '#type' => 'textfield',
-      '#title' => t('You can sort the fields in your subscription form. To do that, enter their names in the desired order in the field below separated by <b>comma.</b>'),
-      '#description' => t('Example: You have selected firstname, lastname and age. You wish to display them in <b>alphabetical order</b>. Do so by entering: <b>age, firstname, lastname</b>.<br /> <b>Note:</b> The email field is always displayed in first position.'),
+      '#title' => t('You can sort the fields in your subscription form. To do that, enter their names in the desired order in the field below separated by <b>comma</b>.'),
+      '#description' => t('Example: You have selected firstname, lastname and age. You wish to display them in <b>alphabetical order</b>. Do so by entering: <b>age, firstname, lastname</b>.<br /> <b>Note:</b> The email field is always shown in first position.'),
       '#default_value' => $entity->sort_fields,
     ];
 
     $form['mailjet_lists']['ml_fields'] = [
       '#type' => 'checkboxes',
-      '#title' => t('Contact properties - select which contact properties to show on your Mailjet subscription form'),
+      '#title' => t('Contact properties - select which contact properties to show in your subscription form'),
       '#description' => '',
       '#options' => $mailjet_properties,
       '#default_value' => explode(',', $entity->fields_mailjet),
@@ -287,7 +287,7 @@ class SubscriptionFormFormBase extends EntityForm {
       '#machine_name' => [
         'exists' => [$this, 'exists'],
         'replace_pattern' => '([^a-z0-9_]+)|(^custom$)',
-        'error' => 'The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores. Additionally, it can not be the reserved word "custom".',
+        'error' => 'The machine-readable name must be unique and can only contain lowercase letters, numbers, and underscores. It can not be the reserved word "custom".',
       ],
       '#disabled' => TRUE,
     ];
@@ -383,7 +383,7 @@ class SubscriptionFormFormBase extends EntityForm {
     $entity->set('changed_date', $form_state->getValue('changed_date'));
 
     if (count($arr_selected_prop) > 3) {
-      drupal_set_message(t('You may select a maximum of 3 contact properties in your subscription form. Please update your selection and save the form again.'), 'error');
+      drupal_set_message(t('You may add a maximum of 3 contact properties in your subscription form. Please update your selection and save the form again.'), 'error');
       return;
     }
 
