@@ -28,7 +28,11 @@ class MailjetApi
             $mjClient->addRequestOption(CURLOPT_USERAGENT, 'kickstart');
             $mjClient->addRequestOption('headers', ['User-Agent' => 'kickstart']);
 
+        } else {
+            $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-3.0');
+            $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-3.0']);
         }
+
         // We turn of secure protocol for API requests if the wordpress does not support it
         if (empty($_SERVER['HTTPS']) || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'off') || $_SERVER['SERVER_PORT'] != 443) {
             $mjClient->setSecureProtocol(false);
