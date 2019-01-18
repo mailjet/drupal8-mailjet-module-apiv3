@@ -22,15 +22,15 @@ class MailjetApi
 
         $mjClient = new Client($mailjetApikey, $mailjetApiSecret);
         if (drupal_get_profile() == 'standard') {
-            $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-3.0');
-            $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-3.0']);
+            $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.2');
+            $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.2']);
         } elseif (drupal_get_profile() == 'commerce_kickstart') {
             $mjClient->addRequestOption(CURLOPT_USERAGENT, 'kickstart');
             $mjClient->addRequestOption('headers', ['User-Agent' => 'kickstart']);
 
         } else {
-            $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-3.0');
-            $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-3.0']);
+            $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.2');
+            $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.2']);
         }
 
         // We turn of secure protocol for API requests if the wordpress does not support it
