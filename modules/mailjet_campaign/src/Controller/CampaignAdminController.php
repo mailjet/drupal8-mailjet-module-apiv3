@@ -26,7 +26,7 @@ class CampaignAdminController extends ControllerBase {
     $mailjetIframe = MailjetApi::getMailjetIframe($config_mailjet->get('mailjet_username'), $config_mailjet->get('mailjet_password'));
     $mailjetIframe->setInitialPage(\MailjetIframe\MailjetIframe::PAGE_CAMPAIGNS);
     $callbackurl = urlencode($base_url . '/campaigncallback');
-    $mailjetIframe->setCallback($callbackurl);
+//    $mailjetIframe->setCallback($callbackurl);
 
     $build = [
       '#type' => 'inline_template',
