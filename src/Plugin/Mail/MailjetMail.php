@@ -2,6 +2,7 @@
 
 namespace Drupal\mailjet\Plugin\Mail;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 use PHPMailer\PHPMailer;
@@ -72,13 +73,16 @@ class MailjetMail implements MailInterface {
       $subject = $message['params']['subject'];
     }
 
-
-    if (isset($message['params']['order'])) {
+    $rawBody = '';
+    if (isset($message['params']['body'])) {
+        $rawBody = $message['params']['body'];
     }
-    else {
-      if (isset($message['params']['body'][0])) {
-        $body = $message['params']['body'][0];
-      }
+
+    if (is_array($rawBody)) {
+        $body = reset($rawBody);
+    }
+    elseif ($rawBody instanceof MarkupInterface) {
+        $body = (string) $rawBody;
     }
 
     $path = drupal_get_path('module', 'mailjet');
