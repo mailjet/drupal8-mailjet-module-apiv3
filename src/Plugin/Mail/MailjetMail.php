@@ -37,11 +37,16 @@ class MailjetMail implements MailInterface {
     $this->AllowHtml = $config_mailjet->get('mail_headers_allow_html_mailjet');
     // Join the body array into one string.
     $message['body'] = implode("\n\n", $message['body']);
+
+    if ($this->AllowHtml) {
+        $message['body'] = Html::decodeEntities($message['body']);
+    }
+
     if (!$this->AllowHtml) {
-      // Convert any HTML to plain-text.
-      $message['body'] = drupal_html_to_text($message['body']);
-      // Wrap the mail body for sending.
-      $message['body'] = drupal_wrap_mail($message['body']);
+        // Convert any HTML to plain-text
+        $message['body'] = MailFormatHelper::htmlToText($message['body']);
+        // Wrap the mail body for sending
+        $message['body'] = MailFormatHelper::wrapMail($message['body']);
     }
     return $message;
   }
