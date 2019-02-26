@@ -37,11 +37,6 @@ class MailjetMail implements MailInterface {
     $this->AllowHtml = $config_mailjet->get('mail_headers_allow_html_mailjet');
     // Join the body array into one string.
     $message['body'] = implode("\n\n", $message['body']);
-
-    if ($this->AllowHtml) {
-        $message['body'] = Html::decodeEntities($message['body']);
-    }
-
     if (!$this->AllowHtml) {
         // Convert any HTML to plain-text
         $message['body'] = MailFormatHelper::htmlToText($message['body']);
