@@ -5,7 +5,7 @@ namespace Drupal\mailjet\Plugin\Mail;
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Mail\MailFormatHelper;
-use PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * Defines the default Drupal mail backend, using PHP's native mail() function.
@@ -85,17 +85,22 @@ class MailjetMail implements MailInterface {
         $body = (string) $rawBody;
     }
 
-    $path = drupal_get_path('module', 'mailjet');
+//    $path = drupal_get_path('module', 'mailjet');
 
-    if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
-      require_once 'libraries/phpmailer/PHPMailerAutoload.php';
+//    if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
+//      require_once 'libraries/phpmailer/PHPMailerAutoload.php';
+//    }
+//    elseif (file_exists($path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php')) {
+//      require_once $path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
+//    }
+
+    if (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
+        require_once 'libraries/phpmailer/src/PHPMailer.php';
+    } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
+        require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
     }
-    elseif (file_exists($path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php')) {
-      require_once $path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
-    }
 
-    if (!class_exists('PHPMailer')) {
-
+    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
       // If the PHPMailer class is not yet auto-loaded, try to load the library
       // using Libraries API, if present.
       if (function_exists('libraries_load')) {
@@ -105,7 +110,7 @@ class MailjetMail implements MailInterface {
 
           \Drupal::logger('mailjet')
             ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
-          drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v5.2.21 from GitHub here: <a href="http://github.com/PHPMailer/PHPMailer/archive/v5.2.21.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
+          drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v6.0.7 from GitHub here: <a href="https://github.com/PHPMailer/PHPMailer/archive/v6.0.7.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
 DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does not exist.'), 'error');
           return FALSE;
         }
@@ -119,7 +124,8 @@ DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does 
     }
 
     // Create a new PHPMailer object - autoloaded from registry.
-    $mailer = new \PHPMailer;
+    $mailer = new PHPMailer;
+
     $system_site_config = \Drupal::config('system.site');
     $from_name = $system_site_config->get('name');
 
@@ -138,23 +144,16 @@ DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does 
       $headers['Reply-To'] = $reply;
     }
 
-    // Blank value will let the e-mail address appear.
-    if ($from == NULL || $from == '') {
-      // If from e-mail address is blank, use smtp_from config option.
-      if ($from = $system_site_config->get('mail')) {
-        // If smtp_from config option is blank, use site_email.
-        if (($from = $system_site_config->get('mail')) == '') {
-          drupal_set_message(t('There is no submitted from address.'), 'error');
-
-          if (\Drupal::state()->get('mailjet_debug')) {
+    $from = empty($from) ? $system_site_config->get('mail') : $from;
+    if(empty($from)) {
+         drupal_set_message(t('There is no submitted from address.'), 'error');
+         if (\Drupal::state()->get('mailjet_debug')) {
             \Drupal::logger('mailjet')
               ->notice('There is no submitted from address.');
           }
-
           return FALSE;
-        }
-      }
     }
+
     if (preg_match('/^"?.*"?\s*<.*>$/', $from)) {
       // . == Matches any single character except line break characters \r and
       // \n.
@@ -190,7 +189,6 @@ DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does 
       }
       $mailer->AddAddress($toaddr, $toname);
     }
-
 
     // Parse the headers of the message and set the PHPMailer object's settings
     // accordingly.
