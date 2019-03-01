@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityTypeManager;
 /**
  * Tests core campaign functionality.
  *
- * @group mailchimp
+ * @group mailjet
  */
 class MailjetCampaignTest extends BrowserTestBase {
 
@@ -54,9 +54,7 @@ class MailjetCampaignTest extends BrowserTestBase {
     $query->range(0, 1);
     $id = $query->execute()->fetchField();
 
-    $campaign = $entity_manager->getStorage('campaign_entity')->load($id);
-
-
+    $campaign = \Drupal::entityManager()->getStorage('campaign_entity')->load($id);
     $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
 
     $this->assertEqual($campaign->id, $campaign_id);
