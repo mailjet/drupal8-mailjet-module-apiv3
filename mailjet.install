@@ -34,3 +34,13 @@ function mailjet_requirements($phase) {
   }
   return $requirements;
 }
+
+/**
+ * Implements hook_uninstall().
+ */
+function mailjet_uninstall() {
+    $config = \Drupal::getContainer()
+      ->get('config.factory')
+      ->getEditable('system.mail');
+    $config->set('interface.default', 'php_mail')->save();
+}
