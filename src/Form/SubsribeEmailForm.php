@@ -9,8 +9,6 @@ namespace Drupal\mailjet\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use MailjetTools\MailjetApi;
-use Mailjet\Client;
-use Mailjet\Resources;
 
 class SubsribeEmailForm extends ConfigFormBase {
 
@@ -32,16 +30,16 @@ class SubsribeEmailForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $form = [];
-    if (isset($_GET['list']) && !empty($_GET['list'])) {
+    if (!empty($_GET['list'])) {
       $list_id = $_GET['list'];
     }
-    if (isset($_GET['sec_code']) && !empty($_GET['sec_code'])) {
+    if (!empty($_GET['sec_code'])) {
       $sec_code_email = base64_decode($_GET['sec_code']);
     }
-    if (isset($_GET['properties']) && !empty($_GET['properties'])) {
+    if (!empty($_GET['properties'])) {
       $properties = json_decode(base64_decode($_GET['properties']));
     }
-    if (isset($_GET['others']) && !empty($_GET['others'])) {
+    if (!empty($_GET['others'])) {
       $form_hidden_id = $_GET['others'];
     }
     else {
@@ -56,12 +54,35 @@ class SubsribeEmailForm extends ConfigFormBase {
 
     // If we have any properties we clean the `signup-` part from the name and prepare them to sync to Mailjet
     // Note that the `$properties` is Object not Array
-    if (isset($properties) && !empty($properties)) {
+    if (!empty($properties)) {
         $propertiesClean = [];
         foreach ($properties as $key => $value) {
             if (stristr($key, 'signup-')) {
                 $keyClean = str_ireplace('signup-', '', $key);
-                $propertiesClean[$keyClean] = $value;
+                switch (mailjet_get_propertiy_type($keyClean)) {
+                    case 'int':
+                      $propertiesClean[$keyClean] = (int) $value;
+                      break;
+                    case 'str':
+                      $propertiesClean[$keyClean] = (string) $value;
+                      break;
+                    case 'float':
+                      $propertiesClean[$keyClean] = (float) $value;
+                      break;
+                    case 'datetime':
+                        $datetime = \DateTime::createFromFormat("d-m-Y", $value);
+                        if ($datetime instanceof \DateTime) {
+                            $propertiesClean[$keyClean] = $datetime->format(\DateTime::RFC3339);
+                        }
+                      break;
+                    case 'bool':
+                      if(strtoupper($value) == 'TRUE') {
+                        $propertiesClean[$keyClean] = true;
+                      } else {
+                        $propertiesClean[$keyClean] = false;
+                      }
+                      break;
+                }
             }
         }
         $contact['Properties'] = $propertiesClean;
@@ -69,6 +90,7 @@ class SubsribeEmailForm extends ConfigFormBase {
 
     //add new email
     $response = MailjetApi::syncMailjetContact($list_id, $contact);
+
     if (false != $response) {
       if (!empty($signup_form->success_message_subsribe)) {
         drupal_set_message(t($signup_form->success_message_subsribe), 'status');
@@ -84,7 +106,6 @@ class SubsribeEmailForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-
 
   }
 
