@@ -148,7 +148,7 @@ class SubscriptionSignupPageForm extends FormBase {
       else {
         $fields = $fields_mailjet;
       }
-      
+
       $counter = 0;
 
       if (!(empty($fields_mailjet[0]))) {
@@ -438,7 +438,13 @@ class SubscriptionSignupPageForm extends FormBase {
 
     $langcode = \Drupal::currentUser()->getPreferredLangcode();
 
-    $subscribe_url = $base_url . '/confirmation-subscribe?sec_code=' . base64_encode($email) . '&list=' . $list_id . '&properties=' . base64_encode(json_encode($properties, true)) . '&others=' . $form_values['signup_id_form'];
+    $query_string = http_build_query(array(
+        'sec_code' => base64_encode($email),
+        'list' => $list_id,
+        'properties' => base64_encode(json_encode($properties, true)),
+        'others' => $form_values['signup_id_form'],
+    ));
+    $subscribe_url = $base_url . '/confirmation-subscribe?' . $query_string;
     $mailManager = \Drupal::service('plugin.manager.mail');
     $module = 'mailjet';
     $key = 'activation_mail';
