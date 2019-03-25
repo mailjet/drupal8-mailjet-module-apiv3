@@ -87,14 +87,22 @@ class MailjetMail implements MailInterface {
 
 //    $path = drupal_get_path('module', 'mailjet');
 
-//    if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
-//      require_once 'libraries/phpmailer/PHPMailerAutoload.php';
-//    }
+
 //    elseif (file_exists($path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php')) {
 //      require_once $path . '/vendor/phpmailer/phpmailer/PHPMailerAutoload.php';
 //    }
 
-    if (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
+    /**
+     * v 5.2.22
+     */
+    if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
+        require_once 'libraries/phpmailer/PHPMailerAutoload.php';
+    }
+
+    /**
+     * v ~6.0
+     */
+    elseif (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
         require_once 'libraries/phpmailer/src/PHPMailer.php';
         require_once 'libraries/phpmailer/src/SMTP.php';
     } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
@@ -112,7 +120,7 @@ class MailjetMail implements MailInterface {
 
           \Drupal::logger('mailjet')
             ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
-          drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v6.0.7 from GitHub here: <a href="https://github.com/PHPMailer/PHPMailer/archive/v6.0.7.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
+          drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v.5.2.22 or later(eg. ~6.0) from GitHub here: <a href="https://github.com/PHPMailer/PHPMailer/archive/v6.0.7.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
 DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does not exist.'), 'error');
           return FALSE;
         }
