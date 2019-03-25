@@ -96,8 +96,10 @@ class MailjetMail implements MailInterface {
 
     if (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
         require_once 'libraries/phpmailer/src/PHPMailer.php';
+        require_once 'libraries/phpmailer/src/SMTP.php';
     } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
         require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+        require_once 'libraries/phpmailer/src/SMTP.php';
     }
 
     if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
