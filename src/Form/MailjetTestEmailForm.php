@@ -68,12 +68,12 @@ class MailjetTestEmailForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
     $config_mailjet = $this->config('mailjet.settings');
 
     if (!empty($config_mailjet->get('mailjet_active'))
       && !empty($config_mailjet->get('mailjet_username'))
       && !empty($config_mailjet->get('mailjet_password'))) {
-
       $mailManager = \Drupal::service('plugin.manager.mail');
       $module = 'mailjet';
       $key = 'test_mail';
@@ -81,8 +81,8 @@ class MailjetTestEmailForm extends ConfigFormBase {
       $params['message'] = t('Your Mailjet configuration is ok!');
       $langcode = \Drupal::currentUser()->getPreferredLangcode();
       $send = TRUE;
-      $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
 
+      $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
       if ($result['result'] !== TRUE) {
         drupal_set_message(t('There was a problem sending your message and it was not sent.'), 'error');
       }

@@ -8,3 +8,4 @@ configure: mailjet.settings
 
 dependencies:
   - libraries
+

@@ -300,7 +300,9 @@ class MailjetApi
         if (!empty($contact['Properties'])) {
             $body['Properties'] = $contact['Properties'];
         }
+
         $response = $mjApiClient->post(Resources::$ContactslistManagecontact, ['id' => $contactListId, 'body' => $body]);
+
         if ($response->success()) {
             return $response->getData();
         } else {
