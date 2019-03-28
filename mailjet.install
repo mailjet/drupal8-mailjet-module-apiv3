@@ -22,8 +22,9 @@ function mailjet_requirements($phase) {
         ]
       ),
     ];
-
-    if (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
+    if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
+        require_once 'libraries/phpmailer/PHPMailerAutoload.php';
+    } elseif (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
         require_once 'libraries/phpmailer/src/PHPMailer.php';
     } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
         require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
