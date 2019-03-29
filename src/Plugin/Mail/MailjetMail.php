@@ -5,7 +5,7 @@ namespace Drupal\mailjet\Plugin\Mail;
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Mail\MailFormatHelper;
-use PHPMailer\PHPMailer\PHPMailer;
+//use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * Defines the default Drupal mail backend, using PHP's native mail() function.
@@ -97,6 +97,7 @@ class MailjetMail implements MailInterface {
      */
     if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
         require_once 'libraries/phpmailer/PHPMailerAutoload.php';
+        $mailer = new \PHPMailer;
     }
 
     /**
@@ -105,36 +106,37 @@ class MailjetMail implements MailInterface {
     elseif (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
         require_once 'libraries/phpmailer/src/PHPMailer.php';
         require_once 'libraries/phpmailer/src/SMTP.php';
+        $mailer = new \PHPMailer\PHPMailer\PHPMailer;
     } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
         require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
         require_once 'libraries/phpmailer/src/SMTP.php';
-    }
+        $mailer = new \PHPMailer\PHPMailer\PHPMailer;
+    }else {
+        if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+                // If the PHPMailer class is not yet auto-loaded, try to load the library
+                // using Libraries API, if present.
+                if (function_exists('libraries_load')) {
 
-    if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
-      // If the PHPMailer class is not yet auto-loaded, try to load the library
-      // using Libraries API, if present.
-      if (function_exists('libraries_load')) {
+                    $library = libraries_load('phpmailer');
+                    if (empty($library) || empty($library['loaded'])) {
 
-        $library = libraries_load('phpmailer');
-        if (empty($library) || empty($library['loaded'])) {
-
-          \Drupal::logger('mailjet')
-            ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
-          drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v.5.2.22 or later(eg. ~6.0) from GitHub here: <a href="https://github.com/PHPMailer/PHPMailer/archive/v6.0.7.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
+                        \Drupal::logger('mailjet')
+                                ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
+                        drupal_set_message(t('This module requires the PHPMailer library to be downloaded and installed separately. <br/> Get the PHPMailer v.5.2.22 or later(eg. ~6.0) from GitHub here: <a href="https://github.com/PHPMailer/PHPMailer/archive/v6.0.7.zip">Click</a> <br/><br/> Upload the "phpmailer" folder to your server inside 
 DRUPAL_ROOT/libraries/. <br/><br/> Unable to send mail : PHPMailer library does not exist.'), 'error');
-          return FALSE;
+                        return FALSE;
+                    }
+                } else {
+                    drupal_set_message(t('Unable to send mail : PHPMailer library does not exist.'), 'error');
+                    \Drupal::logger('mailjet')
+                            ->notice('Unable to send mail : Libraries API and PHPMailer library does not exist .');
+                    return FALSE;
+                }
+            }
         }
-      }
-      else {
-        drupal_set_message(t('Unable to send mail : PHPMailer library does not exist.'), 'error');
-        \Drupal::logger('mailjet')
-          ->notice('Unable to send mail : Libraries API and PHPMailer library does not exist .');
-        return FALSE;
-      }
-    }
 
-    // Create a new PHPMailer object - autoloaded from registry.
-    $mailer = new PHPMailer;
+    
+
 
     $system_site_config = \Drupal::config('system.site');
     $from_name = $system_site_config->get('name');
