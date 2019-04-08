@@ -122,7 +122,7 @@ class MailjetMail implements MailInterface {
 
                         \Drupal::logger('mailjet')
                                 ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
-                        drupal_set_message(t('Unable to send mail: PHPMailer library does not exist.<br /><br />This module requires the PHPMailer library to be downloaded and installed separately. <br/>Get the latest PHPMailer v5 or v6 from the <a href="https://github.com/PHPMailer/PHPMailer/releases">official PHPMailer GitHub page</a>. <br/> Upload the "phpmailer" folder to your server inside 
+                        drupal_set_message(t('Unable to send mail: PHPMailer library does not exist.<br /><br />This module requires the PHPMailer library to be downloaded and installed separately. <br/>Get the latest PHPMailer v5 or v6 from the <a href="https://github.com/PHPMailer/PHPMailer/releases" target="_blank">official PHPMailer GitHub page</a>. <br/> Upload the "phpmailer" folder to your server inside 
 DRUPAL_ROOT/libraries/.'), 'error');
                         return FALSE;
                     }
