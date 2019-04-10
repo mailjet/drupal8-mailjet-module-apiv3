@@ -117,6 +117,25 @@ Configuration
 Author
 
 ## Changelog
+= 8.x-2.3 =
+*Fix mailjet composer issues
+*Use Latest PHPMailer(6.0.7) not only v5.2.22
+*Use phpmailer as external library or from drupal composer
+*Change installation requirements
+*Improve subscription url building and encode base64 encoded properties
+*Convert contact properties values depends on type on confirmation
+*Remove phpmailer from plugin
+*Fix test mail
+*Fix typos
+
+= 8.x-2.2 =
+* Add user agent to all API calls
+
+= 8.x-2.1 =
+* Fix synchronizations
+* Fix subscription witget
+* Fix ROI stats
+
 = 8.x-2.0 =
 * Remove depricated Global $language from stats module
 * Enable user to sort subscription form parameters
