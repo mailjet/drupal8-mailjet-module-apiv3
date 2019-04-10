@@ -699,7 +699,7 @@ function mailjet_mail($key, &$message, $params) {
       $message['body'][] = Html::escape($params['message']);
       break;
     case 'activation_mail':
-      $message['subject'] = t('Activatin mail', $options);
+      $message['subject'] = t('Activation mail', $options);
       $message['body'][] = $params['message'];
       break;
   }
