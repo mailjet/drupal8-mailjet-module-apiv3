@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the MailChimp Module.
+ * Install, update and uninstall functions for the Mailjet Module.
  */
 
 
@@ -17,22 +17,31 @@ function mailjet_requirements($phase) {
       'severity' => REQUIREMENT_ERROR,
       'description' => t('Mailjet module requires the <a href="@phpmailer">PHPMailer Library</a>, which is missing. Download and extract the entire contents of the archive into the %path directory on your server.',
         [
-          '@phpmailer' => 'http://github.com/PHPMailer/PHPMailer/archive/v5.2.21.zip',
-          '%path' => 'sites/all/libraries/phpmailer',
+          '@phpmailer' => 'https://github.com/PHPMailer/PHPMailer/archive/v6.0.7.zip',
+          '%path' => 'libraries/phpmailer',
         ]
       ),
     ];
-
-    if (function_exists('libraries_get_path')) {
-      $phpmailer_path = libraries_get_path('phpmailer');
-      if (!$phpmailer_path) {
+    if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
+        require_once 'libraries/phpmailer/PHPMailerAutoload.php';
+    } elseif (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
+        require_once 'libraries/phpmailer/src/PHPMailer.php';
+    } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
+        require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+    } else {
         $requirements['phpmailer'] = $errorData;
-      }
     }
-    elseif (!file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
-      $requirements['phpmailer'] = $errorData;
-    }
+
   }
   return $requirements;
-}  
+}
 
+/**
+ * Implements hook_uninstall().
+ */
+function mailjet_uninstall() {
+    $config = \Drupal::getContainer()
+      ->get('config.factory')
+      ->getEditable('system.mail');
+    $config->set('interface.default', 'php_mail')->save();
+}

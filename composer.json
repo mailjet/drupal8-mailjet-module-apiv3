@@ -21,7 +21,6 @@
     }
   ],
   "require": {
-    "phpmailer/phpmailer": "~5.2",
     "mailjet/mailjet-apiv3-php": "dev-master",
     "mailjet/Mailjet-iframe-v3": "dev-master"
   },

@@ -3,12 +3,12 @@
 namespace Drupal\Tests\mailjet_event\Functional;
 
 use Drupal\Tests\BrowserTestBase;
-use Drupal\Core\Entity\EntityTypeManager;
+
 
 /**
  * Tests core campaign functionality.
  *
- * @group mailchimp
+ * @group mailjet
  */
 class MailjetEventTest extends BrowserTestBase {
 
