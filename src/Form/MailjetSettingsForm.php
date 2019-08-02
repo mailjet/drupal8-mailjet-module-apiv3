@@ -22,7 +22,7 @@ class MailjetSettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mailjet_settings.adminsettings',
+      'mailjet_settings.settings',
     ];
   }
 
@@ -349,15 +349,8 @@ class MailjetSettingsForm extends ConfigFormBase {
 
     $config_mailjet->set('mailjet_mail', 0);
 
-    if (!empty($form_state->getValue('mail_headers_allow_html_mailjet'))) {
-
-      $config_mailjet->set('mail_headers_allow_html_mailjet', $form_state->getValue('mail_headers_allow_html_mailjet'))
-        ->save();
-
-    }
-    else {
-      $config_mailjet->set('mail_headers_allow_html_mailjet', 0);
-    }
+    $config_mailjet->set('mail_headers_allow_html_mailjet', $form_state->getValue('mail_headers_allow_html_mailjet'))
+      ->save();
 
     drupal_set_message(t('Your options is saved!'));
 
