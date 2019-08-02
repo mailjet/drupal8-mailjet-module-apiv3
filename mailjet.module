@@ -461,66 +461,51 @@ function mailjet_sync_single_user($user, $type) {
 
   mailjet_properties_sync();
   $mailjetApiClient = mailjet_new();
-    //var_dump($infos->getEmail());
   $mj_lists = [];
-  //if (!empty($defaul_mj_list)) {
   $mj_lists[] = mailjet_get_default_list_id($mailjetApiClient);
-  //}
-//    var_dump($mj_lists);
-//    var_dump($type);
-//    var_dump($user);exit;
+  $properties = [];
+
   switch ($type) {
     case 'add':
     case 'update':
-      foreach ($mj_lists as $key => $value) {
-        // Get the data which we have to update. The data will be extracted from the user's object or $info variable
-        $data = [];
-        if (is_array($user) && isset($user[$infos['mail']])) {
-          foreach ($user[$infos['mail']]['properties'] as $prop_key => $prop_value) {
-            $data[str_replace("field_", "", $prop_key)] = $prop_value;
+      foreach ($mj_lists as $listId) {
+        $contact['Email'] = $user->getEmail();
+        foreach ($user as $key => $value) {
+          //ADD ALL FIELDS - NO! - Only name for now
+          if ('name' == $key) {
+            $properties[$key] =  $value->value;
           }
         }
-        else {
-          foreach ($infos as $key => $info) {
-            if (strpos($key, 'field_') !== FALSE && isset($info['und'][0]['value'])) {
-              $data[str_replace("field_", "", $key)] =  $info['und'][0]['value'];
-            }
-          }
+        if (!empty($properties)) {
+          $contact['Properties'] = $properties;
         }
 
-        $contact = [
-          'Email' => $user->get('mail')->value
-        ];
-        if (!empty($data)) {
-            $contact['Properties'] = $data;
-        }
           //add new email
-        $response = MailjetTools\MailjetApi::syncMailjetContact($value, $contact);
-
+        $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact);
         if (false != $response) {
-            \Drupal::logger('mailjet_messages')
-                ->notice(t('The new contact was added to list #' . $value . '.'));
+          \Drupal::logger('mailjet_messages')
+            ->notice(t('The new contact was added to list #' . $listId . '.'));
         }
         else {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was not added to list #' . $value . '.'));
+            ->notice(t('The new contact was not added to list #' . $listId . '.'));
         }
       }
       break;
     case 'remove':
-      foreach ($mj_lists as $key => $value) {
+      foreach ($mj_lists as $listId) {
         $contact = [
           'Email' => $user->get('mail')->value
         ];
         //add new email
-        $response = MailjetTools\MailjetApi::syncMailjetContact($value, $contact, 'remove');
+        $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact, 'remove');
         if (false == $response) {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was unsubscribed from list #' . $value . '.'));
+            ->notice(t('The new contact was unsubscribed from list #' . $listId . '.'));
         }
         else {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was not unsubscribed from list #' . $value . '.'));
+            ->notice(t('The new contact was not unsubscribed from list #' . $listId . '.'));
         }
       }
       break;
@@ -621,9 +606,9 @@ function mailjet_first_sync($list_id) {
       $properties = [];
       $contact['Email'] = $user->getEmail();
       foreach ($user as $key => $value) {
-        //ADD ALL FIELDS
-        if (strpos($key, "field_") !== FALSE) {
-          $properties[str_replace('field_', '', $key)] = ((!empty($value)) ? (defined(LANGUAGE_NONE) && $value[LANGUAGE_NONE][0]['value']): '');
+        //ADD only `name` property for now
+        if ('name' == $key) {
+          $properties[$key] =  $value->value;
         }
       }
       if (!empty($properties)) {
