@@ -418,41 +418,54 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
 }
 
 /**
- * Sync user hooks.
+ * Add a Mailjet user.
+ *
+ * @param \Drupal\user\Entity\User $user
+ *   The User object.
  */
-function mailjet_user_insert($user) {
-    mailjet_sync_single_user($user, 'add');
+function mailjet_user_insert(User $user) {
+  ksm('mailjet_user_insert');
+  mailjet_sync_single_user($user, 'add');
 }
 
 
 /**
- * Updates Mailjet users
+ * Update a Mailjet user.
+ *
+ * @param \Drupal\user\Entity\User $user
+ *   The User object.
  */
-function mailjet_user_update($user) {
-    // Only trigger updates when the account status has changed.
-    if (isset($user->get('status')->value)) {
-        if ($user->get('status')->value > 0) { //should be the same as cancel hook
-            mailjet_sync_single_user($user, 'update');
-        }
-        else {
-            mailjet_sync_single_user($user, 'remove');
-        }
+function mailjet_user_update(User $user) {
+  // Only trigger updates when the account status has changed.
+  if (isset($user->get('status')->value)) {
+    if ($user->get('status')->value > 0) {
+      mailjet_sync_single_user($user, 'update');
     }
+    else {
+      mailjet_sync_single_user($user, 'remove');
+    }
+  }
 }
 
 /**
- * Deletes mailjet user.
+ * Delete a Mailjet user.
+ *
+ * @param \Drupal\user\Entity\User $user
+ *   The User object.
  */
-function mailjet_user_delete($user) {
-    mailjet_sync_single_user($user, 'remove');
+function mailjet_user_delete(User $user) {
+  mailjet_sync_single_user($user, 'remove');
 }
 
-function mailjet_user_cancel($user) {
-    mailjet_sync_single_user($user, 'remove');
-}
-
-
-function mailjet_sync_single_user($user, $type) {
+/**
+ * Sync a single Mailjet user.
+ *
+ * @param \Drupal\user\Entity\User $user
+ *   The User object.
+ * @param $action
+ *   The action to send to Mailjet.
+ */
+function mailjet_sync_single_user(User $user, $action) {
   $config_mailjet = \Drupal::config('mailjet.settings');
 
   if (empty($user->get('mail')->value)) {
@@ -465,13 +478,15 @@ function mailjet_sync_single_user($user, $type) {
   $mj_lists[] = mailjet_get_default_list_id($mailjetApiClient);
   $properties = [];
 
-  switch ($type) {
+  switch ($action) {
     case 'add':
     case 'update':
       foreach ($mj_lists as $listId) {
-        $contact['Email'] = $user->getEmail();
+        $contact = [
+          'Email' => $user->get('mail')->value
+        ];
         foreach ($user as $key => $value) {
-          //ADD ALL FIELDS - NO! - Only name for now
+          // We sync оnly `name` for now
           if ('name' == $key) {
             $properties[$key] =  $value->value;
           }
@@ -480,41 +495,43 @@ function mailjet_sync_single_user($user, $type) {
           $contact['Properties'] = $properties;
         }
 
-          //add new email
+        // Add new contact.
         $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact);
-        if (false != $response) {
+        if ($response) {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was added to list #' . $listId . '.'));
+            ->notice(t('The new contact was added to list #@list.', ['@list' => $listId]));
         }
         else {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was not added to list #' . $listId . '.'));
+            ->notice(t('The new contact was not added to list #@list.', ['@list' => $listId]));
         }
       }
       break;
+
     case 'remove':
       foreach ($mj_lists as $listId) {
         $contact = [
           'Email' => $user->get('mail')->value
         ];
         //add new email
-        $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact, 'remove');
+        $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact, $action);
         if (false == $response) {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was unsubscribed from list #' . $listId . '.'));
+            ->notice(t('The contact was unsubscribed from list #@list.', ['@list' => $listId]));
         }
         else {
           \Drupal::logger('mailjet_messages')
-            ->notice(t('The new contact was not unsubscribed from list #' . $listId . '.'));
+            ->notice(t('The contact was not unsubscribed from list #@list.', ['@list' => $listId]));
         }
       }
       break;
+
     default:
-      drupal_set_message(t("No user action"), "warning");
+      $messenger = \Drupal::messenger();
+      $messenger->addMessage(t('No user action'), 'warning');
       break;
   }
 }
-
 
 /**
  * Checks if batch process is running.
