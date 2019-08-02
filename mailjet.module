@@ -623,7 +623,7 @@ function mailjet_first_sync($list_id) {
       foreach ($user as $key => $value) {
         //ADD ALL FIELDS
         if (strpos($key, "field_") !== FALSE) {
-          $properties[str_replace('field_', '', $key)] = ((!empty($value)) ? $value[LANGUAGE_NONE][0]['value'] : '');
+          $properties[str_replace('field_', '', $key)] = ((!empty($value)) ? (defined(LANGUAGE_NONE) && $value[LANGUAGE_NONE][0]['value']): '');
         }
       }
       if (!empty($properties)) {
