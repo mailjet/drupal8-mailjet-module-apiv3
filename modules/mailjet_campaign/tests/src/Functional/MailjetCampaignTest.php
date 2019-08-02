@@ -57,9 +57,9 @@ class MailjetCampaignTest extends BrowserTestBase {
     $campaign = \Drupal::entityManager()->getStorage('campaign_entity')->load($id);
     $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
 
-    $this->assertEqual($campaign->id, $campaign_id);
-    $this->assertEqual($campaign->name, 'Test campaign');
-    $this->assertEqual($campaign->order_id, '91911');
+    $this->assertEquals($campaign->id, $campaign_id);
+    $this->assertEquals($campaign->name, 'Test campaign');
+    $this->assertEquals($campaign->order_id, '91911');
 
   }
 
