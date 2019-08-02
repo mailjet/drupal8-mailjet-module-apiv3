@@ -9,20 +9,9 @@ $path = drupal_get_path('module', 'mailjet');
 // Autoloading via composer
 require_once $path . '/vendor/autoload.php';
 
-use Drupal\Component\Utility\Html;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use MailJet\MailJet;
-use Drupal\Core\Breadcrumb\Breadcrumb;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Link;
-use \Drupal\Core\Url;
-use MailjetTools\MailjetApi;
-use Exception;
-use Mailjet\Client;
+use Drupal\Core\Url;
+use Drupal\user\Entity\User;
 use Mailjet\Resources;
-use \Drupal\user\Entity\User;
-
-//include $path . '/lib/mailjet-api-php/src/mailjet.api.inc';
 
 /**
  * Redirects to external links.
