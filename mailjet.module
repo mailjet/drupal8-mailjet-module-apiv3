@@ -37,7 +37,7 @@ function mailjet_go_to_external_link($url) {
   }
   else {
     $redirect = $url;
-    $response = new RedirectResponse($url);
+    $response = new \Symfony\Component\HttpFoundation\RedirectResponse($url);
     $response->send();
   }
 }
@@ -47,8 +47,7 @@ function mailjet_go_to_external_link($url) {
  */
 function _mailjet_register_alter_callback() {
 
-  $config_mailjet = \Drupal::service('config.factory')
-    ->getEditable('mailjet.settings');
+  $config_mailjet = \Drupal::service('config.factory')->getEditable('mailjet.settings');
   if (isset($_POST['data']['apikey']) && !empty($_POST['data']['apikey']) && isset($_POST['data']['secretkey']) && !empty($_POST['data']['secretkey'])) {
 
     $config_mailjet->set('mailjet_active', TRUE);
@@ -56,7 +55,7 @@ function _mailjet_register_alter_callback() {
     $config_mailjet->set('mailjet_password', $_POST['data']['secretkey']);
     $config_mailjet->save();
 
-    $mailjetApiClient = MailjetApi::getApiClient($_POST['data']['apikey'], $_POST['data']['secretkey']);
+    $mailjetApiClient = MailjetTools\MailjetApi::getApiClient($_POST['data']['apikey'], $_POST['data']['secretkey']);
     $params = [
       'AllowedAccess' => 'campaigns,contacts,stats,pricing,account,reports',
       'APIKeyALT' => $_POST['data']['apikey'],
@@ -64,7 +63,7 @@ function _mailjet_register_alter_callback() {
       'IsActive' => TRUE,
       'SentData' => serialize(['plugin' => 'drupal-3.0']),
     ];
-    $response = MailjetApi::createApiToken($params);
+    $response = MailjetTools\MailjetApi::createApiToken($params);
     if (false != $response) {
       $config_mailjet->set('APItoken', $response[0]['Token']);
       $config_mailjet->save();
@@ -158,7 +157,7 @@ function mailjet_mjuser_update($infos) {
 function mailjet_user_trackingcheck() {
   $mailjetApiClient = mailjet_new();
   $filters = [
-    'APIKey' => MailjetApi::$mjApiKey,
+    'APIKey' => MailjetTools\MailjetApi::$mjApiKey,
   ];
   $response = $mailjetApiClient->get(Resources::$Eventcallbackurl, ['filters' => $filters]);
   if ($response->success()) {
@@ -179,7 +178,7 @@ function mailjet_user_trackingupdate($tracking, $current_events) {
       if (in_array($key, $check)) {
         if ($value == 1 && !array_key_exists($key, $current_events)) {
           $body = [
-            'APIKeyALT' => MailjetApi::$mjApiKey,
+            'APIKeyALT' => MailjetTools\MailjetApi::$mjApiKey,
             'EventType' => $key,
             'Url' => $tracking['Url'],
           ];
@@ -379,7 +378,7 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
   //get existing contact properties from MailJet
   $properties = [];
   $mailjetApiClient = mailjet_new();
-  $response = MailjetApi::getContactProperties();
+  $response = MailjetTools\MailjetApi::getContactProperties();
   if (false != $response) {
     foreach ($response as $property) {
       $properties[$property['Name']] = (array) $property;
@@ -396,7 +395,7 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
         //drupal_set_message(t('Field '.$field['Name'].' is already in your MailJet account.'),'status'); // no need of this message - too much spam :)
       }
       else {
-        $updateResponse = MailjetApi::updateMailjetContactProperty($properties[$field['Name']]['ID'], $field['Name'], $field['Datatype']);
+        $updateResponse = MailjetTools\MailjetApi::updateMailjetContactProperty($properties[$field['Name']]['ID'], $field['Name'], $field['Datatype']);
         if (false != $updateResponse) {
           drupal_set_message(t('Field ' . $field['Name'] . ' in now updated in your MailJet account!'), 'status');
         }
@@ -406,7 +405,7 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
       }
     }
     else {
-      $insertResponse = MailjetApi::createMailjetContactProperty($field['Name'], $field['Datatype']);
+      $insertResponse = MailjetTools\MailjetApi::createMailjetContactProperty($field['Name'], $field['Datatype']);
       if (false != $insertResponse) {
         drupal_set_message(t('Field ' . $field['Name'] . ' in now inserted in your MailJet account!'), 'status');
       }
@@ -496,7 +495,7 @@ function mailjet_sync_single_user($user, $type) {
             $contact['Properties'] = $data;
         }
           //add new email
-        $response = MailjetApi::syncMailjetContact($value, $contact);
+        $response = MailjetTools\MailjetApi::syncMailjetContact($value, $contact);
 
         if (false != $response) {
             \Drupal::logger('mailjet_messages')
@@ -514,7 +513,7 @@ function mailjet_sync_single_user($user, $type) {
           'Email' => $user->get('mail')->value
         ];
         //add new email
-        $response = MailjetApi::syncMailjetContact($value, $contact, 'remove');
+        $response = MailjetTools\MailjetApi::syncMailjetContact($value, $contact, 'remove');
         if (false == $response) {
           \Drupal::logger('mailjet_messages')
             ->notice(t('The new contact was unsubscribed from list #' . $value . '.'));
@@ -558,7 +557,7 @@ function is_batchjob_running($bjID) {
 function mailjet_get_default_list_id($mailjetApiClient) {
   $mailjetApiClient = mailjet_new();
   // Gets Mailjet contact list by name
-  $contactsList = MailjetApi::getMailjetContactListByName(mailjet_get_default_list_name());
+  $contactsList = MailjetTools\MailjetApi::getMailjetContactListByName(mailjet_get_default_list_name());
 
   if (false != $contactsList) {
     $def_list_id = $contactsList[0]['ID'];
@@ -575,7 +574,7 @@ function mailjet_get_default_list_name() {
  */
 function mailjet_create_default_list() {
   $mailjetApiClient = mailjet_new();
-  $responseNewContactsList = MailjetApi::createMailjetContactList(mailjet_get_default_list_name());
+  $responseNewContactsList = MailjetTools\MailjetApi::createMailjetContactList(mailjet_get_default_list_name());
   if (false != $responseNewContactsList) {
     $def_list_id = $responseNewContactsList[0]['ID'];
     drupal_set_message(t('Default list was created!'), 'status');
@@ -635,7 +634,7 @@ function mailjet_first_sync($list_id) {
     }
   }
 
-  $responseInitialSync = MailjetApi::syncMailjetContacts($list_id, $contacts);
+  $responseInitialSync = MailjetTools\MailjetApi::syncMailjetContacts($list_id, $contacts);
   if (false == $responseInitialSync) {
       drupal_set_message(t('Could not create the contact list'));
   }
@@ -652,7 +651,7 @@ function mailjet_get_lists() {
   $contact_lists = [];
 
   $mailjetApiClient = mailjet_new();
-  $contactsListResponse = MailjetApi::getMailjetContactLists(get_mailjet_get_lists_limit());
+  $contactsListResponse = MailjetTools\MailjetApi::getMailjetContactLists(get_mailjet_get_lists_limit());
   if (false != $contactsListResponse) {
     foreach ($contactsListResponse as $list) {
       $contact_lists[$list['ID']] = $list['Name'];
@@ -666,7 +665,7 @@ function mailjet_get_properties() {
   //get existing contact properties from MailJet
   $properties = [];
   $mailjetApiClient = mailjet_new();
-  $response = MailjetApi::getMailjetContactProperties();
+  $response = MailjetTools\MailjetApi::getMailjetContactProperties();
   if (false != $response) {
     foreach ($response as $property) {
       $properties[$property['Name']] = $property['Name'];
@@ -696,7 +695,7 @@ function mailjet_mail($key, &$message, $params) {
   switch ($key) {
     case 'test_mail':
       $message['subject'] = t('Your test mail from Mailjet', $options);
-      $message['body'][] = Html::escape($params['message']);
+      $message['body'][] = Drupal\Component\Utility\Html::escape($params['message']);
       break;
     case 'activation_mail':
       $message['subject'] = t('Activation mail', $options);
@@ -734,35 +733,35 @@ function prepare_mail_template($email_header, $email_text_button, $email_descrip
   global $base_url;
   $tempalate = '<div style="width: 100%; background-color: white; box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.35);">
     <table class="mockup-content paint-area" style="background-color: white; font-family: Ubuntu, Helvetica; border-collapse: collapse; width: 100%;">
-        <tbody>
-        <tr style="text-align: center; padding: 0 0 20px 0;">
-            <td style="height: 75px; line-height: 75px; width: 100%; vertical-align: middle;">
-                <span id="opt-in-subscribe-title" class="paint-area paint-area--text" contenteditable="true" style="font-family: Ubuntu, Helvetica; font-size: 18px; color: #333333; line-height: normal;"><b class="medium-b">' . $email_header . '</b></span>
-            </td>
-        </tr>
-        <tr>
-            <td style="height: 75px; line-height: 75px; width: 100%; vertical-align: middle; padding: 0 60px;">
-                <div id="opt-in-display-text" class="paint-area paint-area--text" style="text-align: center; color: grey; margin-bottom: 25px; line-height: normal;" contenteditable="true">' . $base_url . '</div></td></tr>
-        <tr>
-            <td><a rel="notrack" class="subscribe" href="' . $url . '" style="text-align: center;display: block;color: white;font-weight: 500;
-                font-size: 15px;background-color: #3da7ea;text-transform: uppercase;text-decoration: none;width: 260px;margin:
-                auto;border-radius: 5px;padding: 16px;">' . $email_text_button . '</a></td>
-        </tr>
-        <tr>
-            <td style="padding: 30px;" >
-                <span style="text-align: center;display: block; font-weight:bold; font-size:14px; text-decoration: none;">' . $email_description . '</span> <br />
-                <a rel="notrack" class="subscribe" href="' . $url . '" style="text-align: center;display: block;color: black; font-size: 12px; text-decoration: underline; margin: auto;">
-                   ' . $url . '
-                </a>
-            </td>
-        </tr>
-       
-	    <tr><td style="text-align: left; height: 75px; line-height: 75px; width: 100%; vertical-align: middle; padding: 0 60px;"><div id="opt-in-footer" class="paint-area paint-area--text" contenteditable="true" style="display: inline-block; font-family: Ubuntu, Helvetica; text-align: left; margin-bottom: 24px; color: grey; line-height: normal;"><i class="medium-i">' . $email_description_footer . '</i></div></td></tr>
-      
-	  
-        <tr><td style="text-align: left; padding: 0 60px; height: 30px; line-height: 30px;"><div id="opt-in-signature-top" class="paint-area paint-area--text" contenteditable="true" style="font-family: Ubuntu, Helvetica; display: inline-block; text-align: left; color: grey; line-height: normal;">' . $email_footer . '</div></td></tr>
-        <tr><td style="text-align: left; padding: 0 60px; height: 30px; line-height: 30px;"><div id="opt-in-signature-bottom" class="paint-area paint-area--text" contenteditable="true" style="font-family: Ubuntu, Helvetica; display: inline-block; text-align: left; color: grey; line-height: normal;"><b class="medium-b">' . $email_owner . '</b></div></td></tr>
-        </tbody>
+      <tbody>
+      <tr style="text-align: center; padding: 0 0 20px 0;">
+          <td style="height: 75px; line-height: 75px; width: 100%; vertical-align: middle;">
+              <span id="opt-in-subscribe-title" class="paint-area paint-area--text" contenteditable="true" style="font-family: Ubuntu, Helvetica; font-size: 18px; color: #333333; line-height: normal;"><b class="medium-b">' . $email_header . '</b></span>
+          </td>
+      </tr>
+      <tr>
+          <td style="height: 75px; line-height: 75px; width: 100%; vertical-align: middle; padding: 0 60px;">
+              <div id="opt-in-display-text" class="paint-area paint-area--text" style="text-align: center; color: grey; margin-bottom: 25px; line-height: normal;" contenteditable="true">' . $base_url . '</div></td></tr>
+      <tr>
+          <td><a rel="notrack" class="subscribe" href="' . $url . '" style="text-align: center;display: block;color: white;font-weight: 500;
+              font-size: 15px;background-color: #3da7ea;text-transform: uppercase;text-decoration: none;width: 260px;margin:
+              auto;border-radius: 5px;padding: 16px;">' . $email_text_button . '</a></td>
+      </tr>
+      <tr>
+          <td style="padding: 30px;" >
+              <span style="text-align: center;display: block; font-weight:bold; font-size:14px; text-decoration: none;">' . $email_description . '</span> <br />
+              <a rel="notrack" class="subscribe" href="' . $url . '" style="text-align: center;display: block;color: black; font-size: 12px; text-decoration: underline; margin: auto;">
+                 ' . $url . '
+              </a>
+          </td>
+      </tr>
+
+      <tr><td style="text-align: left; height: 75px; line-height: 75px; width: 100%; vertical-align: middle; padding: 0 60px;"><div id="opt-in-footer" class="paint-area paint-area--text" contenteditable="true" style="display: inline-block; font-family: Ubuntu, Helvetica; text-align: left; margin-bottom: 24px; color: grey; line-height: normal;"><i class="medium-i">' . $email_description_footer . '</i></div></td></tr>
+
+
+      <tr><td style="text-align: left; padding: 0 60px; height: 30px; line-height: 30px;"><div id="opt-in-signature-top" class="paint-area paint-area--text" contenteditable="true" style="font-family: Ubuntu, Helvetica; display: inline-block; text-align: left; color: grey; line-height: normal;">' . $email_footer . '</div></td></tr>
+      <tr><td style="text-align: left; padding: 0 60px; height: 30px; line-height: 30px;"><div id="opt-in-signature-bottom" class="paint-area paint-area--text" contenteditable="true" style="font-family: Ubuntu, Helvetica; display: inline-block; text-align: left; color: grey; line-height: normal;"><b class="medium-b">' . $email_owner . '</b></div></td></tr>
+      </tbody>
     </table>
 </div>';
 
@@ -781,7 +780,7 @@ function mailjet_get_propertiy_type($property_name) {
   //get existing contact properties from MailJet
   $properties = [];
   $mailjetApiClient = mailjet_new();
-  $response = MailjetApi::getMailjetContactProperties();
+  $response = MailjetTools\MailjetApi::getMailjetContactProperties();
   if (false != $response) {
     foreach ($response as $property) {
 
@@ -934,4 +933,4 @@ function mailjet_theme($existing, $type, $theme, $path) {
       'template' => 'block--local-actions-block',
     ],
   ];
-} 
+}
