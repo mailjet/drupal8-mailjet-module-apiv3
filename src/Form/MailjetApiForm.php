@@ -20,7 +20,7 @@ class MailjetApiForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mailjet_api.adminsettings',
+      'mailjet_api.settings',
     ];
   }
 
