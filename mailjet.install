@@ -22,18 +22,14 @@ function mailjet_requirements($phase) {
         ]
       ),
     ];
-   $pathToPHPMailer = drupal_get_path('module', 'phpmailer');
 
-   if (file_exists($pathToPHPMailer . '/PHPMailerAutoload.php')) {
-     require_once $pathToPHPMailer . '/PHPMailerAutoload.php';
-   } elseif (file_exists($pathToPHPMailer .'/src/PHPMailer.php')) {
-     require_once $pathToPHPMailer . '/src/PHPMailer.php';
-   } elseif (file_exists($pathToPHPMailer . '/src/Plugin/Mail/DrupalPHPMailer.php')) {
-     require_once $pathToPHPMailer . '/src/Plugin/Mail/DrupalPHPMailer.php';
-   } else {
-     $requirements['phpmailer'] = $errorData;
-   }
-
+    if (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
+        require_once 'libraries/phpmailer/src/PHPMailer.php';
+    } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
+        require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+    } else {
+        $requirements['phpmailer'] = $errorData;
+    }
   }
   return $requirements;
 }
