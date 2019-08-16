@@ -413,7 +413,6 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
  *   The User object.
  */
 function mailjet_user_insert(User $user) {
-  ksm('mailjet_user_insert');
   mailjet_sync_single_user($user, 'add');
 }
 
