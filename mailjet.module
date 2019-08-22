@@ -316,13 +316,15 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
 
   //get all user fields from Drupal system
   $user_fields = [];
-  $user_info = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());;
+  //add this property by default
+  $user_fields[] = ["Name" => 'name', "Datatype" => 'str'];
+
+  $user_info = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+
   $counter = 0;
   foreach ($user_info as $key => $value) {
-
     if (strpos($key, "field_") !== FALSE) {
       $current_field = $user_info->getFieldDefinitions()[$key];
-
       $field_type = 'str';
 
       if ($current_field->getType() == "int") {
@@ -331,7 +333,6 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
       if ($current_field->getType() == "float") {
         $field_type = 'float';
       }
-
 
       $user_fields[] = [
         "Name" => str_replace('field_', '', $key),
