@@ -34,28 +34,33 @@ Recommended modules
 Prerequisites
 -------------
 
-The Mailjet plugin relies on the PHPMailer v5.2.21 for sending emails.
+The Mailjet plugin relies on the PHPMailer v5.2.xx for sending emails.
 
-To install PHPMailer via composer use: NOT SUPPORT YET! 
+To install PHPMailer via composer use: composer require drupal/phpmailer 
 
-
-To install PHPMailer manually:
-1) Get the PHPMailer v5.2.22 from GitHub here:
-http://github.com/PHPMailer/PHPMailer/archive/v5.2.22.zip
-2) Extract the archive and rename the folder "PHPMailer-5.2.22" to "phpmailer".
-3) Upload the "phpmailer" folder to your server inside DRUPAL_ROOT/libraries/.
-4) Verify that the file class.phpmailer.php is correctly located at this
-path: DRUPAL_ROOT/libraries/phpmailer/class.phpmailer.php
+To install PHPMailer automatically:
+1) Get the latest PHPMailer version from Drupal here:
+https://www.drupal.org/project/phpmailer
+2) Download the .zip / .tar.gz file or copy the link to it.
+3) Upload the file or paste the link in the Extend page in your store, click Install.
+4) Verify that the module is correctly installed.
 
 Installation
 ------------
 
-1. Download a last release of MAILJET beta version for Drupal version 8.x.
-2. Upload the module  in DRUPAL_ROOT/modules/ directory ( and extract the module if is archived).
-3. Log in as administrator in Drupal.
-4. Enable the Mailjet settings module on the Home >  Administration > Extend page.
-5. Fill in required settings on the Home > Administration > Configuration > System  Mailjet Settings > Mailjet API page.
-6. You will be required to enter API key and Secret Key from your Mailjet account. If you do not have an account yet, please [create one](https://app.mailjet.com/signup?aff=drupal-8).
+
+To install MAILJET via composer use: composer require drupal/mailjet
+
+To install MAILJET automatically:
+
+1. Get the latest MAILJET version from Drupal here: https://www.drupal.org/project/mailjet
+2. Download the .zip / .tar.gz file or copy the link to it.
+3. Log in as administrator in your Drupal store.
+4. Upload the file or paste the link in the Extend page in your store, click Install.
+5. Verify that the module is correctly installed.
+6. Enable the Mailjet settings module on the Home >  Administration > Extend page.
+7. Fill in required settings on the Home > Administration > Configuration > System  Mailjet Settings > Mailjet API page.
+8. You will be required to enter API key and Secret Key from your Mailjet account. If you do not have an account yet, please [create one](https://app.mailjet.com/signup?aff=drupal-8).
 
 Configuration
 -------------
@@ -117,6 +122,17 @@ Configuration
 Author
 
 ## Changelog
+
+= 8.x-2.4 =
+*Fix Single user synchronization as well as sync of contact properties
+*Fix usage for PHPMailer v6.0.7
+*Fix route path for Settings page
+*Fix usage of `LANGUAGE_NONE` constant in case it is not defined
+*Fix saving of Mailjet Settings forms
+*Fix namespace dependencies in info.yml file
+*Fix spaces in routing file
+*Replace deprecated assertEqual() with assertEquals()
+
 = 8.x-2.3 =
 *Fix mailjet composer issues
 *Use Latest PHPMailer(6.0.7) not only v5.2.22

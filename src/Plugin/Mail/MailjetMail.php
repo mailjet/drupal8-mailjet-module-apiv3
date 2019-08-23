@@ -135,7 +135,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
             }
         }
 
-    
+
 
 
     $system_site_config = \Drupal::config('system.site');
@@ -576,8 +576,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
    * @return array
    *   An array containing the resulting mime parts
    */
-  protected
-  function boundarySplit($input, $boundary) {
+  protected function boundarySplit($input, $boundary) {
     $parts = [];
     $bs_possible = drupal_substr($boundary, 2, -2);
     $bs_check = '\"' . $bs_possible . '\"';
@@ -606,8 +605,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
    * @return string
    *   A string with the stripped body part.
    */
-  protected
-  function removeHeaders($input) {
+  protected function removeHeaders($input) {
     $part_array = explode("\n", $input);
 
     if (strpos($part_array[0], 'Content') !== FALSE) {
@@ -650,8 +648,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
    *   A string with the text found between the $beginning_character and the
    *   $ending_character.
    */
-  protected
-  function getSubstrings($source, $target, $beginning_character, $ending_character) {
+  protected function getSubstrings($source, $target, $beginning_character, $ending_character) {
     $search_start = strpos($source, $target) + 1;
     $first_character = strpos($source, $beginning_character, $search_start) + 1;
     $second_character = strpos($source, $ending_character, $first_character) + 1;
@@ -665,4 +662,4 @@ DRUPAL_ROOT/libraries/.'), 'error');
     return $substring;
   }
 
-} 
+}

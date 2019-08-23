@@ -26,7 +26,7 @@ class MailjetAPITest extends BrowserTestBase {
 
     $this->assertNotNull($mailjet_object_api);
 
-    $this->assertEqual(get_class($mailjet_object_api), 'Mailjet\Mailjet');
+    $this->assertEquals(get_class($mailjet_object_api), 'Mailjet\Mailjet');
   }
 
 }

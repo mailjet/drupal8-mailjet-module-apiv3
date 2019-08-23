@@ -70,8 +70,8 @@ class MailjetEventTest extends BrowserTestBase {
 
     $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
 
-    $this->assertEqual($campaign->id, $id);
-    $this->assertEqual($campaign->event_type, 'unsub');
+    $this->assertEquals($campaign->id, $id);
+    $this->assertEquals($campaign->event_type, 'unsub');
 
   }
 
