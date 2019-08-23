@@ -124,25 +124,25 @@ Author
 ## Changelog
 
 = 8.x-2.4 =
-*Fix Single user synchronization as well as sync of contact properties
-*Fix usage for PHPMailer v6.0.7
-*Fix route path for Settings page
-*Fix usage of `LANGUAGE_NONE` constant in case it is not defined
-*Fix saving of Mailjet Settings forms
-*Fix namespace dependencies in info.yml file
-*Fix spaces in routing file
-*Replace deprecated assertEqual() with assertEquals()
+* Fix Single user synchronization as well as sync of contact properties
+* Fix usage for PHPMailer v6.0.7
+* Fix route path for Settings page
+* Fix usage of `LANGUAGE_NONE` constant in case it is not defined
+* Fix saving of Mailjet Settings forms
+* Fix namespace dependencies in info.yml file
+* Fix spaces in routing file
+* Replace deprecated assertEqual() with assertEquals()
 
 = 8.x-2.3 =
-*Fix mailjet composer issues
-*Use Latest PHPMailer(6.0.7) not only v5.2.22
-*Use phpmailer as external library or from drupal composer
-*Change installation requirements
-*Improve subscription url building and encode base64 encoded properties
-*Convert contact properties values depends on type on confirmation
-*Remove phpmailer from plugin
-*Fix test mail
-*Fix typos
+* Fix mailjet composer issues
+* Use Latest PHPMailer(6.0.7) not only v5.2.22
+* Use phpmailer as external library or from drupal composer
+* Change installation requirements
+* Improve subscription url building and encode base64 encoded properties
+* Convert contact properties values depends on type on confirmation
+* Remove phpmailer from plugin
+* Fix test mail
+* Fix typos
 
 = 8.x-2.2 =
 * Add user agent to all API calls
