@@ -123,6 +123,9 @@ Author
 
 ## Changelog
 
+= 8.x-2.5 =
+* Added possibility to sync custom profile fields along with the user's `name` either on initial and single contact sync
+
 = 8.x-2.4 =
 * Fix Single user synchronization as well as sync of contact properties
 * Fix usage for PHPMailer v6.0.7
