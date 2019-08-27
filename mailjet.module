@@ -112,7 +112,6 @@ function mailjet_new() {
  * @return boolean
  */
 function mailjet_user_infos() {
-
   $mailjetApiClient = mailjet_new();
 
   $responseProfile = $mailjetApiClient->get(Resources::$Myprofile);
@@ -125,6 +124,7 @@ function mailjet_user_infos() {
     return FALSE;
   }
 }
+
 
 /**
  * Update the user infos.
@@ -310,9 +310,6 @@ function _has_drupal_property($mailjet_property, $drupal_fields) {
 
 function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
   $config_mailjet = \Drupal::config('mailjet.settings');
-//  if (!($config_mailjet->get('mailjet_properties_sync', TRUE))) { var_dump($config_mailjet);exit;
-//    return;
-//  }
 
   //get all user fields from Drupal system
   $user_fields = [];
@@ -321,10 +318,10 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
 
   $user_info = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
 
-  $counter = 0;
   foreach ($user_info as $key => $value) {
     if (strpos($key, "field_") !== FALSE) {
       $current_field = $user_info->getFieldDefinitions()[$key];
+
       $field_type = 'str';
 
       if ($current_field->getType() == "int") {
@@ -342,24 +339,29 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
   }
 
   if ($newField) {
-    if ($delete === FALSE) {
-      $field_type = 'str';
-      if ($newField['type'] == "int") {
-        $field_type = 'int';
-      }
-      if ($newField['type'] == "float") {
-        $field_type = 'float';
-      }
-
-      $user_fields[] = [
-        "Name" => str_replace('field_', '', $newField['field_name']),
-        "Datatype" => $field_type,
-      ];
+    if (!is_array($newField)) {
+      $newField = [$newField];
     }
-    else {
-      foreach ($user_fields as $key => $value) {
-        if ($value['Name'] === 'field_' . $newField['field_name']) {
-          unset($user_fields[$key]);
+
+    foreach ($newField as $fieldToCreate) {
+      if ($delete === FALSE) {
+        $field_type = 'str';
+        if ($fieldToCreate['type'] == "int") {
+          $field_type = 'int';
+        }
+        if ($fieldToCreate['type'] == "float") {
+          $field_type = 'float';
+        }
+
+        $user_fields[] = [
+          "Name" => str_replace('field_', '', $fieldToCreate['field_name']),
+          "Datatype" => $field_type,
+        ];
+      } else {
+        foreach ($user_fields as $key => $value) {
+          if ($value['Name'] === 'field_' . $fieldToCreate['field_name']) {
+            unset($user_fields[$key]);
+          }
         }
       }
     }
@@ -398,9 +400,10 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
       $insertResponse = MailjetTools\MailjetApi::createMailjetContactProperty($field['Name'], $field['Datatype']);
       if (false != $insertResponse) {
         drupal_set_message(t('Field ' . $field['Name'] . ' in now inserted in your MailJet account!'), 'status');
+        $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
       }
       else {
-        drupal_set_message(t('Couldn\'t update ' . $field['Name'] . ' in your MailJet account!'), 'error');
+        drupal_set_message(t('Couldn\'t insert ' . $field['Name'] . ' in your MailJet account!'), 'error');
       }
     }
   }
@@ -446,6 +449,7 @@ function mailjet_user_delete(User $user) {
   mailjet_sync_single_user($user, 'remove');
 }
 
+
 /**
  * Sync a single Mailjet user.
  *
@@ -461,11 +465,12 @@ function mailjet_sync_single_user(User $user, $action) {
     return;
   }
 
-  mailjet_properties_sync();
+  //mailjet_properties_sync();
   $mailjetApiClient = mailjet_new();
   $mj_lists = [];
   $mj_lists[] = mailjet_get_default_list_id($mailjetApiClient);
   $properties = [];
+  $propertyDefinitions = [];
 
   switch ($action) {
     case 'add':
@@ -475,17 +480,42 @@ function mailjet_sync_single_user(User $user, $action) {
           'Email' => $user->get('mail')->value
         ];
         foreach ($user as $key => $value) {
-          // We sync оnly `name` for now
+
+          // Sync custom Profile fields
+          $profileFields = reset(\Drupal::entityTypeManager()->getStorage('profile')->loadByProperties(['uid' => $user->get('uid')->value]));
+          if (!empty($profileFields) && $profileFields instanceof \Drupal\profile\Entity\Profile) {
+            foreach ($profileFields->toArray() as $fieldName => $field) {
+              if (strpos($fieldName, "field_") !== FALSE) {
+                $fieldValuesConcat = [];
+                $fieldName = str_replace('email', 'property_email', $fieldName);
+                foreach ($field as $fieldValue) {
+                  $fieldValuesConcat[$fieldName][] = $fieldValue['value'];
+                }
+                $properties[str_replace('field_', '', $fieldName)] = implode(' | ', $fieldValuesConcat[$fieldName]);
+              }
+            }
+          }
+
+          // Sync only the `name` from `user` entity
           if ('name' == $key) {
             $properties[$key] =  $value->value;
           }
+          if (strpos($key, "field_") !== FALSE) {
+            $properties[str_replace('field_', '', $key)] = $value->value;
+          }
         }
         if (!empty($properties)) {
+          foreach ($properties as $propertyName => $propertyValue) {
+            $propertyDefinitions[] = ['type' => 'str', 'field_name' => $propertyName];
+          }
           $contact['Properties'] = $properties;
         }
 
+        mailjet_properties_sync($propertyDefinitions);
+
         // Add new contact.
         $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact);
+
         if ($response) {
           \Drupal::logger('mailjet_messages')
             ->notice(t('The new contact was added to list #@list.', ['@list' => $listId]));
@@ -594,10 +624,9 @@ function mailjet_field_delete_field($field) {
  * Sync lists.
  */
 function mailjet_first_sync($list_id) {
-  $config_mailjet = \Drupal::service('config.factory')
-    ->getEditable('mailjet.settings');
+  $config_mailjet = \Drupal::service('config.factory')->getEditable('mailjet.settings');
 
-  mailjet_properties_sync();
+  //mailjet_properties_sync();
 //get all drupal users
 
   //get all drupal users
@@ -606,25 +635,53 @@ function mailjet_first_sync($list_id) {
   $ids = $user_storage->getQuery()->execute();
   $users = $user_storage->loadMultiple($ids);
   $contacts = [];
+  $propertyDefinitions = [];
   foreach ($users as $user_id => $user) {
     if ($user_id > 0 && $user->get('status')->value > 0) {
       $contact = [];
       $properties = [];
       $contact['Email'] = $user->getEmail();
+
+      // Sync custom Profile fields - if any
+      $profileFields = reset(\Drupal::entityTypeManager()->getStorage('profile')->loadByProperties(['uid' => $user_id]));
+      if (!empty($profileFields) && $profileFields instanceof \Drupal\profile\Entity\Profile) {
+        foreach ($profileFields->toArray() as $fieldName => $field) {
+          if (strpos($fieldName, "field_") !== FALSE) {
+            $fieldValuesConcat = [];
+            $fieldName = str_replace('email', 'property_email', $fieldName);
+            foreach ($field as $fieldValue) {
+              $fieldValuesConcat[$fieldName][] = $fieldValue['value'];
+            }
+            $properties[str_replace('field_', '', $fieldName)] = implode(' | ', $fieldValuesConcat[$fieldName]);
+          }
+        }
+      }
+
+
       foreach ($user as $key => $value) {
-        //ADD only `name` property for now
+        // Sync only the `name` from `user` entity
         if ('name' == $key) {
           $properties[$key] =  $value->value;
         }
+        if (strpos($key, "field_") !== FALSE) {
+          $properties[str_replace('field_', '', $key)] = $value->value;
+        }
+
       }
+
       if (!empty($properties)) {
-          $contact['Properties'] = $properties;
+        foreach ($properties as $propertyName => $propertyValue) {
+          $propertyDefinitions[] = ['type' => 'str', 'field_name' => $propertyName];
+        }
+        $contact['Properties'] = $properties;
       }
 
       $contacts[] = $contact;
     }
   }
 
+
+  mailjet_properties_sync($propertyDefinitions);
   $responseInitialSync = MailjetTools\MailjetApi::syncMailjetContacts($list_id, $contacts);
   if (false == $responseInitialSync) {
       drupal_set_message(t('Could not create the contact list'));
