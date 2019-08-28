@@ -480,30 +480,17 @@ function mailjet_sync_single_user(User $user, $action) {
           'Email' => $user->get('mail')->value
         ];
         foreach ($user as $key => $value) {
-
-          // Sync custom Profile fields
-          $profileFields = reset(\Drupal::entityTypeManager()->getStorage('profile')->loadByProperties(['uid' => $user->get('uid')->value]));
-          if (!empty($profileFields) && $profileFields instanceof \Drupal\profile\Entity\Profile) {
-            foreach ($profileFields->toArray() as $fieldName => $field) {
-              if (strpos($fieldName, "field_") !== FALSE) {
-                $fieldValuesConcat = [];
-                $fieldName = str_replace('email', 'property_email', $fieldName);
-                foreach ($field as $fieldValue) {
-                  $fieldValuesConcat[$fieldName][] = $fieldValue['value'];
-                }
-                $properties[str_replace('field_', '', $fieldName)] = implode(' | ', $fieldValuesConcat[$fieldName]);
-              }
-            }
-          }
-
           // Sync only the `name` from `user` entity
           if ('name' == $key) {
             $properties[$key] =  $value->value;
           }
+          // Sync custom Account fields
           if (strpos($key, "field_") !== FALSE) {
-            $properties[str_replace('field_', '', $key)] = $value->value;
+            $fieldValue = $value->getString();
+            $properties[str_replace('field_', '', $key)] = $fieldValue;
           }
         }
+
         if (!empty($properties)) {
           foreach ($properties as $propertyName => $propertyValue) {
             $propertyDefinitions[] = ['type' => 'str', 'field_name' => $propertyName];
@@ -642,31 +629,17 @@ function mailjet_first_sync($list_id) {
       $properties = [];
       $contact['Email'] = $user->getEmail();
 
-      // Sync custom Profile fields - if any
-      $profileFields = reset(\Drupal::entityTypeManager()->getStorage('profile')->loadByProperties(['uid' => $user_id]));
-      if (!empty($profileFields) && $profileFields instanceof \Drupal\profile\Entity\Profile) {
-        foreach ($profileFields->toArray() as $fieldName => $field) {
-          if (strpos($fieldName, "field_") !== FALSE) {
-            $fieldValuesConcat = [];
-            $fieldName = str_replace('email', 'property_email', $fieldName);
-            foreach ($field as $fieldValue) {
-              $fieldValuesConcat[$fieldName][] = $fieldValue['value'];
-            }
-            $properties[str_replace('field_', '', $fieldName)] = implode(' | ', $fieldValuesConcat[$fieldName]);
-          }
-        }
-      }
-
-
       foreach ($user as $key => $value) {
         // Sync only the `name` from `user` entity
         if ('name' == $key) {
           $properties[$key] =  $value->value;
         }
-        if (strpos($key, "field_") !== FALSE) {
-          $properties[str_replace('field_', '', $key)] = $value->value;
-        }
 
+        // Sync custom Account fields
+        if (strpos($key, "field_") !== FALSE) {
+          $fieldValue = $value->getString();
+          $properties[str_replace('field_', '', $key)] = $fieldValue;
+        }
       }
 
       if (!empty($properties)) {
