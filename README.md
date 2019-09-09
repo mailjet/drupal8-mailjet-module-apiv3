@@ -123,6 +123,9 @@ Author
 
 ## Changelog
 
+= 8.x-2.6 =
+* Added missing .yml files
+
 = 8.x-2.5 =
 * Added possibility to sync custom profile fields along with the user's `name` either on initial and single contact sync
 
