@@ -280,7 +280,7 @@ function mailjet_user_domain_status($domain) {
     $domain = '*@' . $domain;
   }
 
-  $params = [
+  $body = [
     'Email' => $domain,
   ];
 
@@ -318,50 +318,46 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
 
   $user_info = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
 
-  foreach ($user_info as $key => $value) {
-    if (strpos($key, "field_") !== FALSE) {
-      $current_field = $user_info->getFieldDefinitions()[$key];
+  foreach ($user_info as $propertyName => $propertyValue) {
+    if (strpos($propertyName, "field_") !== FALSE) {
+      $currentField = $user_info->getFieldDefinitions()[$propertyName];
+
+      $currentFieldType = $currentField->getType();
 
       $field_type = 'str';
-
-      if ($current_field->getType() == "int") {
+      if ($currentFieldType == "integer" || $currentFieldType == "number_integer") {
         $field_type = 'int';
-      }
-      if ($current_field->getType() == "float") {
+      } else if ($currentFieldType == "float" || $currentFieldType == "number_float" || $currentFieldType == "decimal" || $currentFieldType == "number_decimal" || $currentFieldType == "list_float") {
         $field_type = 'float';
+      } else if ($currentFieldType == "boolean" || $currentFieldType == "list_boolean") {
+        $field_type = 'bool';
       }
 
       $user_fields[] = [
-        "Name" => str_replace('field_', '', $key),
+        "Name" => str_replace('field_', '', $propertyName),
         "Datatype" => $field_type,
       ];
     }
   }
-
   if ($newField) {
-    if (!is_array($newField)) {
-      $newField = [$newField];
-    }
+    if ($delete === FALSE) {
+      $field_type = 'str';
+      if ($newField['type'] == "number_integer") {
+        $field_type = 'int';
+      } else if ($newField['type'] == "number_float" || $newField['type'] == "number_decimal") {
+        $field_type = 'float';
+      } else if ($newField['type'] == "list_boolean") {
+        $field_type = 'bool';
+      }
 
-    foreach ($newField as $fieldToCreate) {
-      if ($delete === FALSE) {
-        $field_type = 'str';
-        if ($fieldToCreate['type'] == "int") {
-          $field_type = 'int';
-        }
-        if ($fieldToCreate['type'] == "float") {
-          $field_type = 'float';
-        }
-
-        $user_fields[] = [
-          "Name" => str_replace('field_', '', $fieldToCreate['field_name']),
-          "Datatype" => $field_type,
-        ];
-      } else {
-        foreach ($user_fields as $key => $value) {
-          if ($value['Name'] === 'field_' . $fieldToCreate['field_name']) {
-            unset($user_fields[$key]);
-          }
+      $user_fields[] = [
+        "Name" => str_replace('field_', '', $newField['field_name']),
+        "Datatype" => $field_type,
+      ];
+    } else {
+      foreach ($user_fields as $key => $value) {
+        if ($value['Name'] === 'field_' . $newField['field_name']) {
+          unset($user_fields[$key]);
         }
       }
     }
@@ -371,13 +367,10 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
   $properties = [];
   $mailjetApiClient = mailjet_new();
   $response = MailjetTools\MailjetApi::getContactProperties();
-  if (false != $response) {
+  if (false !== $response) {
     foreach ($response as $property) {
       $properties[$property['Name']] = (array) $property;
     }
-  }
-  else {
-    drupal_set_message(t('Couldn\'t reach MailJet to retrieve existing contact properties! Please try again later or contact MailJet!'), 'error');
   }
 
   //sync Drupal fields to MJ properties
@@ -389,26 +382,67 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
       else {
         $updateResponse = MailjetTools\MailjetApi::updateMailjetContactProperty($properties[$field['Name']]['ID'], $field['Name'], $field['Datatype']);
         if (false != $updateResponse) {
-          drupal_set_message(t('Field ' . $field['Name'] . ' in now updated in your MailJet account!'), 'status');
+//          drupal_set_message(t('Field ' . $field['Name'] . ' is now updated in your MailJet account!'), 'status');
+          $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
         }
         else {
-          drupal_set_message(t('Couldn\'t update ' . $field['Name'] . ' in your MailJet account!'), 'error');
+ //         drupal_set_message(t('Couldn\'t update ' . $field['Name'] . ' in your MailJet account!'), 'error');
         }
       }
     }
     else {
       $insertResponse = MailjetTools\MailjetApi::createMailjetContactProperty($field['Name'], $field['Datatype']);
       if (false != $insertResponse) {
-        drupal_set_message(t('Field ' . $field['Name'] . ' in now inserted in your MailJet account!'), 'status');
+//        drupal_set_message(t('Field ' . $field['Name'] . ' is now inserted in your MailJet account!'), 'status');
         $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
       }
       else {
-        drupal_set_message(t('Couldn\'t insert ' . $field['Name'] . ' in your MailJet account!'), 'error');
+  //      drupal_set_message(t('Couldn\'t insert ' . $field['Name'] . ' in your MailJet account!'), 'error');
       }
     }
   }
   return;
 }
+
+
+function processCustomFields($user)
+{
+  $properties = [];
+
+  foreach ($user as $propertyName => $propertyValue) {
+
+    // Sync only the `name` from `user` entity
+    if ('name' == $propertyName) {
+      $properties[$propertyName] = $propertyValue->getString();
+    }
+
+    if (strpos($propertyName, "field_") !== FALSE) {
+      // Get property types and use it to cast property values
+      $currentField = $user->getFieldDefinitions()[$propertyName];
+
+      $currentFieldType = $currentField->getType();
+
+      if (!empty($propertyValue->value)) {
+
+        $castedPropertyValue = '';
+        if (!empty($propertyValue) && isset($propertyValue->value)) {
+          $castedPropertyValue = $propertyValue->getString();
+          if ($currentFieldType == "integer" || $currentFieldType == "number_integer") {
+            $castedPropertyValue = intval($castedPropertyValue);
+          } else if ($currentFieldType == "float" || $currentFieldType == "number_float" || $currentFieldType == "decimal" || $currentFieldType == "number_decimal" || $currentFieldType == "list_float") {
+            $castedPropertyValue = floatval($castedPropertyValue);
+          } else if ($currentFieldType == "boolean" || $currentFieldType == "list_boolean") {
+            $castedPropertyValue = boolval($castedPropertyValue);
+          }
+        }
+        $properties[str_replace('field_', '', $propertyName)] = $castedPropertyValue;
+      }
+    }
+  }
+
+  return $properties;
+}
+
 
 /**
  * Add a Mailjet user.
@@ -465,7 +499,10 @@ function mailjet_sync_single_user(User $user, $action) {
     return;
   }
 
-  //mailjet_properties_sync();
+  $contact = [
+    'Email' => $user->get('mail')->value
+  ];
+
   $mailjetApiClient = mailjet_new();
   $mj_lists = [];
   $mj_lists[] = mailjet_get_default_list_id($mailjetApiClient);
@@ -476,29 +513,13 @@ function mailjet_sync_single_user(User $user, $action) {
     case 'add':
     case 'update':
       foreach ($mj_lists as $listId) {
-        $contact = [
-          'Email' => $user->get('mail')->value
-        ];
-        foreach ($user as $key => $value) {
-          // Sync only the `name` from `user` entity
-          if ('name' == $key) {
-            $properties[$key] =  $value->value;
-          }
-          // Sync custom Account fields
-          if (strpos($key, "field_") !== FALSE) {
-            $fieldValue = $value->getString();
-            $properties[str_replace('field_', '', $key)] = $fieldValue;
-          }
-        }
 
+        $properties = processCustomFields($user);
         if (!empty($properties)) {
-          foreach ($properties as $propertyName => $propertyValue) {
-            $propertyDefinitions[] = ['type' => 'str', 'field_name' => $propertyName];
-          }
           $contact['Properties'] = $properties;
         }
 
-        mailjet_properties_sync($propertyDefinitions);
+        mailjet_properties_sync();
 
         // Add new contact.
         $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact);
@@ -613,39 +634,20 @@ function mailjet_field_delete_field($field) {
 function mailjet_first_sync($list_id) {
   $config_mailjet = \Drupal::service('config.factory')->getEditable('mailjet.settings');
 
-  //mailjet_properties_sync();
-//get all drupal users
-
-  //get all drupal users
   //$users = entity_load('user');
   $user_storage = \Drupal::service('entity_type.manager')->getStorage('user');
   $ids = $user_storage->getQuery()->execute();
   $users = $user_storage->loadMultiple($ids);
   $contacts = [];
-  $propertyDefinitions = [];
+
   foreach ($users as $user_id => $user) {
     if ($user_id > 0 && $user->get('status')->value > 0) {
       $contact = [];
-      $properties = [];
+      $properties = processCustomFields($user);
       $contact['Email'] = $user->getEmail();
 
-      foreach ($user as $key => $value) {
-        // Sync only the `name` from `user` entity
-        if ('name' == $key) {
-          $properties[$key] =  $value->value;
-        }
-
-        // Sync custom Account fields
-        if (strpos($key, "field_") !== FALSE) {
-          $fieldValue = $value->getString();
-          $properties[str_replace('field_', '', $key)] = $fieldValue;
-        }
-      }
 
       if (!empty($properties)) {
-        foreach ($properties as $propertyName => $propertyValue) {
-          $propertyDefinitions[] = ['type' => 'str', 'field_name' => $propertyName];
-        }
         $contact['Properties'] = $properties;
       }
 
@@ -654,7 +656,8 @@ function mailjet_first_sync($list_id) {
   }
 
 
-  mailjet_properties_sync($propertyDefinitions);
+  mailjet_properties_sync();
+
   $responseInitialSync = MailjetTools\MailjetApi::syncMailjetContacts($list_id, $contacts);
   if (false == $responseInitialSync) {
       drupal_set_message(t('Could not create the contact list'));
