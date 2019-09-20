@@ -308,7 +308,7 @@ function _has_drupal_property($mailjet_property, $drupal_fields) {
 }
 
 
-function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
+function mailjet_properties_sync() {
   $config_mailjet = \Drupal::config('mailjet.settings');
 
   //get all user fields from Drupal system
@@ -325,41 +325,20 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
       $currentFieldType = $currentField->getType();
 
       $field_type = 'str';
-      if ($currentFieldType == "integer" || $currentFieldType == "number_integer") {
+      if ($currentFieldType == "integer" || $currentFieldType == "number_integer" || $currentFieldType == 'timestamp') {
         $field_type = 'int';
-      } else if ($currentFieldType == "float" || $currentFieldType == "number_float" || $currentFieldType == "decimal" || $currentFieldType == "number_decimal" || $currentFieldType == "list_float") {
+      } else if ($currentFieldType == "float" || $currentFieldType == "number_float" || $currentFieldType == "decimal" || $currentFieldType == "number_decimal" || $currentFieldType == "commerce_price") {
         $field_type = 'float';
       } else if ($currentFieldType == "boolean" || $currentFieldType == "list_boolean") {
         $field_type = 'bool';
+      } else if ($currentFieldType == "datetime") {
+        $field_type = 'datetime';
       }
 
       $user_fields[] = [
         "Name" => str_replace('field_', '', $propertyName),
         "Datatype" => $field_type,
       ];
-    }
-  }
-  if ($newField) {
-    if ($delete === FALSE) {
-      $field_type = 'str';
-      if ($newField['type'] == "number_integer") {
-        $field_type = 'int';
-      } else if ($newField['type'] == "number_float" || $newField['type'] == "number_decimal") {
-        $field_type = 'float';
-      } else if ($newField['type'] == "list_boolean") {
-        $field_type = 'bool';
-      }
-
-      $user_fields[] = [
-        "Name" => str_replace('field_', '', $newField['field_name']),
-        "Datatype" => $field_type,
-      ];
-    } else {
-      foreach ($user_fields as $key => $value) {
-        if ($value['Name'] === 'field_' . $newField['field_name']) {
-          unset($user_fields[$key]);
-        }
-      }
     }
   }
 
@@ -377,7 +356,7 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
   foreach ($user_fields as $field) {
     if (array_key_exists($field['Name'], $properties)) {
       if ($field['Datatype'] == $properties[$field['Name']]['Datatype']) {
-        //drupal_set_message(t('Field '.$field['Name'].' is already in your MailJet account.'),'status'); // no need of this message - too much spam :)
+//        drupal_set_message(t('Field '.$field['Name'].' is already in your MailJet account.'),'status'); // no need of this message - too much spam :)
       }
       else {
         $updateResponse = MailjetTools\MailjetApi::updateMailjetContactProperty($properties[$field['Name']]['ID'], $field['Name'], $field['Datatype']);
@@ -386,7 +365,7 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
           $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
         }
         else {
- //         drupal_set_message(t('Couldn\'t update ' . $field['Name'] . ' in your MailJet account!'), 'error');
+//          drupal_set_message(t('Couldn\'t update ' . $field['Name'] . ' in your MailJet account!'), 'error');
         }
       }
     }
@@ -397,7 +376,7 @@ function mailjet_properties_sync($newField = NULL, $delete = FALSE) {
         $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
       }
       else {
-  //      drupal_set_message(t('Couldn\'t insert ' . $field['Name'] . ' in your MailJet account!'), 'error');
+//        drupal_set_message(t('Couldn\'t insert ' . $field['Name'] . ' in your MailJet account!'), 'error');
       }
     }
   }
@@ -422,19 +401,21 @@ function processCustomFields($user)
 
       $currentFieldType = $currentField->getType();
 
-      if (!empty($propertyValue->value)) {
-
+      if (!empty($propertyValue)) {
         $castedPropertyValue = '';
-        if (!empty($propertyValue) && isset($propertyValue->value)) {
-          $castedPropertyValue = $propertyValue->getString();
-          if ($currentFieldType == "integer" || $currentFieldType == "number_integer") {
-            $castedPropertyValue = intval($castedPropertyValue);
-          } else if ($currentFieldType == "float" || $currentFieldType == "number_float" || $currentFieldType == "decimal" || $currentFieldType == "number_decimal" || $currentFieldType == "list_float") {
-            $castedPropertyValue = floatval($castedPropertyValue);
-          } else if ($currentFieldType == "boolean" || $currentFieldType == "list_boolean") {
-            $castedPropertyValue = boolval($castedPropertyValue);
-          }
+        $castedPropertyValue = $propertyValue->getString();
+        if ($currentFieldType == "integer" || $currentFieldType == "number_integer" || $currentFieldType == "timestamp") {
+          $castedPropertyValue = intval($castedPropertyValue);
+        } else if ($currentFieldType == "float" || $currentFieldType == "number_float" || $currentFieldType == "decimal" || $currentFieldType == "number_decimal") {
+          $castedPropertyValue = floatval($castedPropertyValue);
+        } else if ($currentFieldType == "boolean" || $currentFieldType == "list_boolean") {
+          $castedPropertyValue = boolval($castedPropertyValue);
+        } else if ($currentFieldType == "datetime") {
+          $castedPropertyValue = date("c", strtotime($castedPropertyValue)); // RFC 3339 format
+        } else if ($currentFieldType == "commerce_price") {
+          $castedPropertyValue = floatval($castedPropertyValue);
         }
+
         $properties[str_replace('field_', '', $propertyName)] = $castedPropertyValue;
       }
     }
@@ -507,7 +488,6 @@ function mailjet_sync_single_user(User $user, $action) {
   $mj_lists = [];
   $mj_lists[] = mailjet_get_default_list_id($mailjetApiClient);
   $properties = [];
-  $propertyDefinitions = [];
 
   switch ($action) {
     case 'add':
@@ -615,20 +595,6 @@ function mailjet_create_default_list() {
 }
 
 /**
- * Creates mailjet field.
- */
-function mailjet_field_create_field($field) {
-  mailjet_properties_sync($field);
-}
-
-/**
- * Deletes mailjet field.
- */
-function mailjet_field_delete_field($field) {
-  mailjet_properties_sync($field, TRUE);
-}
-
-/**
  * Sync lists.
  */
 function mailjet_first_sync($list_id) {
@@ -654,7 +620,6 @@ function mailjet_first_sync($list_id) {
       $contacts[] = $contact;
     }
   }
-
 
   mailjet_properties_sync();
 
@@ -695,7 +660,6 @@ function mailjet_get_properties() {
       $properties[$property['Name']] = $property['Name'];
     }
   }
-
 
   return $properties;
 }
