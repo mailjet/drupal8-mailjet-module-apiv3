@@ -123,6 +123,9 @@ Author
 
 ## Changelog
 
+= 8.x-2.7 =
+* Added processing of most used custom account field types and removed messages for end user when sync is performing.
+
 = 8.x-2.6 =
 * Added missing .yml files
 
