@@ -432,7 +432,9 @@ function processCustomFields($user)
  *   The User object.
  */
 function mailjet_user_insert(User $user) {
-  mailjet_sync_single_user($user, 'add');
+  if ($user->get('status')->value > 0) {
+    mailjet_sync_single_user($user, 'add');
+  }
 }
 
 
