@@ -3,7 +3,7 @@ description: Add support for sending MailJet Campaigns.
 package: Mailjet
 type: module
 version: 8.x-1.1
-core: 8.x
+core: 8.x || 9.x
 
 dependencies:
   - mailjet:mailjet

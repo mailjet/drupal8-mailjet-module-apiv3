@@ -10,7 +10,7 @@ description: ''
 tag: ''
 base_table: commerce_order_item
 base_field: order_item_id
-core: 8.x
+core: 8.x || 9.x
 display:
   default:
     display_plugin: default
