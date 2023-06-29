@@ -2,7 +2,7 @@ name: Mailjet Trigger Examples
 description: Examples of displaying information for customer's orders
 package: Mailjet
 type: module
-version: 8.x-1.1
+version: 8.x-1.2
 core: 8.x || 9.x
 
 dependencies:
