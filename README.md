@@ -34,6 +34,13 @@ Recommended modules
 Prerequisites
 -------------
 
+### For Drupal 9.x make next steps:
+1) composer require drupal/phpmailer_smtp
+2) composer require drupal/mailjet
+3) Make steps for configuration listed in `Configuration` section
+
+
+### For Drupal 8.x and below 9.x
 The Mailjet plugin relies on the PHPMailer v5.2.xx for sending emails.
 
 To install PHPMailer via composer use: composer require drupal/phpmailer 

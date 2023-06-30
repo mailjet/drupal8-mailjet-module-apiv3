@@ -134,11 +134,8 @@ class MailjetBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
-    if (strpos($route_match->getRouteObject()
-        ->getPath(), 'mailjet') !== FALSE) {
-      return TRUE;
-    }
-    return FALSE;
+      return strpos($route_match->getRouteObject()
+              ->getPath(), 'mailjet') !== FALSE;
   }
 
   /**

@@ -3,7 +3,7 @@ description: Send your emails by your Mailjet API.
 package: Mailjet
 type: module
 version: 8.x-2.7
-core: 8.x
+core: 8.x || 9.x
 configure: mailjet.settings
 
 dependencies:
