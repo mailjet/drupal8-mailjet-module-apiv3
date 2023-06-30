@@ -130,6 +130,9 @@ Author
 
 ## Changelog
 
+= 8.x-2.8 =
+* Support 9.x Drupal
+
 = 8.x-2.7 =
 * Added processing of most used custom account field types and removed messages for end user when sync is performing.
 
