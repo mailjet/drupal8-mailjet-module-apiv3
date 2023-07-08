@@ -2,8 +2,8 @@ name: Mailjet
 description: Send your emails by your Mailjet API.
 package: Mailjet
 type: module
-version: 8.x-2.7
-core: 8.x || 9.x
+version: 8.x-2.8
+core_version_requirement: ^8 || ^9
 configure: mailjet.settings
 
 dependencies:
