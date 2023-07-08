@@ -59,7 +59,7 @@ function _mailjet_register_alter_callback() {
       mailjet_first_sync(mailjet_get_default_list_id(mailjet_new()));
     }
     else {
-      drupal_set_message(t('Token was not generated! Please try again.'), 'error');
+      \Drupal::messenger()->addMessage(t('Token was not generated! Please try again.'), 'error', FALSE);
     }
   }
 
@@ -101,7 +101,7 @@ function mailjet_new() {
     return $mailjetApiClient;
   }
   if (!($key) && !($secret_key)) {
-    drupal_set_message(t('You need to add your MailJet API details before you can continue!'), 'warning');
+    \Drupal::messenger()->addMessage(t('You need to add your MailJet API details before you can continue!'), 'warning', FALSE);
   }
   return FALSE;
 }
@@ -261,7 +261,7 @@ function mailjet_user_domain_add($domain) {
     return TRUE;
   }
   else {
-    drupal_set_message(t($response->getReasonPhrase()), 'error');
+    \Drupal::messenger()->addMessage(t($response->getReasonPhrase()), 'error', FALSE);
     return FALSE;
   }
 }
@@ -356,27 +356,22 @@ function mailjet_properties_sync() {
   foreach ($user_fields as $field) {
     if (array_key_exists($field['Name'], $properties)) {
       if ($field['Datatype'] == $properties[$field['Name']]['Datatype']) {
-//        drupal_set_message(t('Field '.$field['Name'].' is already in your MailJet account.'),'status'); // no need of this message - too much spam :)
       }
       else {
         $updateResponse = MailjetTools\MailjetApi::updateMailjetContactProperty($properties[$field['Name']]['ID'], $field['Name'], $field['Datatype']);
         if (false != $updateResponse) {
-//          drupal_set_message(t('Field ' . $field['Name'] . ' is now updated in your MailJet account!'), 'status');
           $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
         }
         else {
-//          drupal_set_message(t('Couldn\'t update ' . $field['Name'] . ' in your MailJet account!'), 'error');
         }
       }
     }
     else {
       $insertResponse = MailjetTools\MailjetApi::createMailjetContactProperty($field['Name'], $field['Datatype']);
       if (false != $insertResponse) {
-//        drupal_set_message(t('Field ' . $field['Name'] . ' is now inserted in your MailJet account!'), 'status');
         $properties[$field['Name']] = $field; // Add it here, so the next loop it wont be handled again
       }
       else {
-//        drupal_set_message(t('Couldn\'t insert ' . $field['Name'] . ' in your MailJet account!'), 'error');
       }
     }
   }
@@ -588,10 +583,10 @@ function mailjet_create_default_list() {
   $responseNewContactsList = MailjetTools\MailjetApi::createMailjetContactList(mailjet_get_default_list_name());
   if (false != $responseNewContactsList) {
     $def_list_id = $responseNewContactsList[0]['ID'];
-    drupal_set_message(t('Default list was created!'), 'status');
+    \Drupal::messenger()->addMessage(t('Default list was created!'), 'status', FALSE);
   }
   else {
-    drupal_set_message(t('Default list was not created! Please try again.'), 'error');
+    \Drupal::messenger()->addMessage(t('Default list was not created! Please try again.'), 'error', FALSE);
   }
   return empty($def_list_id) ? 0 : $def_list_id;
 }
@@ -627,10 +622,10 @@ function mailjet_first_sync($list_id) {
 
   $responseInitialSync = MailjetTools\MailjetApi::syncMailjetContacts($list_id, $contacts);
   if (false == $responseInitialSync) {
-      drupal_set_message(t('Could not create the contact list'));
+    \Drupal::messenger()->addMessage(t('Could not create the contact list'), "error", FALSE);
   }
 
-  drupal_set_message(t('Sync in progress.'), 'status');
+  \Drupal::messenger()->addMessage(t('Sync in progress.'), 'status', FALSE);
 }
 
 function  get_mailjet_get_lists_limit() {

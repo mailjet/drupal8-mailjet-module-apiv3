@@ -21,10 +21,10 @@ class MailjetApi
         }
 
         $mjClient = new Client($mailjetApikey, $mailjetApiSecret);
-        if (drupal_get_profile() == 'standard') {
+        if (\Drupal::installProfile() == 'standard') {
             $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.7');
             $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.7']);
-        } elseif (drupal_get_profile() == 'commerce_kickstart') {
+        } elseif (\Drupal::installProfile() == 'commerce_kickstart') {
             $mjClient->addRequestOption(CURLOPT_USERAGENT, 'kickstart');
             $mjClient->addRequestOption('headers', ['User-Agent' => 'kickstart']);
 

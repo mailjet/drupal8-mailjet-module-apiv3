@@ -45,9 +45,9 @@ class SubscriptionFormDeleteForm extends EntityConfirmFormBase {
     $this->entity->delete();
 
     // Set a message that the entity was deleted.
-    drupal_set_message($this->t('Subscription Form %label was deleted.', [
+    \Drupal::messenger()->addMessage($this->t('Subscription Form %label was deleted.', [
       '%label' => $this->entity->label(),
-    ]));
+    ]), "status", FALSE);
 
     // Redirect the user to the list controller when complete.
     $form_state->setRedirectUrl($this->getCancelUrl());

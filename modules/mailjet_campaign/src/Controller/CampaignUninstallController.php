@@ -17,7 +17,7 @@ class CampaignUninstallController extends ControllerBase {
     $entities = $controller->loadMultiple();
     $controller->delete($entities);
     
-    drupal_set_message(t('Campaign entities is removing succcefully!'));
+    \Drupal::messenger()->addMessage(t('Campaign entities is removing succcefully!'), "status", FALSE);
     return $build;
 
   }

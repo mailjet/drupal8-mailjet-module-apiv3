@@ -2,8 +2,8 @@ name: Mailjet Stats
 description: Add support for viewing MailJet Stats.
 package: Mailjet
 type: module
-version: 8.x-1.2
-core: 8.x || 9.x
+version: 1.2
+core_version_requirement: ^9
 
 dependencies:
   - mailjet:mailjet

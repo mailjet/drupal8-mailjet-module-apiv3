@@ -17,7 +17,7 @@ class EventUninstallController extends ControllerBase {
     $entities = $controller->loadMultiple();
     $controller->delete($entities);
 
-    drupal_set_message(t('Event entities is removing succcefully!'));
+    \Drupal::messenger()->addMessage(t('Event entities is removing succcefully!'), "status", FALSE);
 
     return $build;
 

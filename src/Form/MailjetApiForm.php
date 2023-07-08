@@ -116,14 +116,14 @@ class MailjetApiForm extends ConfigFormBase
                 $config->save();
                 mailjet_first_sync(mailjet_get_default_list_id(mailjet_new()));
 
-                drupal_set_message(t('The configuration options have been saved.'));
+                \Drupal::messenger()->addMessage(t('The configuration options have been saved.'), "status", FALSE);
                 drupal_flush_all_caches();
             } else {
                 $form_state->setErrorByName('mailjet_username', t('Token was NOT generated! Please try again.'));
             }
         } else {
-            drupal_set_message(t('Please verify that you have entered your API and secret key correctly. Please note this plug-in is compatible for Mailjet v3 accounts only. Click <a href=" https://app.mailjet.com/support/why-do-i-get-an-api-error-when-trying-to-activate-a-mailjet-plug-in,497.htm"> here</a> for more information'),
-                'error');
+            \Drupal::messenger()->addMessage(t('Please verify that you have entered your API and secret key correctly. Please note this plug-in is compatible for Mailjet v3 accounts only. Click <a href=" https://app.mailjet.com/support/why-do-i-get-an-api-error-when-trying-to-activate-a-mailjet-plug-in,497.htm"> here</a> for more information'),
+                'error', FALSE);
         }
     }
 
