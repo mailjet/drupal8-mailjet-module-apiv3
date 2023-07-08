@@ -17,7 +17,7 @@ class StatsAdminController extends ControllerBase {
     $build = [];
     $config_mailjet = \Drupal::config('mailjet.settings');
     if (empty($config_mailjet->get('mailjet_active')) && empty($config_mailjet->get('mailjet_username')) && empty($config_mailjet->get('mailjet_password'))) {
-      drupal_set_message(t('You need to add your Mailjet API details before you can continue'), 'warning');
+      \Drupal::messenger()->addMessage(t('You need to add your Mailjet API details before you can continue'), "warning", FALSE);
       $response = new RedirectResponse('admin/config/mailjet/settings');
       $response->send();
     }
