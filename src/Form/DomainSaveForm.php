@@ -76,11 +76,11 @@ class DomainSaveForm extends ConfigFormBase
 
         $domain = $form_state->getValue('domain');
         if (mailjet_user_domain_add($domain)) {
-            drupal_set_message(t('Your domain @domain has successfully been added to Mailjet. 
+            \Drupal::messenger()->addMessage(t('Your domain @domain has successfully been added to Mailjet. 
       To confirm domain ownership you must create an empty text file and place it in the root folder of the website.  
       The file name is shown in the table below on the same line as your newly added domain.', [
                 '@domain' => $domain,
-            ]));
+            ]), "status", FALSE);
 
             $response = new RedirectResponse($base_url . '/admin/config/system/mailjet/domains');
             $response->send();

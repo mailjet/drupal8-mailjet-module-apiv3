@@ -36,7 +36,7 @@ class MailjetConfigurationAccessCheck implements AccessInterface
             }
 
             if ($_SERVER["REQUEST_URI"] !== '/admin/config/system/mailjet/api') {
-                drupal_set_message(t('You need to add your MailJet API details before you can continue! Enter your Mailjet Api keys <a href="' . $base_url . '/admin/config/system/mailjet/api">here.</a>'), 'warning');
+                \Drupal::messenger()->addMessage(t('You need to add your MailJet API details before you can continue! Enter your Mailjet Api keys <a href="' . $base_url . '/admin/config/system/mailjet/api">here.</a>'), "warning", FALSE);
             }
             return AccessResult::forbidden();
         }

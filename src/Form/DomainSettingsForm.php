@@ -55,11 +55,20 @@ class DomainSettingsForm extends ConfigFormBase
                 } else {
                     $email = $domain['Email'];
                 }
-                $options[$email] = [
-                    'domain' => str_replace('*@', '', $email),
-                    'enabled' => $domain['Status'],
-                    'file_name' => $domain['Filename'],
-                ];
+        
+                // Ensure $email is a string before using it as a key.
+                if (is_string($email)) {
+                    $options[$email] = [
+                        'domain' => str_replace('*@', '', $email),
+                        'enabled' => $domain['Status'],
+                        'file_name' => $domain['Filename'],
+                    ];
+                }
+                else {
+                    // $email is not a string.
+                    \Drupal::messenger()->addMessage(t('Unexpected non-string email encountered.'), "error", FALSE);
+
+                }
             }
         }
 

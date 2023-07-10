@@ -110,12 +110,12 @@ class MailjetMail implements MailInterface
 
                         \Drupal::logger('mailjet')
                             ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
-                        drupal_set_message(t('Unable to send mail: PHPMailer library does not exist.<br /><br />This module requires the PHPMailer library to be downloaded and installed separately. <br/>Get the latest PHPMailer v5 or v6 from the <a href="https://github.com/PHPMailer/PHPMailer/releases" target="_blank">official PHPMailer GitHub page</a>. <br/> Upload the "phpmailer" folder to your server inside 
-DRUPAL_ROOT/libraries/.'), 'error');
+                            \Drupal::messenger()->addMessage(t('Unable to send mail: PHPMailer library does not exist.<br /><br />This module requires the PHPMailer library to be downloaded and installed separately. <br/>Get the latest PHPMailer v5 or v6 from the <a href="https://github.com/PHPMailer/PHPMailer/releases" target="_blank">official PHPMailer GitHub page</a>. <br/> Upload the "phpmailer" folder to your server inside 
+DRUPAL_ROOT/libraries/.'), 'error', FALSE);
                         return FALSE;
                     }
                 } else {
-                    drupal_set_message(t('Unable to send mail: PHPMailer library does not exist.'), 'error');
+                    \Drupal::messenger()->addMessage(t('Unable to send mail: PHPMailer library does not exist.'), 'error', FALSE);
                     \Drupal::logger('mailjet')
                         ->notice('Unable to send mail: Libraries API and PHPMailer library does not exist.');
                     return FALSE;
@@ -143,7 +143,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
         $from = empty($from) ? $system_site_config->get('mail') : $from;
         if (empty($from)) {
-            drupal_set_message(t('There is no submitted from address.'), 'error');
+            \Drupal::messenger()->addMessage(t('There is no submitted from address.'), 'error', FALSE);
             if (\Drupal::state()->get('mailjet_debug')) {
                 \Drupal::logger('mailjet')
                     ->notice('There is no submitted from address.');
@@ -157,8 +157,8 @@ DRUPAL_ROOT/libraries/.'), 'error');
             // * == Repeats the previous item zero or more times.
             $from_name = preg_replace('/"?([^("\t\n)]*)"?.*$/', '$1', $from);
             $from = preg_replace("/(.*)\<(.*)\>/i", '$2', $from);
-        } elseif (!valid_email_address($from)) {
-            drupal_set_message(t('The submitted from address (@from) is not valid.', ['@from' => $from]), 'error');
+        } elseif (!\Drupal::service('email.validator')->isValid($from)) {
+            \Drupal::messenger()->addMessage(t('The submitted from address (@from) is not valid.', ['@from' => $from]), 'error', FALSE);
 
             if (\Drupal::state()->get('mailjet_debug')) {
                 \Drupal::logger('mailjet')
@@ -262,7 +262,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
                         default:
                             // Everything else is unsuppored by PHPMailer.
-                            drupal_set_message(t('The Content-Type of your message is not supported by PHPMailer and will be sent as text/plain instead.'), 'error');
+                            \Drupal::messenger()->addMessage(t('The Content-Type of your message is not supported by PHPMailer and will be sent as text/plain instead.'), 'error', FALSE);
 
                             if (\Drupal::state()->get('mailjet_debug')) {
                                 \Drupal::logger('mailjet')
@@ -446,7 +446,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
                         if (file_exists($file_path)) {
                             if (!$mailer->AddAttachment($file_path, $file_name, $file_encoding, $filetype)) {
-                                drupal_set_message(t('Attahment could not be found or accessed.'));
+                                \Drupal::messenger()->addMessage(t('Attahment could not be found or accessed.'), "status", FALSE);
                             }
                         } else {
                             // Clean up the text.
@@ -464,7 +464,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                             $file_path = file_save_data($attachment, $attachment_new_filename, FILE_EXISTS_RENAME);
 
                             if (!$mailer->AddAttachment($file_path, $file_name)) {
-                                drupal_set_message(t('Attachment could not be found or accessed.'));
+                                \Drupal::messenger()->addMessage(t('Attachment could not be found or accessed.'), "status", FALSE);
                             }
                         }
                     }

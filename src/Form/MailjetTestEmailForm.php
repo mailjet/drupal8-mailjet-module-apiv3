@@ -64,7 +64,7 @@ class MailjetTestEmailForm extends ConfigFormBase
     public function validateForm(array &$form, FormStateInterface $form_state)
     {
 
-        if (!valid_email_address($form_state->getValue('test_email'))) {
+        if (!\Drupal::service('email.validator')->isValid($form_state->getValue('test_email'))) {
             $form_state->setErrorByName('test_email', t('The provided test e-mail address is not valid.'));
         }
     }
@@ -90,13 +90,13 @@ class MailjetTestEmailForm extends ConfigFormBase
             $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
 
             if ($result['result'] !== TRUE) {
-                drupal_set_message(t('There was a problem sending your message and it was not sent.'), 'error');
+                \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent.'), 'error', FALSE);
             } else {
-                drupal_set_message(t('Your message has been sent.'));
+                \Drupal::messenger()->addMessage(t('Your message has been sent.'), "status", FALSE);
             }
 
         } else {
-            drupal_set_message(t('There was a problem with configuration with Mailjet API. Please enter API keys and other information again!'), 'error');
+            \Drupal::messenger()->addMessage(t('There was a problem with configuration with Mailjet API. Please enter API keys and other information again!'), 'error', FALSE);
         }
     }
 }
