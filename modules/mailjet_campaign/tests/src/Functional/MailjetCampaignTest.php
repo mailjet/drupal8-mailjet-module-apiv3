@@ -10,57 +10,55 @@ use Drupal\Core\Entity\EntityTypeManager;
  *
  * @group mailjet
  */
-class MailjetCampaignTest extends BrowserTestBase {
-
-
+class MailjetCampaignTest extends BrowserTestBase
+{
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['mailjet', 'mailjet_campaign'];
+    public static $modules = ['mailjet', 'mailjet_campaign'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+    protected function setUp()
+    {
 
-    parent::setUp();
+        parent::setUp();
 
-    $campaign_data = [
-      'name' => 'Test campaign',
-      'camp_id_mailjet' => '1111112e1',
-      'order_id' => '91911',
-    ];
+        $campaign_data = [
+        'name' => 'Test campaign',
+        'camp_id_mailjet' => '1111112e1',
+        'order_id' => '91911',
+        ];
 
-    $campaign = \Drupal::entityManager()
-      ->getStorage('campaign_entity')
-      ->create($campaign_data);
+        $campaign = \Drupal::entityManager()
+        ->getStorage('campaign_entity')
+        ->create($campaign_data);
 
-    $campaign->save();
-
-  }
+        $campaign->save();
+    }
 
 
   /**
    * Tests retrieval of a specific campaign.
    */
-  public function testGetCampaign() {
-    $campaign_id = '1111112e1';
+    public function testGetCampaign()
+    {
+        $campaign_id = '1111112e1';
 
-    $query = \Drupal::database()->select('mailjet_campign', 'mj');
-    $query->addField('mj', 'campaign_id');
-    $query->condition('mj.camp_id_mailjet', trim($campaign_id));
-    $query->range(0, 1);
-    $id = $query->execute()->fetchField();
+        $query = \Drupal::database()->select('mailjet_campign', 'mj');
+        $query->addField('mj', 'campaign_id');
+        $query->condition('mj.camp_id_mailjet', trim($campaign_id));
+        $query->range(0, 1);
+        $id = $query->execute()->fetchField();
 
-    $campaign = \Drupal::entityManager()->getStorage('campaign_entity')->load($id);
-    $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
+        $campaign = \Drupal::entityManager()->getStorage('campaign_entity')->load($id);
+        $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
 
-    $this->assertEquals($campaign->id, $campaign_id);
-    $this->assertEquals($campaign->name, 'Test campaign');
-    $this->assertEquals($campaign->order_id, '91911');
-
-  }
-
+        $this->assertEquals($campaign->id, $campaign_id);
+        $this->assertEquals($campaign->name, 'Test campaign');
+        $this->assertEquals($campaign->order_id, '91911');
+    }
 }

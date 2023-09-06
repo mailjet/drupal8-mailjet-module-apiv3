@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mailjet\Controller\MailjetUpgradeController.
@@ -10,7 +11,6 @@ use Drupal\Core\Controller\ControllerBase;
 
 class MailjetUpgradeController extends ControllerBase
 {
-
     public function redirect_upgrade()
     {
         define("IFRAME_URL", "https://app.mailjet.com/");

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mailjet\Controller\MailjetRegisterController.
@@ -10,7 +11,6 @@ use Drupal\Core\Controller\ControllerBase;
 
 class MailjetRegisterController extends ControllerBase
 {
-
     public function redirect_register()
     {
         define("IFRAME_URL", "https://app.mailjet.com/");

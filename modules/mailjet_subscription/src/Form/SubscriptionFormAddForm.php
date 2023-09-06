@@ -10,12 +10,12 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @ingroup mailjet_subscription
  */
-class SubscriptionFormAddForm extends SubscriptionFormFormBase {
-
-  protected function actions(array $form, FormStateInterface $form_state) {
-    $actions = parent::actions($form, $form_state);
-    $actions['submit']['#value'] = $this->t('Create a Subscription Form');
-    return $actions;
-  }
-
+class SubscriptionFormAddForm extends SubscriptionFormFormBase
+{
+    protected function actions(array $form, FormStateInterface $form_state)
+    {
+        $actions = parent::actions($form, $form_state);
+        $actions['submit']['#value'] = $this->t('Create a Subscription Form');
+        return $actions;
+    }
 }

@@ -14,23 +14,17 @@
     {
       "type": "vcs",
       "url": "git@github.com:mailjet/mailjet-apiv3-php.git"
-    },
-    {
-      "type": "vcs",
-      "url": "git@github.com:mailjet/Mailjet-iframe-v3.git"
     }
   ],
   "require": {
     "mailjet/mailjet-apiv3-php": "dev-master",
-    "mailjet/Mailjet-iframe-v3": "dev-master"
-  },
-  "autoload": {
-    "psr-4": {
-      "MailjetTools\\": "lib/mailjet-api-php/src/"
-    }
+    "guzzlehttp/guzzle": "^6.0"
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   },
   "scripts": {
 	 "post-install-cmd": [
@@ -40,6 +34,11 @@
 	"post-update-cmd": [
 	  "find ./vendor -name '.git' | xargs rm -rf",
 	  "find ./vendor -name '.gitignore' | xargs rm -rf"
-	]
+    ]
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "*",
+    "phpcompatibility/php-compatibility": "*",
+    "phpstan/phpstan": "1.11.x-dev"
   }
 }

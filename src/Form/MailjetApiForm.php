@@ -15,7 +15,6 @@ use Mailjet\Resources;
 
 class MailjetApiForm extends ConfigFormBase
 {
-
     /**
      * {@inheritdoc}
      */
@@ -56,14 +55,14 @@ class MailjetApiForm extends ConfigFormBase
             '#type' => 'textfield',
             '#title' => t('API Key'),
             '#default_value' => $config_mailjet->get('mailjet_username'),
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['api']['mailjet_password'] = [
             '#type' => 'textfield',
             '#title' => t('Secret Key'),
             '#default_value' => $config_mailjet->get('mailjet_password'),
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['actions']['#type'] = 'actions';
@@ -82,7 +81,6 @@ class MailjetApiForm extends ConfigFormBase
      */
     public function validateForm(array &$form, FormStateInterface $form_state)
     {
-
     }
 
     /**
@@ -97,17 +95,19 @@ class MailjetApiForm extends ConfigFormBase
         $config->set('mailjet_password', $form_state->getValue('mailjet_password'));
         $config->save();
 
-        $mailjetApiClient = MailjetApi::getApiClient($form_state->getValue('mailjet_username'),
-            $form_state->getValue('mailjet_password'));
+        $mailjetApiClient = MailjetApi::getApiClient(
+            $form_state->getValue('mailjet_username'),
+            $form_state->getValue('mailjet_password')
+        );
         $response = $mailjetApiClient->get(Resources::$Myprofile);
         if ($response->success()) {
-            $config->set('mailjet_active', TRUE);
+            $config->set('mailjet_active', true);
 
             $params = [
                 'AllowedAccess' => 'campaigns,contacts,stats,pricing,account,reports',
                 'APIKeyALT' => $form_state->getValue('mailjet_username'),
                 'TokenType' => 'iframe',
-                'IsActive' => TRUE,
+                'IsActive' => true,
             ];
 
             $responseApiToken = MailjetApi::createApiToken($params);
@@ -122,9 +122,10 @@ class MailjetApiForm extends ConfigFormBase
                 $form_state->setErrorByName('mailjet_username', t('Token was NOT generated! Please try again.'));
             }
         } else {
-            drupal_set_message(t('Please verify that you have entered your API and secret key correctly. Please note this plug-in is compatible for Mailjet v3 accounts only. Click <a href=" https://app.mailjet.com/support/why-do-i-get-an-api-error-when-trying-to-activate-a-mailjet-plug-in,497.htm"> here</a> for more information'),
-                'error');
+            drupal_set_message(
+                t('Please verify that you have entered your API and secret key correctly. Please note this plug-in is compatible for Mailjet v3 accounts only. Click <a href=" https://app.mailjet.com/support/why-do-i-get-an-api-error-when-trying-to-activate-a-mailjet-plug-in,497.htm"> here</a> for more information'),
+                'error'
+            );
         }
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  * @file
  *  * Contains \Drupal\mailjet\Form\DomainSettingsForm.
@@ -11,19 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
 
 class DomainSettingsForm extends ConfigFormBase
 {
-
     public function getFormId()
     {
 
         return 'trusted_domain_form';
-
     }
 
     protected function getEditableConfigNames()
     {
 
         return ['config.trusted_domains'];
-
     }
 
     /**
@@ -85,8 +83,6 @@ class DomainSettingsForm extends ConfigFormBase
      */
     public function validateForm(array &$form, FormStateInterface $form_state)
     {
-
-
     }
 
     /**
@@ -100,6 +96,5 @@ class DomainSettingsForm extends ConfigFormBase
                 mailjet_user_domain_status($domain);
             }
         }
-
     }
 }

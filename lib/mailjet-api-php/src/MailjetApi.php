@@ -27,7 +27,6 @@ class MailjetApi
         } elseif (drupal_get_profile() == 'commerce_kickstart') {
             $mjClient->addRequestOption(CURLOPT_USERAGENT, 'kickstart');
             $mjClient->addRequestOption('headers', ['User-Agent' => 'kickstart']);
-
         } else {
             $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.7');
             $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.7']);
@@ -157,7 +156,7 @@ class MailjetApi
     public static function getPropertyIdByName($name)
     {
         if (!$name) {
-           return false;
+            return false;
         }
         $contactProperties = self::getContactProperties();
         if ($contactProperties) {
@@ -335,20 +334,20 @@ class MailjetApi
 
     public static function getMailjetIframe($username, $password)
     {
-      $mailjetIframe = new \MailjetIframe\MailjetIframe($username, $password, false);
+        $mailjetIframe = new \MailjetIframe\MailjetIframe($username, $password, false);
 
-      $language = \Drupal::languageManager()->getCurrentLanguage();
-      $lang_codes_map = [
+        $language = \Drupal::languageManager()->getCurrentLanguage();
+        $lang_codes_map = [
         'en' => 'en_US',
         'fr' => 'fr_FR',
         'de' => 'de_DE',
         'es' => 'es_ES',
         'it' => 'it_IT',
-      ];
-      $default_lang = 'en';
-      $locale = isset($lang_codes_map[$language->getId()]) ? $lang_codes_map[$language->getId()] : $lang_codes_map[$default_lang];
+        ];
+        $default_lang = 'en';
+        $locale = isset($lang_codes_map[$language->getId()]) ? $lang_codes_map[$language->getId()] : $lang_codes_map[$default_lang];
 
-      $mailjetIframe
+        $mailjetIframe
         ->setCallback('')
         ->setTokenExpiration(600)
         ->setLocale($locale)
@@ -365,8 +364,6 @@ class MailjetApi
         ->turnCreateCampaignButton(\MailjetIframe\MailjetIframe::ON)
         ->turnSendingPolicy(\MailjetIframe\MailjetIframe::ON);
 
-      return $mailjetIframe;
+        return $mailjetIframe;
     }
-
-
 }

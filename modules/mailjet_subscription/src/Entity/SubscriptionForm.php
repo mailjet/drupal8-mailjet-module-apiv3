@@ -33,56 +33,56 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   }
  * )
  */
-class SubscriptionForm extends ConfigEntityBase {
-
+class SubscriptionForm extends ConfigEntityBase
+{
   /**
    * The Signup ID.
    *
    * @var int
    */
-  public $id;
+    public $id;
 
   /**
    * The Signup Form Machine Name.
    *
    * @var string
    */
-  public $name;
+    public $name;
 
   /**
    * The Signup Form Description.
    *
    * @var string
    */
-  public $description;
+    public $description;
 
   /**
    * The Signup Form Label of Sumbit button.
    *
    * @var string
    */
-  public $sumbit_label;
+    public $sumbit_label;
 
   /**
    * The Signup Form Destination Page
    *
    * @var string
    */
-  public $destination_page;
+    public $destination_page;
 
   /**
    * The Signup Form Confirmation Message
    *
    * @var string
    */
-  public $confirmation_message;
+    public $confirmation_message;
 
   /**
    * The Signup Form Error token
    *
    * @var string
    */
-  public $error_token;
+    public $error_token;
 
 
   /**
@@ -90,7 +90,7 @@ class SubscriptionForm extends ConfigEntityBase {
    *
    * @var string
    */
-  public $confirmation_email_text;
+    public $confirmation_email_text;
 
 
   /**
@@ -98,96 +98,96 @@ class SubscriptionForm extends ConfigEntityBase {
    *
    * @var string
    */
-  public $email_text_button;
+    public $email_text_button;
 
 
   /** The Signup Form Email Text Description
    *
    * @var string
    */
-  public $email_text_description;
+    public $email_text_description;
 
   /**
    * The Signup Form Email Thank You Message
    *
    * @var string
    */
-  public $email_text_thank_you;
+    public $email_text_thank_you;
 
   /**
    * The Signup Form Email Owner
    *
    * @var string
    */
-  public $email_owner;
+    public $email_owner;
 
   /**
    * The Signup Form Subscribe Error
    *
    * @var string
    */
-  public $subscribe_error;
+    public $subscribe_error;
 
   /**
    * The Signup Form Contact Exist Message
    *
    * @var string
    */
-  public $contact_exist;
+    public $contact_exist;
 
   /**
    * The Signup Form Success Message Subscribe
    *
    * @var string
    */
-  public $success_message_subsribe;
+    public $success_message_subsribe;
 
   /**
    * The Signup Form lists
    *
    * @var arrayF
    */
-  public $lists;
+    public $lists;
 
   /**
    * The Signup Form Conctact propeties
    *
    * @var array
    */
-  public $fields_mailjet;
+    public $fields_mailjet;
 
   /**
    * The Signup Form CSS FIELD
    *
    * @var array
    */
-  public $css_field;
+    public $css_field;
 
   /**
    * The Signup Form Js Field
    *
    * @var string
    */
-  public $js_field;
+    public $js_field;
 
   /**
    * The Signup Form Email Footer Text
    *
    * @var string
    */
-  public $email_footer_text;
+    public $email_footer_text;
 
   /**
    * The Signup Form Error Data Type Message
    *
    * @var string
    */
-  public $error_data_types;
+    public $error_data_types;
 
   /**
    * The Signup Form Sort fields - String
    *
    * @var string
    */
-  public $sort_fields;
+    public $sort_fields;
 }

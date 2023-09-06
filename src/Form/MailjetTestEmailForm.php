@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  * @file
  *  * Contains \Drupal\mailjet\Form\MailjetTestEmailForm.
@@ -13,7 +14,6 @@ use Drupal\Component\Utility\SafeMarkup;
 
 class MailjetTestEmailForm extends ConfigFormBase
 {
-
     /**
      * {@inheritdoc}
      */
@@ -76,25 +76,25 @@ class MailjetTestEmailForm extends ConfigFormBase
     {
         $config_mailjet = $this->config('mailjet.settings');
 
-        if (!empty($config_mailjet->get('mailjet_active'))
+        if (
+            !empty($config_mailjet->get('mailjet_active'))
             && !empty($config_mailjet->get('mailjet_username'))
-            && !empty($config_mailjet->get('mailjet_password'))) {
-
+            && !empty($config_mailjet->get('mailjet_password'))
+        ) {
             $mailManager = \Drupal::service('plugin.manager.mail');
             $module = 'mailjet';
             $key = 'test_mail';
             $to = $form_state->getValue('test_email');
             $params['message'] = t('Your Mailjet configuration is ok!');
             $langcode = \Drupal::currentUser()->getPreferredLangcode();
-            $send = TRUE;
-            $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+            $send = true;
+            $result = $mailManager->mail($module, $key, $to, $langcode, $params, null, $send);
 
-            if ($result['result'] !== TRUE) {
+            if ($result['result'] !== true) {
                 drupal_set_message(t('There was a problem sending your message and it was not sent.'), 'error');
             } else {
                 drupal_set_message(t('Your message has been sent.'));
             }
-
         } else {
             drupal_set_message(t('There was a problem with configuration with Mailjet API. Please enter API keys and other information again!'), 'error');
         }
