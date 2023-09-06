@@ -11,7 +11,6 @@ use Drupal\Core\Routing\Access\AccessInterface;
  */
 class MailjetConfigurationAccessCheck implements AccessInterface
 {
-
     /**
      * Access check for Mailjet module configuration.
      * Ensures a Mailjet API keys has been provided.
@@ -26,12 +25,12 @@ class MailjetConfigurationAccessCheck implements AccessInterface
 
         // Check for permission
 
-        if ($user->hasPermission('access administration pages') == TRUE) {
-
-            if (!empty($config_mailjet->get('mailjet_active'))
+        if ($user->hasPermission('access administration pages') == true) {
+            if (
+                !empty($config_mailjet->get('mailjet_active'))
                 && !empty($config_mailjet->get('mailjet_username'))
-                && !empty($config_mailjet->get('mailjet_password'))) {
-
+                && !empty($config_mailjet->get('mailjet_password'))
+            ) {
                 return AccessResult::allowed();
             }
 
@@ -43,5 +42,4 @@ class MailjetConfigurationAccessCheck implements AccessInterface
 
         return AccessResult::forbidden();
     }
-
 }

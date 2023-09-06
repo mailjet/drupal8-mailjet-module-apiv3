@@ -16,30 +16,30 @@ use Drupal\Core\Block\BlockBase;
  *   "Drupal\mailjet_subscription\Plugin\Derivative\SubscriptionDerivativeBlock"
  * )
  */
-class SubscriptionFormBlock extends BlockBase {
-
+class SubscriptionFormBlock extends BlockBase
+{
   /**
    * {@inheritdoc}
    */
-  public function build() {
-    $signup_id = $this->getDerivativeId();
-    $content = NULL;
+    public function build()
+    {
+        $signup_id = $this->getDerivativeId();
+        $content = null;
 
-    /* @var $signup \Drupal\mailjet_subscription\Entity\SubscriptionForm */
+      /* @var $signup \Drupal\mailjet_subscription\Entity\SubscriptionForm */
 
-    $signup = mailjet_subscription_load($signup_id);
+        $signup = mailjet_subscription_load($signup_id);
 
-    if (!empty($signup) && !is_null($signup)) {
-      $form = new \Drupal\mailjet_subscription\Form\SubscriptionSignupPageForm();
+        if (!empty($signup) && !is_null($signup)) {
+            $form = new \Drupal\mailjet_subscription\Form\SubscriptionSignupPageForm();
 
-      $form_id = 'mailjet_signup_subscribe_block_' . $signup->id() . '_form';
-      $form->setFormID($form_id);
-      $form->setSignupID($signup->id());
+            $form_id = 'mailjet_signup_subscribe_block_' . $signup->id() . '_form';
+            $form->setFormID($form_id);
+            $form->setSignupID($signup->id());
 
-      $content = \Drupal::formBuilder()->getForm($form);
+            $content = \Drupal::formBuilder()->getForm($form);
+        }
+
+        return $content;
     }
-
-    return $content;
-  }
-
 }

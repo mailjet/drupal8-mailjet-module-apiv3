@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mailjet\Controller\MailjetController.
@@ -10,10 +11,8 @@ use Drupal\Core\Controller\ControllerBase;
 
 class MailjetController extends ControllerBase
 {
-
     public function content()
     {
         return [];
-
     }
 }

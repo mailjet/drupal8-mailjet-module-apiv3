@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  * @file
  *  * Contains \Drupal\mailjet\Form\SubsribeEmailForm.
@@ -12,19 +13,16 @@ use MailjetTools\MailjetApi;
 
 class SubsribeEmailForm extends ConfigFormBase
 {
-
     public function getFormId()
     {
 
         return 'subscribe_admin_form';
-
     }
 
     protected function getEditableConfigNames()
     {
 
         return ['config.subscribe_form'];
-
     }
 
     /**
@@ -46,7 +44,7 @@ class SubsribeEmailForm extends ConfigFormBase
         if (!empty($_GET['others'])) {
             $form_hidden_id = $_GET['others'];
         } else {
-            return FALSE;
+            return false;
         }
         $signup_form = mailjet_subscription_load($form_hidden_id);
         $mailjetApiClient = mailjet_new();
@@ -110,7 +108,6 @@ class SubsribeEmailForm extends ConfigFormBase
      */
     public function validateForm(array &$form, FormStateInterface $form_state)
     {
-
     }
 
     /**
@@ -118,7 +115,5 @@ class SubsribeEmailForm extends ConfigFormBase
      */
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
-
     }
-
 }

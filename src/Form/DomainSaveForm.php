@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  * @file
  *  * Contains \Drupal\mailjet\Form\DomainSettingsForm.
@@ -12,19 +13,16 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class DomainSaveForm extends ConfigFormBase
 {
-
     public function getFormId()
     {
 
         return 'domain_save_custom_admin_form';
-
     }
 
     protected function getEditableConfigNames()
     {
 
         return ['config.save_domain'];
-
     }
 
     /**
@@ -39,7 +37,7 @@ class DomainSaveForm extends ConfigFormBase
             '#type' => 'textfield',
             '#title' => t('Domain'),
             '#description' => t('Please enter the domain name that you will be adding to your Mailjet account.'),
-            '#required' => FALSE,
+            '#required' => false,
         ];
 
         $form['submit'] = [
@@ -48,7 +46,6 @@ class DomainSaveForm extends ConfigFormBase
         ];
 
         return $form;
-
     }
 
     /**
@@ -61,10 +58,9 @@ class DomainSaveForm extends ConfigFormBase
 
         if (!preg_match("/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/", $form_values['domain'])) {
             $form_state->setErrorByName('domain', t('Please enter a valid domain name.'));
-            return FALSE;
+            return false;
         }
-        return TRUE;
-
+        return true;
     }
 
     /**
@@ -84,10 +80,8 @@ class DomainSaveForm extends ConfigFormBase
 
             $response = new RedirectResponse($base_url . '/admin/config/system/mailjet/domains');
             $response->send();
-
         } else {
-            return FALSE;
+            return false;
         }
-
     }
 }

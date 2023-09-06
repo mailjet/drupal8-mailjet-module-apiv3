@@ -12,18 +12,18 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @ingroup mailjet_subscription
  */
-class SubscriptionFormController extends EntityAccessControlHandler {
-
+class SubscriptionFormController extends EntityAccessControlHandler
+{
   /**
    * {@inheritdoc}
    */
-  public function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    public function checkAccess(EntityInterface $entity, $operation, AccountInterface $account)
+    {
 
-    if ($operation == 'view') {
-      return TRUE;
+        if ($operation == 'view') {
+            return true;
+        }
+
+        return parent::checkAccess($entity, $operation, $account);
     }
-
-    return parent::checkAccess($entity, $operation, $account);
-  }
-
 }

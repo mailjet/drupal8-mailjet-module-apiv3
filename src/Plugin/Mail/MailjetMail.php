@@ -19,7 +19,6 @@ use Drupal\Core\Mail\MailFormatHelper;
  */
 class MailjetMail implements MailInterface
 {
-
     protected $AllowHtml;
 
     /**
@@ -87,38 +86,36 @@ class MailjetMail implements MailInterface
          */
         if (file_exists('libraries/phpmailer/PHPMailerAutoload.php')) {
             require_once 'libraries/phpmailer/PHPMailerAutoload.php';
-            $mailer = new \PHPMailer;
+            $mailer = new \PHPMailer();
         } /**
          * v ~6.0
          */
         elseif (file_exists('libraries/phpmailer/src/PHPMailer.php')) {
             require_once 'libraries/phpmailer/src/PHPMailer.php';
             require_once 'libraries/phpmailer/src/SMTP.php';
-            $mailer = new \PHPMailer\PHPMailer\PHPMailer;
+            $mailer = new \PHPMailer\PHPMailer\PHPMailer();
         } elseif (file_exists('../vendor/phpmailer/phpmailer/src/PHPMailer.php')) {
             require_once '../vendor/phpmailer/phpmailer/src/PHPMailer.php';
             require_once 'libraries/phpmailer/src/SMTP.php';
-            $mailer = new \PHPMailer\PHPMailer\PHPMailer;
+            $mailer = new \PHPMailer\PHPMailer\PHPMailer();
         } else {
             if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
                 // If the PHPMailer class is not yet auto-loaded, try to load the library
                 // using Libraries API, if present.
                 if (function_exists('libraries_load')) {
-
                     $library = libraries_load('phpmailer');
                     if (empty($library) || empty($library['loaded'])) {
-
                         \Drupal::logger('mailjet')
                             ->notice('Unable to send mail : Libraries API can not load PHPMailer library.');
                         drupal_set_message(t('Unable to send mail: PHPMailer library does not exist.<br /><br />This module requires the PHPMailer library to be downloaded and installed separately. <br/>Get the latest PHPMailer v5 or v6 from the <a href="https://github.com/PHPMailer/PHPMailer/releases" target="_blank">official PHPMailer GitHub page</a>. <br/> Upload the "phpmailer" folder to your server inside 
 DRUPAL_ROOT/libraries/.'), 'error');
-                        return FALSE;
+                        return false;
                     }
                 } else {
                     drupal_set_message(t('Unable to send mail: PHPMailer library does not exist.'), 'error');
                     \Drupal::logger('mailjet')
                         ->notice('Unable to send mail: Libraries API and PHPMailer library does not exist.');
-                    return FALSE;
+                    return false;
                 }
             }
         }
@@ -148,7 +145,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                 \Drupal::logger('mailjet')
                     ->notice('There is no submitted from address.');
             }
-            return FALSE;
+            return false;
         }
 
         if (preg_match('/^"?.*"?\s*<.*>$/', $from)) {
@@ -165,7 +162,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                     ->notice('The submitted from address (@from) is not valid.', ['@from' => $from]);
             }
 
-            return FALSE;
+            return false;
         }
 
         // Defines the From value $from_nameto what we expect.
@@ -174,7 +171,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
         // Create the list of 'To:' recipients.
         $torecipients = explode(',', $to);
         foreach ($torecipients as $torecipient) {
-            if (strpos($torecipient, '<') !== FALSE) {
+            if (strpos($torecipient, '<') !== false) {
                 $toparts = explode(' <', $torecipient);
                 $toname = $toparts[0];
                 $toaddr = rtrim($toparts[1], '>');
@@ -190,7 +187,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
         foreach ($headers as $key => $value) {
             switch (\Drupal\Component\Utility\Unicode::strtolower($key)) {
                 case 'from':
-                    if ($from == NULL or $from == '') {
+                    if ($from == null or $from == '') {
                         // If a from value was already given, then set based on header.
                         // Should be the most common situation since drupal_mail moves the
                         // from to headers.
@@ -226,13 +223,13 @@ DRUPAL_ROOT/libraries/.'), 'error');
                     switch ($vars[0]) {
                         case 'text/plain':
                             // The message includes only a plain text part.
-                            $mailer->IsHTML(FALSE);
+                            $mailer->IsHTML(false);
                             $content_type = 'text/plain';
                             break;
 
                         case 'text/html':
                             // The message includes only an HTML part.
-                            $mailer->IsHTML(TRUE);
+                            $mailer->IsHTML(true);
                             $content_type = 'text/html';
                             break;
 
@@ -270,7 +267,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                             }
 
                             // Force the Content-Type to be text/plain.
-                            $mailer->IsHTML(FALSE);
+                            $mailer->IsHTML(false);
                             $content_type = 'text/plain';
                     }
                     break;
@@ -278,7 +275,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                 case 'reply-to':
                     // Only add a "reply-to" if it's not the same as "return-path".
                     if ($value != $headers['Return-Path']) {
-                        if (strpos($value, '<') !== FALSE) {
+                        if (strpos($value, '<') !== false) {
                             $reply_to_parts = explode('<', $value);
                             $reply_to_name = trim($reply_to_parts[0]);
                             $reply_to_name = trim($reply_to_name, '"');
@@ -306,7 +303,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                 case 'cc':
                     $ccrecipients = explode(',', $value);
                     foreach ($ccrecipients as $ccrecipient) {
-                        if (strpos($ccrecipient, '<') !== FALSE) {
+                        if (strpos($ccrecipient, '<') !== false) {
                             $ccparts = explode(' <', $ccrecipient);
                             $ccname = $ccparts[0];
                             $ccaddr = rtrim($ccparts[1], '>');
@@ -321,7 +318,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                 case 'bcc':
                     $bccrecipients = explode(',', $value);
                     foreach ($bccrecipients as $bccrecipient) {
-                        if (strpos($bccrecipient, '<') !== FALSE) {
+                        if (strpos($bccrecipient, '<') !== false) {
                             $bccparts = explode(' <', $bccrecipient);
                             $bccname = $bccparts[0];
                             $bccaddr = rtrim($bccparts[1], '>');
@@ -375,14 +372,14 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
                 // Determine if there is an HTML part for when adding the plain
                 // text part.
-                $text_plain = FALSE;
-                $text_html = FALSE;
+                $text_plain = false;
+                $text_html = false;
                 foreach ($body_parts as $body_part) {
                     if (strpos($body_part, 'text/plain')) {
-                        $text_plain = TRUE;
+                        $text_plain = true;
                     }
                     if (strpos($body_part, 'text/html')) {
-                        $text_html = TRUE;
+                        $text_html = true;
                     }
                 }
 
@@ -422,11 +419,11 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
                         if ($text_html) {
                             $mailer->AltBody = $body_part;
-                            $mailer->IsHTML(TRUE);
+                            $mailer->IsHTML(true);
                             $mailer->ContentType = 'multipart/mixed';
                         } else {
                             $mailer->Body = $body_part;
-                            $mailer->IsHTML(FALSE);
+                            $mailer->IsHTML(false);
                             $mailer->ContentType = 'multipart/mixed';
                         }
                     } // If text/html within the body part, add it to $mailer->Body.
@@ -435,7 +432,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
                         $body_part = trim($this->removeHeaders(trim($body_part)));
                         // Include it as part of the mail object.
                         $mailer->Body = $body_part;
-                        $mailer->IsHTML(TRUE);
+                        $mailer->IsHTML(true);
                         $mailer->ContentType = 'multipart/mixed';
                     } // Add the attachment.
                     elseif (strpos($body_part, 'Content-Disposition: attachment;')) {
@@ -482,7 +479,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
         // If username and password are given, use SMTP authentication.
         if ($username != '' && $password != '') {
-            $mailer->SMTPAuth = TRUE;
+            $mailer->SMTPAuth = true;
             $mailer->Username = $username;
             $mailer->Password = $password;
         }
@@ -510,7 +507,6 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
 
         if (\Drupal::state()->get('mailjet_debug')) {
-
             \Drupal::logger('mailjet')
                 ->notice('Sending mail to: @to', ['@to' => $to]);
         }
@@ -526,11 +522,11 @@ DRUPAL_ROOT/libraries/.'), 'error');
                         '@error_message' => $mailer->ErrorInfo,
                     ]);
             }
-            return FALSE;
+            return false;
         }
 
         $mailer->SmtpClose();
-        return TRUE;
+        return true;
     }
 
     /**
@@ -576,9 +572,9 @@ DRUPAL_ROOT/libraries/.'), 'error');
     {
         $part_array = explode("\n", $input);
 
-        if (strpos($part_array[0], 'Content') !== FALSE) {
-            if (strpos($part_array[1], 'Content') !== FALSE) {
-                if (strpos($part_array[2], 'Content') !== FALSE) {
+        if (strpos($part_array[0], 'Content') !== false) {
+            if (strpos($part_array[1], 'Content') !== false) {
+                if (strpos($part_array[2], 'Content') !== false) {
                     array_shift($part_array);
                     array_shift($part_array);
                     array_shift($part_array);
@@ -624,5 +620,4 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
         return $substring;
     }
-
 }

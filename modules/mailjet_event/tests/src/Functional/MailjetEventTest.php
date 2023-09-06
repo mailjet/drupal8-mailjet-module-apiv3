@@ -4,30 +4,29 @@ namespace Drupal\Tests\mailjet_event\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
-
 /**
  * Tests core campaign functionality.
  *
  * @group mailjet
  */
-class MailjetEventTest extends BrowserTestBase {
-
-
+class MailjetEventTest extends BrowserTestBase
+{
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['mailjet', 'mailjet_event'];
+    public static $modules = ['mailjet', 'mailjet_event'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+    protected function setUp()
+    {
 
-    parent::setUp();
+        parent::setUp();
 
-    $json = '{
+        $json = '{
     "event": "unsub",
     "time": 1510665512,
     "MessageID": 20829151068018510,
@@ -41,39 +40,36 @@ class MailjetEventTest extends BrowserTestBase {
     "agent": ""
 }';
 
-    $event = json_decode($json);
+        $event = json_decode($json);
 
-    $event_data = [
-      'event_id' => '1000',
-      'event_field' => $event,
-      'event_type' => $event->event,
+        $event_data = [
+        'event_id' => '1000',
+        'event_field' => $event,
+        'event_type' => $event->event,
 
-    ];
+        ];
 
-    $event_en = \Drupal::entityManager()
-      ->getStorage('event_entity')
-      ->create($event_data);
+        $event_en = \Drupal::entityManager()
+        ->getStorage('event_entity')
+        ->create($event_data);
 
-    $event_en->save();
-
-  }
+        $event_en->save();
+    }
 
 
   /**
    * Tests retrieval of a specific campaign.
    */
-  public function testGetEvent() {
-    $id = '1000';
+    public function testGetEvent()
+    {
+        $id = '1000';
 
-    $campaign = $entity_manager->getStorage('campaign_entity')->load($id);
+        $campaign = $entity_manager->getStorage('campaign_entity')->load($id);
 
 
-    $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
+        $this->assertTrue(is_object($campaign), 'Tested retrieval of campaign data.');
 
-    $this->assertEquals($campaign->id, $id);
-    $this->assertEquals($campaign->event_type, 'unsub');
-
-  }
-
+        $this->assertEquals($campaign->id, $id);
+        $this->assertEquals($campaign->event_type, 'unsub');
+    }
 }
-

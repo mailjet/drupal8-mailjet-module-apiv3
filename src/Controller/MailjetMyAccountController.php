@@ -11,7 +11,6 @@ use Drupal\Core\Controller\ControllerBase;
 
 class MailjetMyAccountController extends ControllerBase
 {
-
     public function redirect_my_profile()
     {
         define("IFRAME_URL", "https://app.mailjet.com/");

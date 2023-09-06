@@ -10,6 +10,6 @@ use Drupal\Core\Entity\EntityChangedInterface;
  * Provides an interface defining a Signupform entity.
  *
  */
-interface EventInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
-
+interface EventInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface
+{
 }

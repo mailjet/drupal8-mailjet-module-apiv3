@@ -17,7 +17,6 @@ use UsStates\UsStates;
 
 class MailjetSettingsForm extends ConfigFormBase
 {
-
     /**
      * {@inheritdoc}
      */
@@ -60,9 +59,9 @@ class MailjetSettingsForm extends ConfigFormBase
         }
 
         if ($config->get('interface.default') == 'mailjet_mail') {
-            $mailjet_on = TRUE;
+            $mailjet_on = true;
         } else {
-            $mailjet_on = FALSE;
+            $mailjet_on = false;
         }
 
 
@@ -177,49 +176,49 @@ class MailjetSettingsForm extends ConfigFormBase
             '#type' => 'textfield',
             '#title' => t('E-mail'),
             '#default_value' => !empty($user_infos) ? $user_infos['Email'] : '',
-            '#disabled' => TRUE,
+            '#disabled' => true,
         ];
 
         $form['infos']['firstname'] = [
             '#type' => 'textfield',
             '#title' => t('First Name'),
             '#default_value' => !empty($user_infos) ? $user_infos['Firstname'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['infos']['lastname'] = [
             '#type' => 'textfield',
             '#title' => t('Last Name'),
             '#default_value' => !empty($user_infos) ? $user_infos['Lastname'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['infos']['company_name'] = [
             '#type' => 'textfield',
             '#title' => t('Company Name'),
             '#default_value' => !empty($user_infos) ? $user_infos['CompanyName'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['infos']['address_street'] = [
             '#type' => 'textfield',
             '#title' => t('Address'),
             '#default_value' => !empty($user_infos) ? $user_infos['AddressStreet'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['infos']['address_city'] = [
             '#type' => 'textfield',
             '#title' => t('City'),
             '#default_value' => !empty($user_infos) ? $user_infos['AddressCity'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['infos']['address_postal_code'] = [
             '#type' => 'textfield',
             '#title' => t('Post Code'),
             '#default_value' => !empty($user_infos) ? $user_infos['AddressPostalCode'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         $form['infos']['address_country'] = [
@@ -227,7 +226,7 @@ class MailjetSettingsForm extends ConfigFormBase
             '#title' => t('Country'),
             '#options' => \Drupal::service('country_manager')->getList(),
             '#default_value' => !empty($user_infos) ? $user_infos['AddressCountry'] : '',
-            '#required' => TRUE,
+            '#required' => true,
         ];
 
         // States only show up for US citizens
@@ -239,7 +238,7 @@ class MailjetSettingsForm extends ConfigFormBase
             '#title' => t('State'),
             '#options' => UsStates::getStates(),
             '#default_value' => !empty($user_infos) ? $user_infos['AddressState'] : '',
-            '#required' => TRUE,
+            '#required' => true,
             '#states' => [
                 // Only show this field when the value of type is sell.
                 'visible' => [
@@ -296,14 +295,14 @@ class MailjetSettingsForm extends ConfigFormBase
 
 
         $host = !empty($config->get('mailjet_host')) ? $config->get('mailjet_host') : 'in-v3.mailjet.com';
-        $connected = FALSE;
+        $connected = false;
 
         for ($i = 0; $i < count($configs); ++$i) {
             $soc = @ fsockopen($configs[$i][0] . $host, $configs[$i][1], $errno, $errstr, 5);
 
             if ($soc) {
                 fClose($soc);
-                $connected = TRUE;
+                $connected = true;
                 break;
             }
         }
@@ -343,7 +342,7 @@ class MailjetSettingsForm extends ConfigFormBase
 
         if (!empty($form_state->getValue('mailjet_on'))) {
             $config->set('interface.default', 'mailjet_mail')->save();
-        } else if ($config->get('interface.default') == 'mailjet_mail') {
+        } elseif ($config->get('interface.default') == 'mailjet_mail') {
             $config->set('interface.default', 'php_mail')->save();
         }
 
@@ -385,14 +384,12 @@ class MailjetSettingsForm extends ConfigFormBase
         ];
         if (mailjet_mjuser_update($infos)) {
             drupal_set_message(t('Your user profile is updated and sync with Mailjet database!'));
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
 
         $config->save();
         $config_mailjet->save();
-
     }
-
 }

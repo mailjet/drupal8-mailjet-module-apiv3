@@ -11,7 +11,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class InitSubscriber implements EventSubscriberInterface
 {
-
     /**
      * {@inheritdoc}
      */
@@ -25,7 +24,5 @@ class InitSubscriber implements EventSubscriberInterface
      */
     public function onEvent()
     {
-
     }
-
 }
