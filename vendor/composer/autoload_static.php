@@ -29,6 +29,10 @@ class ComposerStaticInit9f95350bff734ea50e86827e21cea0b8
             'Psr\\Http\\Message\\' => 17,
             'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 57,
         ),
+        'M' => 
+        array (
+            'MailjetTools\\' => 13,
+        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -57,6 +61,10 @@ class ComposerStaticInit9f95350bff734ea50e86827e21cea0b8
         'PHPCSStandards\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 
         array (
             0 => __DIR__ . '/..' . '/dealerdirect/phpcodesniffer-composer-installer/src',
+        ),
+        'MailjetTools\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/lib/mailjet-api-php',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (

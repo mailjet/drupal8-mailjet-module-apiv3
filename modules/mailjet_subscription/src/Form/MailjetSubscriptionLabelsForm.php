@@ -114,9 +114,9 @@ class MailjetSubscriptionLabelsForm extends ConfigFormBase
         $status = $entity->save();
 
         if ($status == SAVED_UPDATED) {
-            drupal_set_message(t('Subscription Form Labels have been updated.'));
+            \Drupal::messenger()->addMessage(t('Subscription Form Labels have been updated.'));
         } else {
-            drupal_set_message(t('Subscription Form Labels haven\'t been updated.'));
+            \Drupal::messenger()->addMessage(t('Subscription Form Labels haven\'t been updated.'));
         }
     }
 }

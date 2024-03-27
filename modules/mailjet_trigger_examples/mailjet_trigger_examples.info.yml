@@ -3,15 +3,9 @@ description: Examples of displaying information for customer's orders
 package: Mailjet
 type: module
 version: 8.x-1.2
-core: 8.x || 9.x
+core_version_requirement: ^9 || ^10
 
 dependencies:
   - mailjet:mailjet
   - message:message
   - token:token
-  - commerce
-  - commerce_order
-  - commerce_cart
-  - commerce_payment
-  - commerce_product
-  - commerce_store
