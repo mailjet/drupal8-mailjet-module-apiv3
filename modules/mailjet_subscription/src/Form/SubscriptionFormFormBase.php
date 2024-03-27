@@ -383,7 +383,7 @@ class SubscriptionFormFormBase extends EntityForm
         $entity->set('changed_date', $form_state->getValue('changed_date'));
 
         if (count($arr_selected_prop) > 3) {
-            drupal_set_message(t('You may add a maximum of 3 contact properties in your subscription form. Please update your selection and save the form again.'), 'error');
+            \Drupal::messenger()->addMessage(t('You may add a maximum of 3 contact properties in your subscription form. Please update your selection and save the form again.'), 'error');
             return;
         }
 
@@ -395,9 +395,9 @@ class SubscriptionFormFormBase extends EntityForm
         $edit_link = Link::fromTextAndUrl($this->t('Edit'), $url)->toString();
 
         if ($status == SAVED_UPDATED) {
-            drupal_set_message($this->t('Subscription Form %label has been updated.', ['%label' => $entity->label()]));
+            \Drupal::messenger()->addMessage($this->t('Subscription Form %label has been updated.', ['%label' => $entity->label()]));
         } else {
-            drupal_set_message($this->t('Subscription Form %label has been added.', ['%label' => $entity->label()]));
+            \Drupal::messenger()->addMessage($this->t('Subscription Form %label has been added.', ['%label' => $entity->label()]));
         }
 
         $form_state->setRedirect('entity.mailjet_subscription_form.list');

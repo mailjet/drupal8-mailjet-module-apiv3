@@ -50,11 +50,15 @@ class DomainSettingsForm extends ConfigFormBase
             foreach ($domains as $domain) {
                 if (is_object($domain['Email'])) {
                     $email = $domain['Email']['Email'];
-                } else {
-                    $email = $domain['Email'];
+                } else if (is_array($domain['Email'])) {
+                    $email = $domain['Email']['Email'];
                 }
+                if (empty($email)) {
+                  continue;
+                }
+                $email = str_replace('*@', '', $email);
                 $options[$email] = [
-                    'domain' => str_replace('*@', '', $email),
+                    'domain' => $email,
                     'enabled' => $domain['Status'],
                     'file_name' => $domain['Filename'],
                 ];

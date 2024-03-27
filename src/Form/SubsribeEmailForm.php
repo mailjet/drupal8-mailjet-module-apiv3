@@ -94,9 +94,9 @@ class SubsribeEmailForm extends ConfigFormBase
 
         if (false != $response) {
             if (!empty($signup_form->success_message_subsribe)) {
-                drupal_set_message(t($signup_form->success_message_subsribe), 'status');
+                \Drupal::messenger()->addMessage(t($signup_form->success_message_subsribe), 'status');
             } else {
-                drupal_set_message(t('You have successfully subscribed to Mailjet contact list! Thank you!'));
+                \Drupal::messenger()->addMessage(t('You have successfully subscribed to Mailjet contact list! Thank you!'));
             }
         }
 

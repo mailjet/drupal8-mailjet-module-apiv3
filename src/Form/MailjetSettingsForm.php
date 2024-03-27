@@ -351,7 +351,7 @@ class MailjetSettingsForm extends ConfigFormBase
         $config_mailjet->set('mail_headers_allow_html_mailjet', $form_state->getValue('mail_headers_allow_html_mailjet'))
             ->save();
 
-        drupal_set_message(t('Your options is saved!'));
+        \Drupal::messenger()->addMessage(t('Your options is saved!'));
 
 
         $tracking = [
@@ -365,9 +365,9 @@ class MailjetSettingsForm extends ConfigFormBase
         ];
         $current_events = unserialize($form_state->getValue('current_events'));
         if (mailjet_user_trackingupdate($tracking, $current_events)) {
-            drupal_set_message(t('Your tracking settings is saved!'));
+            \Drupal::messenger()->addMessage(t('Your tracking settings is saved!'));
         } else {
-            drupal_set_message(t('Your tracking settings is NOT saved!'));
+            \Drupal::messenger()->addMessage(t('Your tracking settings is NOT saved!'));
         }
 
 
@@ -383,7 +383,7 @@ class MailjetSettingsForm extends ConfigFormBase
                 '' : $form_state->getValue('address_state'),
         ];
         if (mailjet_mjuser_update($infos)) {
-            drupal_set_message(t('Your user profile is updated and sync with Mailjet database!'));
+            \Drupal::messenger()->addMessage(t('Your user profile is updated and sync with Mailjet database!'));
             return true;
         } else {
             return false;

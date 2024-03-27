@@ -352,19 +352,19 @@ class SubscriptionSignupPageForm extends FormBase
 
             switch (mailjet_get_propertiy_type($filed_prop_name)) {
                 case 'int':
-                    drupal_set_message($missmatch_values, 'error');
+                    \Drupal::messenger()->addMessage($missmatch_values, 'error');
                     break;
 
                 case 'str':
-                    drupal_set_message($missmatch_values, 'error');
+                    \Drupal::messenger()->addMessage($missmatch_values, 'error');
                     break;
 
                 case 'datetime':
-                    drupal_set_message($missmatch_values, 'error');
+                    \Drupal::messenger()->addMessage($missmatch_values, 'error');
                     break;
 
                 case 'bool':
-                    drupal_set_message($missmatch_values, 'error');
+                    \Drupal::messenger()->addMessage($missmatch_values, 'error');
                     break;
             }
             return false;
@@ -412,14 +412,14 @@ class SubscriptionSignupPageForm extends FormBase
             if (false != $responseContactList) {
                 \Drupal::logger('mailjet_messages')
                 ->error(t('The contact was unsubscribed from list #' . $list_id . '.'));
-                drupal_set_message(t('The contact was unsubscribed successfully!'));
+                \Drupal::messenger()->addMessage(t('The contact was unsubscribed successfully!'));
                 $response = new RedirectResponse($base_url);
                 $response->send();
                 return;
             } else {
                 \Drupal::logger('mailjet_messages')
                 ->error(t('The contact was not unsubscribed from list #' . $list_id . '.'));
-                drupal_set_message(t('Error'), 'error');
+                \Drupal::messenger()->addMessage(t('Error'), 'error');
             }
             return;
         }
@@ -429,7 +429,7 @@ class SubscriptionSignupPageForm extends FormBase
       // The user exists in the given list
         if ($user_exists) {
             $message = str_replace('%', $email, $entity->contact_exist);
-            drupal_set_message($message, 'error');
+            \Drupal::messenger()->addMessage($message, 'error');
             return;
         }
 
@@ -450,9 +450,9 @@ class SubscriptionSignupPageForm extends FormBase
         if ($mailManager->mail($module, $key, $to, $langcode, $params, null, true)) {
             $confirmation_message = str_replace("%", $email, $entity->confirmation_message);
             if (!empty($entity->confirmation_message)) {
-                drupal_set_message(t($confirmation_message), 'status');
+                \Drupal::messenger()->addMessage(t($confirmation_message), 'status');
             } else {
-                drupal_set_message(t('Subscription confirmation email was sent to ' . $email . '. Please check your inbox and confirm the subscription.'));
+                \Drupal::messenger()->addMessage(t('Subscription confirmation email was sent to ' . $email . '. Please check your inbox and confirm the subscription.'));
             }
         }
 
