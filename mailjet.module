@@ -100,7 +100,7 @@ function mailjet_new()
         return MailjetTools\MailjetApi::getApiClient($key, $secret_key);
     }
     if (!($key) && !($secret_key)) {
-      \Drupal::messenger()->addMessage(t('You need to add your MailJet API details before you can continue!'));
+        \Drupal::messenger()->addMessage(t('You need to add your MailJet API details before you can continue!'));
     }
     return false;
 }
@@ -881,7 +881,7 @@ function mailjet_preprocess_block(&$variables)
         foreach ($action_links as $link) {
 
             $url = Url::fromRoute($link['route_name']);
-            $internal_link = \Drupal::l($link['title'], $url);
+            $internal_link = \Drupal\Core\Link::fromTextAndUrl($link['title'], $url);;
 
             $output_html .= '<li><span class="label">' . accessProtected($internal_link, 'generatedLink') . '</span><span class="description">' . accessProtected($link['description'], 'string') . '</span></li> ';
         }
@@ -899,12 +899,19 @@ function mailjet_preprocess(&$variables)
 
 }
 
+/**
+ * @throws ReflectionException
+ */
 function accessProtected($obj, $prop)
 {
     $reflection = new ReflectionClass($obj);
-    $property = $reflection->getProperty($prop);
-    $property->setAccessible(TRUE);
-    return $property->getValue($obj);
+    if ($reflection->hasProperty($prop)) {
+        $property = $reflection->getProperty($prop);
+        $property->setAccessible(true);
+        return $property->getValue($obj);
+    }
+
+    return '';
 }
 
 /**

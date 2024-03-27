@@ -1,6 +1,6 @@
 <?php
 
-namespace UsStates;
+namespace MailjetTools;
 
 class UsStates
 {
