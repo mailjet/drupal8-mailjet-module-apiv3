@@ -3,7 +3,7 @@
         'name' => 'drupal/mailjet',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'cfbf0aa0952c88ba98f97cbe3bac3112b1d03a85',
+        'reference' => '8c5335af5ec55f465a646c0d064e22fa34dc2417',
         'type' => 'drupal-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'drupal/mailjet' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'cfbf0aa0952c88ba98f97cbe3bac3112b1d03a85',
+            'reference' => '8c5335af5ec55f465a646c0d064e22fa34dc2417',
             'type' => 'drupal-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

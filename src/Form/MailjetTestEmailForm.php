@@ -91,12 +91,12 @@ class MailjetTestEmailForm extends ConfigFormBase
             $result = $mailManager->mail($module, $key, $to, $langcode, $params, null, $send);
 
             if ($result['result'] !== true) {
-                drupal_set_message(t('There was a problem sending your message and it was not sent.'), 'error');
+                \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent.'), 'error');
             } else {
-                drupal_set_message(t('Your message has been sent.'));
+                \Drupal::messenger()->addMessage(t('Your message has been sent.'));
             }
         } else {
-            drupal_set_message(t('There was a problem with configuration with Mailjet API. Please enter API keys and other information again!'), 'error');
+            \Drupal::messenger()->addMessage(t('There was a problem with configuration with Mailjet API. Please enter API keys and other information again!'), 'error');
         }
     }
 }
