@@ -154,7 +154,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
             // * == Repeats the previous item zero or more times.
             $from_name = preg_replace('/"?([^("\t\n)]*)"?.*$/', '$1', $from);
             $from = preg_replace("/(.*)\<(.*)\>/i", '$2', $from);
-        } elseif (!valid_email_address($from)) {
+        } elseif (!\Drupal::service('email.validator')->isValid($from)) {
             \Drupal::messenger()->addMessage(t('The submitted from address (@from) is not valid.', ['@from' => $from]), 'error');
 
             if (\Drupal::state()->get('mailjet_debug')) {

@@ -64,7 +64,7 @@ class MailjetTestEmailForm extends ConfigFormBase
     public function validateForm(array &$form, FormStateInterface $form_state)
     {
 
-        if (!valid_email_address($form_state->getValue('test_email'))) {
+        if (!\Drupal::service('email.validator')->isValid($form_state->getValue('test_email'))) {
             $form_state->setErrorByName('test_email', t('The provided test e-mail address is not valid.'));
         }
     }
