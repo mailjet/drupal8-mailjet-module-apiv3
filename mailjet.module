@@ -4,11 +4,12 @@
  * code for Mailjet module
  */
 
-$path = drupal_get_path('module', 'mailjet');
+$path = \Drupal::service('extension.list.module')->getPath('mailjet');
 
 // Autoloading via composer
 require_once $path . '/vendor/autoload.php';
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Mailjet\Resources;
@@ -812,9 +813,7 @@ function mailjet_menu_local_actions_alter(&$local_actions)
 
     $menu_action_links = [];
     $counter = 0;
-
     foreach ($local_actions as $action_link) {
-
         switch ($action_link['id']) {
 
             case 'view.order.page_1':

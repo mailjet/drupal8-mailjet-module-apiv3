@@ -240,10 +240,13 @@ class SubscriptionSignupPageForm extends FormBase
     {
 
         $form_values = $form_state->getValues();
+      /**
+       * @var \stdClass $signup_form
+       */
         $signup_form = mailjet_subscription_load($this->entity_id);
 
         if (!isset($form_values['unsubscribe_id']) && empty($form_values['unsubscribe_id'])) {
-            if (!valid_email_address($form_values['signup-email'])) {
+            if (!\Drupal::service('email.validator')->isValid($form_values['signup-email'])) {
                 $form_state->setErrorByName('signup-email', t('Please enter a valid email address!'));
             }
 

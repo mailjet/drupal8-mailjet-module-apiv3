@@ -3,7 +3,7 @@
 namespace Drupal\mailjet_subscription\Form;
 
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\Query\QueryFactory;
+use Drupal\Core\Entity\Query\Sql\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,7 +27,7 @@ class SubscriptionFormFormBase extends EntityForm
 
     public static function create(ContainerInterface $container)
     {
-        return new static($container->get('entity.query'));
+        return new static($container->get('entity.query.sql'));
     }
 
 

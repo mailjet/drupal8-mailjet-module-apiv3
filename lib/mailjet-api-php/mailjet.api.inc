@@ -730,9 +730,9 @@ class MailJet
         curl_setopt($this->_curl_handle, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($this->_curl_handle, CURLOPT_TIMEOUT, 10); //timeout in seconds
         curl_setopt($this->_curl_handle, CURLOPT_USERPWD, $this->_apiKey . ':' . $this->_secretKey);
-        if (drupal_get_profile() == 'standard') {
+        if (\Drupal::installProfile() === 'standard') {
             curl_setopt($this->_curl_handle, CURLOPT_USERAGENT, 'drupal-3.0');
-        } elseif (drupal_get_profile() == 'commerce_kickstart') {
+        } elseif (\Drupal::installProfile() === 'commerce_kickstart') {
             curl_setopt($this->_curl_handle, CURLOPT_USERAGENT, 'kickstart');
         }
 
