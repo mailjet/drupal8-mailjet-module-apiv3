@@ -3,6 +3,9 @@
 namespace Drupal\mailjet\Plugin\Mail;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\File\FileSystem;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Mail\MailFormatHelper;
 
@@ -185,7 +188,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
         // Parse the headers of the message and set the PHPMailer object's settings
         // accordingly.
         foreach ($headers as $key => $value) {
-            switch (\Drupal\Component\Utility\Unicode::strtolower($key)) {
+            switch (mb_strtolower($key)) {
                 case 'from':
                     if ($from == null or $from == '') {
                         // If a from value was already given, then set based on header.
@@ -205,8 +208,9 @@ DRUPAL_ROOT/libraries/.'), 'error');
                     $vars = explode('; ', $value);
                     foreach ($vars as $i => $var) {
                         if ($cut = strpos($var, '=')) {
-                            $new_var = \Drupal\Component\Utility\Unicode::strtolower(\Drupal\Component\Utility\Unicode::substr($var, $cut + 1));
-                            $new_key = \Drupal\Component\Utility\Unicode::substr($var, 0, $cut);
+
+                            $new_var = mb_strtolower(substr($var, $cut + 1));
+                            $new_key = substr($var, 0, $cut);
                             unset($vars[$i]);
                             $vars[$new_key] = $new_var;
                         }
@@ -341,10 +345,6 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
         // Processes the message's body.
         switch ($content_type) {
-            case 'multipart/related':
-                $mailer->Body = $body;
-
-                break;
 
             case 'multipart/alternative':
                 // Split the body based on the boundary ID.
@@ -442,23 +442,23 @@ DRUPAL_ROOT/libraries/.'), 'error');
                         $file_type = $this->getSubstrings($body_part, 'Content-Type', ' ', ';');
 
                         if (file_exists($file_path)) {
-                            if (!$mailer->AddAttachment($file_path, $file_name, $file_encoding, $filetype)) {
+                            if (!$mailer->AddAttachment($file_path, $file_name, $file_encoding, $file_type)) {
                                 \Drupal::messenger()->addMessage(t('Attahment could not be found or accessed.'));
                             }
                         } else {
                             // Clean up the text.
                             $body_part = trim($this->removeHeaders(trim($body_part)));
 
-                            if (drupal_strtolower($file_encoding) == 'base64') {
+                            if (mb_strtolower($file_encoding) === 'base64') {
                                 $attachment = base64_decode($body_part);
-                            } elseif (drupal_strtolower($file_encoding) == 'quoted-printable') {
+                            } elseif (mb_strtolower($file_encoding) === 'quoted-printable') {
                                 $attachment = quoted_printable_decode($body_part);
                             } else {
                                 $attachment = $body_part;
                             }
 
-                            $attachment_new_filename = tempnam(realpath(file_directory_temp()), 'smtp');
-                            $file_path = file_save_data($attachment, $attachment_new_filename, FILE_EXISTS_RENAME);
+                            $attachment_new_filename = tempnam(realpath(\Drupal::service('file_system')->getTempDirectory()), 'smtp');
+                            $file_path = file_save_data($attachment, $attachment_new_filename, FileSystemInterface::EXISTS_REPLACE);
 
                             if (!$mailer->AddAttachment($file_path, $file_name)) {
                                 \Drupal::messenger()->addMessage(t('Attachment could not be found or accessed.'));
@@ -490,11 +490,9 @@ DRUPAL_ROOT/libraries/.'), 'error');
             case 'ssl':
                 $mailer->SMTPSecure = 'ssl';
                 break;
-
             case 'tls':
                 $mailer->SMTPSecure = 'tls';
                 break;
-
             default:
                 $mailer->SMTPSecure = '';
         }
@@ -543,7 +541,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
     protected function boundarySplit($input, $boundary)
     {
         $parts = [];
-        $bs_possible = drupal_substr($boundary, 2, -2);
+        $bs_possible = mb_substr($boundary, 2, -2);
         $bs_check = '\"' . $bs_possible . '\"';
 
         if ($boundary == $bs_check) {
@@ -552,7 +550,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
 
         $tmp = explode('--' . $boundary, $input);
 
-        for ($i = 1; $i < count($tmp); $i++) {
+        for ($i = 1, $iMax = count($tmp); $i < $iMax; $i++) {
             if (trim($tmp[$i])) {
                 $parts[] = $tmp[$i];
             }
@@ -568,7 +566,7 @@ DRUPAL_ROOT/libraries/.'), 'error');
      * @return string
      *   A string with the stripped body part.
      */
-    protected function removeHeaders($input)
+    protected function removeHeaders(string $input): string
     {
         $part_array = explode("\n", $input);
 
@@ -611,11 +609,11 @@ DRUPAL_ROOT/libraries/.'), 'error');
         $search_start = strpos($source, $target) + 1;
         $first_character = strpos($source, $beginning_character, $search_start) + 1;
         $second_character = strpos($source, $ending_character, $first_character) + 1;
-        $substring = drupal_substr($source, $first_character, $second_character - $first_character);
-        $string_length = drupal_strlen($substring) - 1;
+        $substring = mb_substr($source, $first_character, $second_character - $first_character);
+        $string_length = mb_strlen($substring) - 1;
 
         if ($substring[$string_length] == $ending_character) {
-            $substring = drupal_substr($substring, 0, $string_length);
+            $substring = mb_strlen($substring, 0, $string_length);
         }
 
         return $substring;
