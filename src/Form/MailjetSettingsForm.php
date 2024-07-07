@@ -7,6 +7,7 @@
 
 namespace Drupal\mailjet\Form;
 
+use Drupal;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Locale\Country;
@@ -231,7 +232,7 @@ class MailjetSettingsForm extends ConfigFormBase
 
         // States only show up for US citizens
 
-        $path = drupal_get_path('module', 'mailjet');
+        $path = Drupal::service('extension.list.module')->getPath('mailjet');
         //include $path . '/lib/mailjet-api-php/src/UsStates.php';
         $form['infos']['address_state'] = [
             '#type' => 'select',

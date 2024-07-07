@@ -4,11 +4,12 @@
  * code for Mailjet module
  */
 
-$path = \Drupal::service('extension.list.module')->getPath('mailjet');
+$path = Drupal::service('extension.list.module')->getPath('mailjet');
 
 // Autoloading via composer
 require_once $path . '/vendor/autoload.php';
 
+use Drupal\commerce_store\StoreStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\user\Entity\User;
@@ -19,7 +20,7 @@ use Mailjet\Resources;
  */
 function mailjet_go_to_external_link($url)
 {
-    $moduleHandler = \Drupal::service('module_handler');
+    $moduleHandler = Drupal::service('module_handler');
     if ($moduleHandler->moduleExists('overlay') && overlay_get_mode() == 'child') {
         unset($_GET['destination']);
         overlay_close_dialog($url, ['external' => TRUE]);
@@ -36,7 +37,7 @@ function mailjet_go_to_external_link($url)
 function _mailjet_register_alter_callback()
 {
 
-    $config_mailjet = \Drupal::service('config.factory')->getEditable('mailjet.settings');
+    $config_mailjet = Drupal::service('config.factory')->getEditable('mailjet.settings');
     if (isset($_POST['data']['apikey']) && !empty($_POST['data']['apikey']) && isset($_POST['data']['secretkey']) && !empty($_POST['data']['secretkey'])) {
 
         $config_mailjet->set('mailjet_active', TRUE);
@@ -58,7 +59,7 @@ function _mailjet_register_alter_callback()
             $config_mailjet->save();
             mailjet_first_sync(mailjet_get_default_list_id(mailjet_new()));
         } else {
-            \Drupal::messenger()->addMessage(t('Token was not generated! Please try again.'), 'error');
+            Drupal::messenger()->addMessage(t('Token was not generated! Please try again.'), 'error');
         }
     }
 
@@ -88,7 +89,7 @@ function _mailjet_register_alter_callback()
  */
 function mailjet_new()
 {
-    $config_mailjet = \Drupal::config('mailjet.settings');
+    $config_mailjet = Drupal::config('mailjet.settings');
     $key = '';
     $secret_key = '';
     if (!empty($config_mailjet->get('mailjet_active')) && !empty($config_mailjet->get('mailjet_username'))
@@ -101,7 +102,7 @@ function mailjet_new()
         return MailjetTools\MailjetApi::getApiClient($key, $secret_key);
     }
     if (!($key) && !($secret_key)) {
-        \Drupal::messenger()->addMessage(t('You need to add your MailJet API details before you can continue!'));
+        Drupal::messenger()->addMessage(t('You need to add your MailJet API details before you can continue!'));
     }
     return false;
 }
@@ -132,7 +133,7 @@ function mailjet_user_infos()
  */
 function mailjet_mjuser_update($infos)
 {
-    \Drupal::logger('my_module')->notice(print_r($infos, TRUE));
+    Drupal::logger('my_module')->notice(print_r($infos, TRUE));
     $mailjetApiClient = mailjet_new();
     $response = $mailjetApiClient->put(Resources::$Myprofile, ['body' => $infos]);
     return ($response->success()) ? TRUE : FALSE;
@@ -222,7 +223,7 @@ function mailjet_user_domain_list()
 function mailjet_get_a_trusted_email()
 {
     $mailjetApiClient = mailjet_new();
-    $system_site_config = \Drupal::config('system.site');
+    $system_site_config = Drupal::config('system.site');
 
     $filters = [
         'style' => 'full',
@@ -261,7 +262,7 @@ function mailjet_user_domain_add($domain)
         return TRUE;
     }
 
-    \Drupal::messenger()->addMessage(t($response->getReasonPhrase()), 'error');
+    Drupal::messenger()->addMessage(t($response->getReasonPhrase()), 'error');
     return FALSE;
 }
 
@@ -308,14 +309,14 @@ function _has_drupal_property($mailjet_property, $drupal_fields)
 
 function mailjet_properties_sync()
 {
-    $config_mailjet = \Drupal::config('mailjet.settings');
+    $config_mailjet = Drupal::config('mailjet.settings');
 
     //get all user fields from Drupal system
     $user_fields = [];
     //add this property by default
     $user_fields[] = ["Name" => 'name', "Datatype" => 'str'];
 
-    $user_info = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+    $user_info = \Drupal\user\Entity\User::load(Drupal::currentUser()->id());
 
     foreach ($user_info as $propertyName => $propertyValue) {
         if (strpos($propertyName, "field_") !== FALSE) {
@@ -391,7 +392,6 @@ function processCustomFields($user)
             $currentFieldType = $currentField->getType();
 
             if (!empty($propertyValue)) {
-                $castedPropertyValue = '';
                 $castedPropertyValue = $propertyValue->getString();
                 if ($currentFieldType == "integer" || $currentFieldType == "number_integer" || $currentFieldType == "timestamp") {
                     $castedPropertyValue = intval($castedPropertyValue);
@@ -464,7 +464,7 @@ function mailjet_user_delete(User $user)
  */
 function mailjet_sync_single_user(User $user, $action)
 {
-    $config_mailjet = \Drupal::config('mailjet.settings');
+    $config_mailjet = Drupal::config('mailjet.settings');
 
     if (empty($user->get('mail')->value)) {
         return;
@@ -495,10 +495,10 @@ function mailjet_sync_single_user(User $user, $action)
                 $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact);
 
                 if ($response) {
-                    \Drupal::logger('mailjet_messages')
+                    Drupal::logger('mailjet_messages')
                         ->notice(t('The new contact was added to list #@list.', ['@list' => $listId]));
                 } else {
-                    \Drupal::logger('mailjet_messages')
+                    Drupal::logger('mailjet_messages')
                         ->notice(t('The new contact was not added to list #@list.', ['@list' => $listId]));
                 }
             }
@@ -512,17 +512,17 @@ function mailjet_sync_single_user(User $user, $action)
                 //add new email
                 $response = MailjetTools\MailjetApi::syncMailjetContact($listId, $contact, $action);
                 if (false == $response) {
-                    \Drupal::logger('mailjet_messages')
+                    Drupal::logger('mailjet_messages')
                         ->notice(t('The contact was unsubscribed from list #@list.', ['@list' => $listId]));
                 } else {
-                    \Drupal::logger('mailjet_messages')
+                    Drupal::logger('mailjet_messages')
                         ->notice(t('The contact was not unsubscribed from list #@list.', ['@list' => $listId]));
                 }
             }
             break;
 
         default:
-            $messenger = \Drupal::messenger();
+            $messenger = Drupal::messenger();
             $messenger->addMessage(t('No user action'), 'warning');
             break;
     }
@@ -533,7 +533,7 @@ function mailjet_sync_single_user(User $user, $action)
  */
 function is_batchjob_running($bjID)
 {
-    $config_mailjet = \Drupal::config('mailjet.settings');
+    $config_mailjet = Drupal::config('mailjet.settings');
     $mailjetApiClient = mailjet_new();
     $filters = [
         'APIKeyALT' => $config_mailjet->get('mailjet_username'),
@@ -542,11 +542,7 @@ function is_batchjob_running($bjID)
     if ($responseBatchJobCheck->success()) {
         $responseBatchJobCheckData = $responseBatchJobCheck->getData();
     }
-    if (!empty($responseBatchJobCheckData[0]['Status']) && $responseBatchJobCheckData[0]['Status'] == "Completed") {
-        return FALSE;
-    }
-
-    return TRUE;
+    return !(!empty($responseBatchJobCheckData[0]['Status']) && $responseBatchJobCheckData[0]['Status'] == "Completed");
 }
 
 /**
@@ -578,9 +574,9 @@ function mailjet_create_default_list()
     $responseNewContactsList = MailjetTools\MailjetApi::createMailjetContactList(mailjet_get_default_list_name());
     if (false != $responseNewContactsList) {
         $def_list_id = $responseNewContactsList[0]['ID'];
-        \Drupal::messenger()->addMessage(t('Default list was created!'), 'status');
+        Drupal::messenger()->addMessage(t('Default list was created!'), 'status');
     } else {
-        \Drupal::messenger()->addMessage(t('Default list was not created! Please try again.'), 'error');
+        Drupal::messenger()->addMessage(t('Default list was not created! Please try again.'), 'error');
     }
     return empty($def_list_id) ? 0 : $def_list_id;
 }
@@ -590,11 +586,10 @@ function mailjet_create_default_list()
  */
 function mailjet_first_sync($list_id)
 {
-    $config_mailjet = \Drupal::service('config.factory')->getEditable('mailjet.settings');
+    $config_mailjet = Drupal::service('config.factory')->getEditable('mailjet.settings');
 
-    //$users = entity_load('user');
-    $user_storage = \Drupal::service('entity_type.manager')->getStorage('user');
-    $ids = $user_storage->getQuery()->execute();
+    $user_storage = Drupal::entityTypeManager()->getStorage('user');
+    $ids = $user_storage->getQuery()->accessCheck(false)->execute();
     $users = $user_storage->loadMultiple($ids);
     $contacts = [];
 
@@ -616,11 +611,11 @@ function mailjet_first_sync($list_id)
     mailjet_properties_sync();
 
     $responseInitialSync = MailjetTools\MailjetApi::syncMailjetContacts($list_id, $contacts);
-    if (false == $responseInitialSync) {
-        \Drupal::messenger()->addMessage(t('Could not create the contact list'));
+    if (!$responseInitialSync) {
+        Drupal::messenger()->addMessage(t('Could not create the contact list'));
     }
 
-    \Drupal::messenger()->addMessage(t('Sync in progress.'), 'status');
+    Drupal::messenger()->addMessage(t('Sync in progress.'), 'status');
 }
 
 function get_mailjet_get_lists_limit()
@@ -861,7 +856,7 @@ function mailjet_menu_local_actions_alter(&$local_actions)
         $counter++;
     }
     ksort($menu_action_links);
-    \Drupal::state()->set('mailjet_action_links', $menu_action_links);
+    Drupal::state()->set('mailjet_action_links', $menu_action_links);
 }
 
 /**
@@ -871,17 +866,14 @@ function mailjet_preprocess_block(&$variables)
 {
     $variables['#cache']['contexts'][] = 'url';
 
-    if ($_SERVER['REQUEST_URI'] == '/admin/config/system/mailjet/mailjet-panel') {
+    if ($_SERVER['REQUEST_URI'] === '/admin/config/system/mailjet/mailjet-panel') {
 
-        $action_links = \Drupal::state()->get('mailjet_action_links');
-
-
+        $action_links = Drupal::state()->get('mailjet_action_links');
         $output_html = '<br/><ul class="admin-list">';
         foreach ($action_links as $link) {
 
             $url = Url::fromRoute($link['route_name']);
-            $internal_link = \Drupal\Core\Link::fromTextAndUrl($link['title'], $url);;
-
+            $internal_link = \Drupal\Core\Link::fromTextAndUrl($link['title'], $url);
             $output_html .= '<li><span class="label">' . accessProtected($internal_link, 'generatedLink') . '</span><span class="description">' . accessProtected($link['description'], 'string') . '</span></li> ';
         }
         $output_html .= '</ul>';
@@ -891,11 +883,6 @@ function mailjet_preprocess_block(&$variables)
     } else {
         $variables['content_menu'] = NULL;
     }
-}
-
-function mailjet_preprocess(&$variables)
-{
-
 }
 
 /**
@@ -918,8 +905,7 @@ function accessProtected($obj, $prop)
  */
 function mailjet_theme_registry_alter(&$theme_registry)
 {
-
-    $theme_registry['block__local_actions_block']['path'] = drupal_get_path('module', 'mailjet') . '/templates';
+    $theme_registry['block__local_actions_block']['path'] = Drupal::service('extension.list.module')->getPath('mailjet') . '/templates';
 }
 
 function mailjet_theme($existing, $type, $theme, $path)
