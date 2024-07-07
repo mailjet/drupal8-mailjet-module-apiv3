@@ -8,6 +8,7 @@ use Drupal\Core\File\FileSystem;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Mail\MailInterface;
 use Drupal\Core\Mail\MailFormatHelper;
+use Drupal\file\FileRepositoryInterface;
 
 //use PHPMailer\PHPMailer\PHPMailer;
 
@@ -458,7 +459,9 @@ DRUPAL_ROOT/libraries/.'), 'error');
                             }
 
                             $attachment_new_filename = tempnam(realpath(\Drupal::service('file_system')->getTempDirectory()), 'smtp');
-                            $file_path = file_save_data($attachment, $attachment_new_filename, FileSystemInterface::EXISTS_REPLACE);
+                            /** @var FileRepositoryInterface $fileRepository */
+                            $fileRepository = \Drupal::service('file.repository');
+                            $fileRepository->writeData($attachment, $attachment_new_filename, FileSystemInterface::EXISTS_REPLACE);
 
                             if (!$mailer->AddAttachment($file_path, $file_name)) {
                                 \Drupal::messenger()->addMessage(t('Attachment could not be found or accessed.'));
