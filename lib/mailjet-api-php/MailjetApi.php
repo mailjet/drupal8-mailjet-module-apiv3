@@ -22,14 +22,14 @@ class MailjetApi
 
     $mjClient = new Client($mailjetApikey, $mailjetApiSecret);
     if (\Drupal::installProfile() === 'standard') {
-      $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.7');
-      $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.7']);
+      $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.9');
+      $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.9']);
     } elseif (\Drupal::installProfile() == 'commerce_kickstart') {
       $mjClient->addRequestOption(CURLOPT_USERAGENT, 'kickstart');
       $mjClient->addRequestOption('headers', ['User-Agent' => 'kickstart']);
     } else {
-      $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.7');
-      $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.7']);
+      $mjClient->addRequestOption(CURLOPT_USERAGENT, 'drupal-8.x-2.9');
+      $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.9']);
     }
 
     // The Mailjet API is HTTPS-only: never fall back to plain HTTP, whatever

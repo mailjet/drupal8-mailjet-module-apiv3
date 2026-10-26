@@ -130,6 +130,10 @@ Author
 
 ## Changelog
 
+= 8.x-2.9 =
+* Security: Mailjet API calls are always sent over HTTPS (ahead of the Mailjet API HTTP deprecation). Previously the module fell back to plain HTTP when the Drupal site itself was not served over HTTPS
+* User-Agent sent to the Mailjet API updated to the module version
+
 = 8.x-2.8 =
 * Support 9.x Drupal
 
