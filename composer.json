@@ -10,7 +10,7 @@
     "minimum-stability": "dev",
     "support": {
         "issues": "https://www.drupal.org/project/issues/mailjet",
-        "source": "http://cgit.drupalcode.org/mailjet"
+        "source": "https://git.drupalcode.org/project/mailjet"
     },
     "repositories": [
         {
