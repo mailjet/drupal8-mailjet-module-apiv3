@@ -4,10 +4,10 @@
  * Mailjet Public API / The real-time Cloud Emailing platform
  *
  * Connect your Apps and Make our product yours with our powerful API
- * http://www.mailjet.com/ Mailjet SAS Website
+ * https://www.mailjet.com/ Mailjet SAS Website
  *
  * @copyright  Copyright (c) 2012-2013, Mailjet SAS,
- *   http://www.mailjet.com/Terms-of-use.htm
+ *   https://www.mailjet.com/Terms-of-use.htm
  * @file
  */
 
@@ -15,7 +15,7 @@
  * Mailjet Public API Main Class
  *
  * This class enables you to connect your Apps and use our powerful API.
- * http://www.mailjet.com/docs/api
+ * https://www.mailjet.com/docs/api
  *
  * updated on 2013-08-11
  *
@@ -210,7 +210,7 @@ class MailJet
         if ($secretKey) {
             $this->_secretKey = $secretKey;
         }
-        $this->_apiUrl = (($this->_secure) ? 'https' : 'http') . '://api.mailjet.com/v3/' . $this->_version;
+        $this->_apiUrl = 'https://api.mailjet.com/v3/' . $this->_version;
     }
 
   /**
@@ -244,7 +244,7 @@ class MailJet
             $this->_debugRequest = $request;
         }
 
-        $this->_debugCallUrl = $this->_apiUrl = $url = (($this->_secure) ? 'https' : 'http') . '://api.mailjet.com/v3/DATA/' . $method . '/' . $id . '/' . $type
+        $this->_debugCallUrl = $this->_apiUrl = $url = 'https://api.mailjet.com/v3/DATA/' . $method . '/' . $id . '/' . $type
         . '/' . $contType;
 
         if (is_NULL($this->_curl_handle)) {
@@ -380,16 +380,13 @@ class MailJet
    * @access  public
    * @uses  Mailjet::Api::$_apiUrl
    *
-   * @param boolean $secure TRUE to secure the transaction, FALSE otherwise
+   * @param boolean $secure Ignored, HTTPS is always used
    */
     public function secure($secure = true)
     {
-        $this->_secure = $secure;
-        $protocol = 'http';
-        if ($secure) {
-            $protocol = 'https';
-        }
-        $this->_apiUrl = preg_replace('/http(s)?:\/\//', $protocol . '://', $this->_apiUrl);
+        // The Mailjet API is HTTPS-only: the flag is kept for backward compatibility and ignored.
+        $this->_secure = true;
+        $this->_apiUrl = preg_replace('/^http:\/\//i', 'https://', $this->_apiUrl);
     }
 
   /**
@@ -543,7 +540,7 @@ class MailJet
 
     public function resetRequest()
     {
-        $this->_apiUrl = (($this->_secure) ? 'https' : 'http') . '://api.mailjet.com/v3/' . $this->_version;
+        $this->_apiUrl = 'https://api.mailjet.com/v3/' . $this->_version;
         $this->_request_post = false;
     }
 

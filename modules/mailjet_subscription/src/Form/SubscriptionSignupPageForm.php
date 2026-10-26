@@ -401,7 +401,7 @@ class SubscriptionSignupPageForm extends FormBase
 
       //Unsubscribe
         if (!empty($form_values['unsubscribe_id'])) {
-    //      $url = 'http://api.mailjet.com/v3/REST/user/' . $user->getEmail();
+    //      $url = 'https://api.mailjet.com/v3/REST/user/' . $user->getEmail();
     //      $result = $mailjetApiClient->generalRequest(FALSE, [], 'GET', $url);
     //      $result_arr = json_decode($result);
     //      $user_id = $result_arr->Data[0]->ID;

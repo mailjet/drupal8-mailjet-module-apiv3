@@ -32,10 +32,9 @@ class MailjetApi
       $mjClient->addRequestOption('headers', ['User-Agent' => 'drupal-8.x-2.7']);
     }
 
-    // We turn of secure protocol for API requests if the wordpress does not support it
-    if (empty($_SERVER['HTTPS']) || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'off') || $_SERVER['SERVER_PORT'] != 443) {
-      $mjClient->setSecureProtocol(false);
-    }
+    // The Mailjet API is HTTPS-only: never fall back to plain HTTP, whatever
+    // protocol the Drupal site itself is served with.
+    $mjClient->setSecureProtocol(true);
     self::$mjApiKey = $mailjetApikey;
     self::$mjApiClient = $mjClient;
 
